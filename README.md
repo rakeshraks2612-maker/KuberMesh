@@ -9,7 +9,6 @@
 [![Razorpay Test APIs](https://img.shields.io/badge/Razorpay-Live%20Test%20Connected-0C2340.svg)](https://razorpay.com/)
 
 👉 **Live Public HTTPS Demo**: **[https://grad-generating-businesses-articles.trycloudflare.com](https://grad-generating-businesses-articles.trycloudflare.com)**  
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/rakeshraks2612-maker/KuberMesh)
 
 ---
 
