@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KuberMesh — Autonomous Revenue Optimizer & Agentic Commerce Protocol</title>
+  <meta name="description" content="KuberMesh: Closed-loop autonomous revenue optimizer and agent-to-agent commerce protocol for Razorpay merchants.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- TOP NAVIGATION -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <div class="logo-icon">⚡</div>
+        <div>
+          <div class="brand-title">KUBER<span>MESH</span></div>
+          <div class="brand-tagline">Autonomous Revenue Optimizer & A2A Commerce Protocol</div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div class="badge badge-rzp">
+          <span class="status-dot green"></span> Razorpay Test Mode
+        </div>
+        <div class="badge badge-protocol">
+          <span class="status-dot blue"></span> NPCI UAP / x402 Active
+        </div>
+        <button id="btn-reset-demo" class="btn btn-secondary btn-sm" onclick="resetDemo()">Reset Demo</button>
+      </div>
+    </header>
+
+    <!-- METRICS STRIP -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Revenue At Risk</div>
+        <div class="metric-value text-red" id="metric-total-leakage">₹0</div>
+        <div class="metric-sub">Across active merchant catalog</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Autonomous Interventions</div>
+        <div class="metric-value text-emerald" id="metric-interventions">0</div>
+        <div class="metric-sub">Zero-LLM Guardrail Verified</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">A2A Protocol Status</div>
+        <div class="metric-value text-indigo">Ready (v1.0)</div>
+        <div class="metric-sub">Exposing <code>kubermesh.json</code></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Guardrail Strictness</div>
+        <div class="metric-value text-amber">100% Gated</div>
+        <div class="metric-sub">Max Disc 20% | Min Margin 8%</div>
+      </div>
+    </section>
+
+    <!-- TAB NAVIGATION -->
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-btn-growth" onclick="switchTab('growth')">
+        📊 Catalog Health & Revenue Engine
+      </button>
+      <button class="tab-btn" id="tab-btn-a2a" onclick="switchTab('a2a')">
+        🤖 Agent-to-Agent (A2A) Gateway
+      </button>
+      <button class="tab-btn" id="tab-btn-audit" onclick="switchTab('audit')">
+        🛡️ Immutable Audit Ledger
+      </button>
+    </div>
+
+    <!-- TAB 1: REVENUE GROWTH & AGENTIC OPTIMIZATION -->
+    <main id="tab-growth" class="tab-content active">
+      <div class="toolbar">
+        <div class="toolbar-title">
+          <h2>Catalog Risk Analysis & Autonomous Growth</h2>
+          <p>Real-time computation of Revenue At Risk Score (RARS) with deterministic intervention gating.</p>
+        </div>
+        <div class="toolbar-buttons">
+          <button id="btn-scan" class="btn btn-primary" onclick="runCatalogScan()">
+            <span class="btn-icon">⚡</span> Run Autonomous Growth Scan
+          </button>
+          <button id="btn-fail-demo" class="btn btn-warning" onclick="triggerGracefulFailureDemo()">
+            <span class="btn-icon">🛡️</span> Demo Graceful Failure & Auto-Repair
+          </button>
+        </div>
+      </div>
+
+      <!-- CATALOG TABLE -->
+      <div class="card table-card">
+        <div class="table-responsive">
+          <table class="data-table" id="catalog-table">
+            <thead>
+              <tr>
+                <th>SKU & Product Name</th>
+                <th>Retail Price</th>
+                <th>Base Margin</th>
+                <th>Cart Abandonment</th>
+                <th>7d Velocity</th>
+                <th>Stagnation</th>
+                <th>RARS Score</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="catalog-table-body">
+              <tr><td colspan="8" class="text-center">Loading catalog metrics...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AGENT EXECUTION TRACE CONTAINER -->
+      <div id="execution-trace-panel" class="card trace-card" style="display: none;">
+        <div class="trace-header">
+          <div class="trace-title">
+            <span class="pulsing-indicator"></span> Autonomous Decision & Guardrail Trace
+          </div>
+          <button class="btn-close" onclick="closeTracePanel()">×</button>
+        </div>
+        <div class="trace-body" id="trace-content">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 2: AGENT-TO-AGENT (A2A) GATEWAY -->
+    <main id="tab-a2a" class="tab-content">
+      <div class="toolbar">
+        <div class="toolbar-title">
+          <h2>Agent-to-Agent (A2A) Commerce Protocol</h2>
+          <p>Enabling external AI buyers to discover catalog, negotiate within margin bounds, and create Razorpay checkouts.</p>
+        </div>
+        <div class="toolbar-buttons">
+          <a href="/api/a2a/catalog" target="_blank" class="btn btn-secondary">
+            View <code>kubermesh.json</code> Manifest
+          </a>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <!-- AI BUYER SIMULATOR -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🤖 AI Buyer Agent Simulator</h3>
+            <p>Simulate an autonomous procurement agent negotiating with the merchant.</p>
+          </div>
+          <div class="card-body form-grid">
+            <div class="form-group">
+              <label for="a2a-buyer-id">Buyer Agent ID</label>
+              <input type="text" id="a2a-buyer-id" value="agent_gemini_buyer_99" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="a2a-sku">Target SKU</label>
+              <select id="a2a-sku" class="form-input" onchange="updateA2APriceHint()">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="a2a-qty">Quantity</label>
+              <input type="number" id="a2a-qty" value="1" min="1" max="10" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="a2a-offered-inr">Offered Unit Price (₹)</label>
+              <input type="number" id="a2a-offered-inr" value="1300" class="form-input">
+              <small class="text-muted" id="a2a-price-hint">Retail: ₹1,499.00 | Floor Price: ₹1,032.61</small>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="submitA2ANegotiation()">
+              Dispatch A2A Negotiation Handshake
+            </button>
+          </div>
+        </div>
+
+        <!-- A2A RESPONSE TERMINAL -->
+        <div class="card">
+          <div class="card-header">
+            <h3>⚡ Protocol Handshake Response</h3>
+            <p>Razorpay Order & Token Signature</p>
+          </div>
+          <div class="card-body">
+            <div class="code-terminal" id="a2a-result-terminal">
+              <span class="text-muted">// Awaiting incoming A2A negotiation request...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 3: IMMUTABLE AUDIT LEDGER -->
+    <main id="tab-audit" class="tab-content">
+      <div class="toolbar">
+        <div class="toolbar-title">
+          <h2>Immutable Financial Audit Ledger</h2>
+          <p>Every rupee action is cryptographically hashed, logged, and reversibly mapped for automated rollback.</p>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <div class="table-responsive">
+          <table class="data-table" id="audit-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Target SKU</th>
+                <th>Action Type</th>
+                <th>Guardrail Hash</th>
+                <th>RARS Δ</th>
+                <th>Revenue Impact</th>
+                <th>Status</th>
+                <th>Rollback</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <tr><td colspan="8" class="text-center">Loading audit records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div>KuberMesh v1.0.0 — Built for <strong>Razorpay Buildathon (Track 01)</strong></div>
+      <div class="footer-links">Deterministic Guardrails • Zero-LLM Financial Validation • NPCI UAP/x402 Ready</div>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
