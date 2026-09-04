@@ -3,19 +3,19 @@ let currentCatalogData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   initAmbientCanvas();
+  initHeroCardsParallax();
   loadDashboardData();
   loadAuditLedger();
   updateElasticitySimulation();
 });
 
-// Serene Ambient Canvas Animation Engine (Fintech Constellation & Dynamic Aurora)
+// Luminous Fluid Aurora & Streamlines Canvas Engine
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let width, height;
-  let particles = [];
-  let mouse = { x: -1000, y: -1000, active: false };
+  let streams = [];
   let time = 0;
 
   function resize() {
@@ -23,113 +23,109 @@ function initAmbientCanvas() {
     height = canvas.height = window.innerHeight;
   }
   window.addEventListener("resize", resize);
-  window.addEventListener("mousemove", (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    mouse.active = true;
-  });
-  window.addEventListener("mouseleave", () => {
-    mouse.active = false;
-  });
   resize();
 
-  const palette = [
-    { r: 2, g: 132, b: 199 },   // Fintech Cobalt
-    { r: 16, g: 185, b: 129 },  // Emerald
-    { r: 99, g: 102, b: 241 },  // Indigo
-    { r: 139, g: 92, b: 246 }   // Violet
-  ];
-
-  const count = Math.min(50, Math.max(30, Math.floor(window.innerWidth / 30)));
-  for (let i = 0; i < count; i++) {
-    const col = palette[Math.floor(Math.random() * palette.length)];
-    particles.push({
+  // Create fluid flow streams
+  const streamCount = 45;
+  for (let i = 0; i < streamCount; i++) {
+    streams.push({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.45,
-      vy: (Math.random() - 0.5) * 0.45,
-      baseRadius: Math.random() * 2 + 1.5,
-      color: col,
-      pulseSpeed: 0.02 + Math.random() * 0.03,
-      phase: Math.random() * Math.PI * 2
+      length: Math.random() * 80 + 40,
+      speed: Math.random() * 0.8 + 0.4,
+      radius: Math.random() * 2 + 1,
+      color: i % 3 === 0 
+        ? "rgba(2, 132, 199, 0.45)"  // Cobalt Blue
+        : i % 3 === 1 
+          ? "rgba(16, 185, 129, 0.40)" // Emerald Green
+          : "rgba(139, 92, 246, 0.35)", // Violet
+      seed: Math.random() * 100
     });
   }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
-    time += 0.015;
+    time += 0.008;
 
-    // 1. Draw subtle cursor aura spotlight
-    if (mouse.active) {
-      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 160);
-      grad.addColorStop(0, "rgba(2, 132, 199, 0.07)");
-      grad.addColorStop(1, "transparent");
-      ctx.fillStyle = grad;
+    // Draw fluid flowing particles & soft trails
+    streams.forEach(s => {
+      // Flow field calculation
+      const angle = Math.sin(s.x * 0.002 + time) * Math.cos(s.y * 0.002 + time) * Math.PI * 2;
+      s.x += Math.cos(angle) * s.speed + 0.5;
+      s.y += Math.sin(angle) * s.speed;
+
+      // Soft glowing particle head
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 160, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // 2. Draw delicate constellation connection hairlines
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 135) {
-          const alpha = (1 - dist / 135) * 0.14;
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(15, 23, 42, ${alpha})`;
-          ctx.lineWidth = 0.85;
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // 3. Draw luminous drifting stars
-    particles.forEach(p => {
-      // Gentle cursor repulsion
-      if (mouse.active) {
-        const mdx = mouse.x - p.x;
-        const mdy = mouse.y - p.y;
-        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-        if (mdist < 120) {
-          const force = (1 - mdist / 120) * 0.8;
-          p.x -= (mdx / mdist) * force;
-          p.y -= (mdy / mdist) * force;
-        }
-      }
-
-      const currentRadius = p.baseRadius + Math.sin(time + p.phase) * 0.6;
-
-      // Soft glow
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, currentRadius * 2.2, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, 0.12)`;
+      ctx.arc(s.x, s.y, s.radius * 2, 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
       ctx.fill();
 
-      // Core particle
+      // Delicate trailing stream
       ctx.beginPath();
-      ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, 0.80)`;
-      ctx.fill();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x - Math.cos(angle) * s.length * 0.3, s.y - Math.sin(angle) * s.length * 0.3);
+      ctx.strokeStyle = s.color.replace(/[\d\.]+\)$/, "0.12)");
+      ctx.lineWidth = s.radius;
+      ctx.stroke();
 
-      p.x += p.vx;
-      p.y += p.vy;
-
-      if (p.x < -10) p.x = width + 10;
-      if (p.x > width + 10) p.x = -10;
-      if (p.y < -10) p.y = height + 10;
-      if (p.y > height + 10) p.y = -10;
+      // Wrap around edges
+      if (s.x > width + 50) s.x = -50;
+      if (s.x < -50) s.x = width + 50;
+      if (s.y > height + 50) s.y = -50;
+      if (s.y < -50) s.y = height + 50;
     });
 
     requestAnimationFrame(draw);
   }
 
   draw();
+}
+
+// Interactive 3D Card Deck Parallax & Tilt Physics
+function initHeroCardsParallax() {
+  const stage = document.querySelector(".hero-cards-stage");
+  if (!stage) return;
+  const cards = stage.querySelectorAll(".fintech-credit-card");
+  if (!cards.length) return;
+
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+
+  window.addEventListener("mousemove", (e) => {
+    const rect = stage.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    targetX = (e.clientX - centerX) / (window.innerWidth / 2);
+    targetY = (e.clientY - centerY) / (window.innerHeight / 2);
+  });
+
+  function updateTilt() {
+    currentX += (targetX - currentX) * 0.08;
+    currentY += (targetY - currentY) * 0.08;
+
+    const tiltX = -currentY * 12; // tilt up/down
+    const tiltY = currentX * 16;  // tilt left/right
+
+    const obsidian = stage.querySelector(".card-obsidian");
+    const glass = stage.querySelector(".card-glass");
+    const cobalt = stage.querySelector(".card-cobalt");
+
+    if (obsidian && !obsidian.matches(":hover")) {
+      obsidian.style.transform = `rotateX(${10 + tiltX * 0.6}deg) rotateY(${14 + tiltY * 0.8}deg) rotateZ(-6deg) translateY(${tiltX * 2}px)`;
+    }
+    if (glass && !glass.matches(":hover")) {
+      glass.style.transform = `rotateX(${8 + tiltX * 0.8}deg) rotateY(${tiltY}deg) rotateZ(0deg) translateY(${-10 + tiltX * 1.5}px) scale(1.04)`;
+    }
+    if (cobalt && !cobalt.matches(":hover")) {
+      cobalt.style.transform = `rotateX(${10 + tiltX * 0.6}deg) rotateY(${-14 + tiltY * 0.8}deg) rotateZ(6deg) translateY(${tiltX * 2}px)`;
+    }
+
+    requestAnimationFrame(updateTilt);
+  }
+
+  updateTilt();
 }
 
 function scrollToDashboard() {
