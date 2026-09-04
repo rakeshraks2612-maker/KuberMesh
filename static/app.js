@@ -9,20 +9,102 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
-// Interactive Neural Agent Commerce Graph Canvas Engine (OpenAI / Palantir Style)
+// Fluid Perlin Smoke & Magnetic Streamline Vortex Engine (Stripe Press / Apple Style)
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let width, height;
-  let mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000, active: false };
+  let mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000, vx: 0, vy: 0, active: false };
   let time = 0;
+
+  // Ultra-fast Simplex / Perlin Noise Approximation for Fluid Vector Fields
+  const PERLIN_SIZE = 256;
+  const p = new Uint8Array(PERLIN_SIZE * 2);
+  for (let i = 0; i < PERLIN_SIZE; i++) p[i] = i;
+  for (let i = PERLIN_SIZE - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = p[i];
+    p[i] = p[j];
+    p[j] = temp;
+  }
+  for (let i = 0; i < PERLIN_SIZE; i++) p[PERLIN_SIZE + i] = p[i];
+
+  function grad(hash, x, y, z) {
+    const h = hash & 15;
+    const u = h < 8 ? x : y;
+    const v = h < 4 ? y : (h === 12 || h === 14 ? x : z);
+    return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+  }
+
+  function noise3D(x, y, z) {
+    const X = Math.floor(x) & 255;
+    const Y = Math.floor(y) & 255;
+    const Z = Math.floor(z) & 255;
+    x -= Math.floor(x);
+    y -= Math.floor(y);
+    z -= Math.floor(z);
+    const u = x * x * x * (x * (x * 6 - 15) + 10);
+    const v = y * y * y * (y * (y * 6 - 15) + 10);
+    const w = z * z * z * (z * (z * 6 - 15) + 10);
+    const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
+    const B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
+
+    const res = (1 - w) * (
+      (1 - v) * ((1 - u) * grad(p[AA], x, y, z) + u * grad(p[BA], x - 1, y, z)) +
+      v * ((1 - u) * grad(p[AB], x, y - 1, z) + u * grad(p[BB], x - 1, y - 1, z))
+    ) + w * (
+      (1 - v) * ((1 - u) * grad(p[AA + 1], x, y, z - 1) + u * grad(p[BA + 1], x - 1, y, z - 1)) +
+      v * ((1 - u) * grad(p[AB + 1], x, y - 1, z - 1) + u * grad(p[BB + 1], x - 1, y - 1, z - 1))
+    );
+    return res;
+  }
+
+  // Particle System
+  let particles = [];
+  const PARTICLE_COUNT = Math.min(1100, Math.max(650, Math.floor((window.innerWidth * window.innerHeight) / 1400)));
+
+  const COLOR_PALETTE = [
+    { r: 2, g: 132, b: 199, a: 0.65 },   // Electric Azure
+    { r: 99, g: 102, b: 241, a: 0.60 },  // Royal Indigo
+    { r: 6, g: 182, b: 212, a: 0.55 },   // Luminous Cyan
+    { r: 16, g: 185, b: 129, a: 0.50 },  // Emerald Mint
+    { r: 168, g: 85, b: 247, a: 0.55 }   // Ethereal Violet
+  ];
+
+  function createParticle() {
+    const col = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+    return {
+      x: Math.random() * width,
+      y: Math.random() * height,
+      prevX: 0,
+      prevY: 0,
+      vx: 0,
+      vy: 0,
+      speed: Math.random() * 1.6 + 0.8,
+      radius: Math.random() * 1.5 + 0.8,
+      age: Math.random() * 200,
+      maxAge: Math.random() * 250 + 200,
+      color: `rgba(${col.r}, ${col.g}, ${col.b}, ${col.a})`,
+      colorGlow: `rgba(${col.r}, ${col.g}, ${col.b}, 0.25)`
+    };
+  }
 
   function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
-    initGraph();
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const p = createParticle();
+      p.prevX = p.x;
+      p.prevY = p.y;
+      particles.push(p);
+    }
+    // Fill initial canvas background
+    ctx.fillStyle = "#f8fafc";
+    ctx.fillRect(0, 0, width, height);
   }
+
   window.addEventListener("resize", resize);
   window.addEventListener("mousemove", (e) => {
     mouse.targetX = e.clientX;
@@ -33,233 +115,94 @@ function initAmbientCanvas() {
     mouse.active = false;
   });
 
-  // Nodes & Telemetry Network
-  let nodes = [];
-  let packets = [];
-
-  const HUB_LABELS = ["NPCI UAP", "RAZORPAY VAULT", "ZERO-LLM SAFE", "BUYER MESH"];
-  const PALETTE = [
-    { fill: "#0284c7", glow: "2, 132, 199" },   // Azure
-    { fill: "#6366f1", glow: "99, 102, 241" },  // Indigo
-    { fill: "#10b981", glow: "16, 185, 129" },  // Emerald
-    { fill: "#06b6d4", glow: "6, 182, 212" }    // Cyan
-  ];
-
-  function initGraph() {
-    nodes = [];
-    packets = [];
-    const count = Math.min(52, Math.max(30, Math.floor((width * height) / 22000)));
-
-    for (let i = 0; i < count; i++) {
-      const isHub = i < 4;
-      const theme = PALETTE[i % PALETTE.length];
-      nodes.push({
-        id: i,
-        isHub: isHub,
-        label: isHub ? HUB_LABELS[i] : null,
-        x: Math.random() * width,
-        y: Math.random() * height,
-        baseX: Math.random() * width,
-        baseY: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        radius: isHub ? 4.5 : (i % 3 === 0 ? 3.0 : 2.0),
-        color: theme.fill,
-        glowColor: theme.glow,
-        pulseOffset: Math.random() * 10,
-        rippleRadius: 0,
-        rippleAlpha: 0
-      });
-    }
-
-    // Initialize Active Transaction Pulses along the graph
-    for (let p = 0; p < 24; p++) {
-      packets.push({
-        from: Math.floor(Math.random() * nodes.length),
-        to: Math.floor(Math.random() * nodes.length),
-        progress: Math.random(),
-        speed: 0.008 + Math.random() * 0.014,
-        color: PALETTE[p % PALETTE.length].fill,
-        glow: PALETTE[p % PALETTE.length].glow
-      });
-    }
-  }
-
   resize();
 
   function draw() {
-    ctx.clearRect(0, 0, width, height);
-    time += 0.016;
+    time += 0.0028;
 
-    // Smooth Mouse Interpolation
+    // Smooth partial clear to leave silky smoke trails
+    ctx.fillStyle = "rgba(248, 250, 252, 0.07)";
+    ctx.fillRect(0, 0, width, height);
+
+    // Mouse velocity & position damping
     if (mouse.active) {
-      mouse.x += (mouse.targetX - mouse.x) * 0.12;
-      mouse.y += (mouse.targetY - mouse.y) * 0.12;
+      const prevMx = mouse.x;
+      const prevMy = mouse.y;
+      mouse.x += (mouse.targetX - mouse.x) * 0.14;
+      mouse.y += (mouse.targetY - mouse.y) * 0.14;
+      mouse.vx = mouse.x - prevMx;
+      mouse.vy = mouse.y - prevMy;
 
-      // Radiant Cursor Field
-      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
-      grad.addColorStop(0, "rgba(2, 132, 199, 0.06)");
+      // Radiant Cursor Ambient Glow
+      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 200);
+      grad.addColorStop(0, "rgba(2, 132, 199, 0.05)");
       grad.addColorStop(0.5, "rgba(99, 102, 241, 0.02)");
       grad.addColorStop(1, "transparent");
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 220, 0, Math.PI * 2);
+      ctx.arc(mouse.x, mouse.y, 200, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // 1. Update Node Positions with Soft Float & Mouse Gravitational Pull
-    for (let i = 0; i < nodes.length; i++) {
-      const n = nodes[i];
-      n.x += n.vx;
-      n.y += n.vy;
+    const noiseScale = 0.0016;
 
-      // Gentle Screen Bounding Bounce
-      if (n.x < 30 || n.x > width - 30) n.vx *= -1;
-      if (n.y < 30 || n.y > height - 30) n.vy *= -1;
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.prevX = p.x;
+      p.prevY = p.y;
+      p.age++;
 
-      // Mouse Gravitational Spring Physics
+      // Compute Perlin flow field angle
+      const nVal = noise3D(p.x * noiseScale, p.y * noiseScale, time);
+      const angle = nVal * Math.PI * 3.5;
+
+      const targetVx = Math.cos(angle) * p.speed;
+      const targetVy = Math.sin(angle) * p.speed;
+
+      p.vx += (targetVx - p.vx) * 0.08;
+      p.vy += (targetVy - p.vy) * 0.08;
+
+      // Interactive Magnetic Mouse Vortex
       if (mouse.active) {
-        const dx = mouse.x - n.x;
-        const dy = mouse.y - n.y;
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
         const dist = Math.hypot(dx, dy);
-        if (dist < 200 && dist > 0) {
-          const force = (1 - dist / 200) * 0.45;
-          n.x += (dx / dist) * force * 2.5;
-          n.y += (dy / dist) * force * 2.5;
+
+        if (dist < 260 && dist > 1) {
+          const force = (1 - dist / 260);
+          // Vortex tangential whirlpool velocity
+          const vortexAngle = Math.atan2(dy, dx) + Math.PI / 2;
+          p.vx += Math.cos(vortexAngle) * force * 1.8;
+          p.vy += Math.sin(vortexAngle) * force * 1.8;
+
+          // Drag along mouse velocity
+          p.vx += mouse.vx * force * 0.12;
+          p.vy += mouse.vy * force * 0.12;
         }
       }
 
-      // Update ripple ring on transaction receipt
-      if (n.rippleAlpha > 0) {
-        n.rippleRadius += 0.75;
-        n.rippleAlpha -= 0.025;
-      }
-    }
+      p.x += p.vx;
+      p.y += p.vy;
 
-    // 2. Draw Synaptic Graph Connections (Edges)
-    const maxDist = 145;
-    for (let i = 0; i < nodes.length; i++) {
-      const n1 = nodes[i];
-      for (let j = i + 1; j < nodes.length; j++) {
-        const n2 = nodes[j];
-        const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-        if (dist < maxDist) {
-          const alpha = (1 - dist / maxDist) * 0.32;
-          
-          // Hover highlighting
-          const isNearMouse = mouse.active && (Math.hypot(mouse.x - n1.x, mouse.y - n1.y) < 160 || Math.hypot(mouse.x - n2.x, mouse.y - n2.y) < 160);
-          const edgeAlpha = isNearMouse ? Math.min(0.65, alpha * 2.2) : alpha;
-
-          ctx.beginPath();
-          ctx.moveTo(n1.x, n1.y);
-          ctx.lineTo(n2.x, n2.y);
-          ctx.strokeStyle = `rgba(${n1.glowColor}, ${edgeAlpha})`;
-          ctx.lineWidth = isNearMouse ? 1.4 : 0.85;
-          ctx.stroke();
-        }
-      }
-    }
-
-    // 3. Update & Draw Live Transaction Pulses
-    for (let p = 0; p < packets.length; p++) {
-      const pkt = packets[p];
-      pkt.progress += pkt.speed;
-
-      const src = nodes[pkt.from];
-      const tgt = nodes[pkt.to];
-
-      if (!src || !tgt) continue;
-
-      // If finished route or nodes too far, pick new route
-      const dist = Math.hypot(src.x - tgt.x, src.y - tgt.y);
-      if (pkt.progress >= 1 || dist > maxDist * 1.5) {
-        pkt.from = pkt.to;
-        // Pick random nearby neighbor
-        let neighbors = [];
-        for (let k = 0; k < nodes.length; k++) {
-          if (k !== pkt.from && Math.hypot(nodes[pkt.from].x - nodes[k].x, nodes[pkt.from].y - nodes[k].y) < maxDist) {
-            neighbors.push(k);
-          }
-        }
-        pkt.to = neighbors.length > 0 ? neighbors[Math.floor(Math.random() * neighbors.length)] : Math.floor(Math.random() * nodes.length);
-        pkt.progress = 0;
-
-        // Trigger reception ripple on destination
-        if (tgt) {
-          tgt.rippleRadius = tgt.radius;
-          tgt.rippleAlpha = 0.6;
-        }
+      // Wrap around or regenerate if aged
+      if (p.x < -20 || p.x > width + 20 || p.y < -20 || p.y > height + 20 || p.age > p.maxAge) {
+        p.x = Math.random() * width;
+        p.y = Math.random() * height;
+        p.prevX = p.x;
+        p.prevY = p.y;
+        p.vx = 0;
+        p.vy = 0;
+        p.age = 0;
       }
 
-      // Packet coordinates
-      const px = src.x + (tgt.x - src.x) * pkt.progress;
-      const py = src.y + (tgt.y - src.y) * pkt.progress;
-
-      // Draw glowing packet comet
-      const glow = ctx.createRadialGradient(px, py, 0, px, py, 8);
-      glow.addColorStop(0, `rgba(${pkt.glow}, 0.7)`);
-      glow.addColorStop(0.5, `rgba(${pkt.glow}, 0.2)`);
-      glow.addColorStop(1, "transparent");
-      ctx.fillStyle = glow;
+      // Draw Silky Streamline Ribbon
       ctx.beginPath();
-      ctx.arc(px, py, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffffff";
-      ctx.fill();
-    }
-
-    // 4. Draw Graph Nodes & Hub Badges
-    for (let i = 0; i < nodes.length; i++) {
-      const n = nodes[i];
-      const pulse = Math.sin(time * 2 + n.pulseOffset) * 0.5 + 0.5;
-
-      // Draw transaction arrival ripple ring
-      if (n.rippleAlpha > 0) {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.rippleRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${n.glowColor}, ${n.rippleAlpha})`;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-      }
-
-      // Hub Outer Orbit Ring
-      if (n.isHub) {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius + 6 + pulse * 2.5, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${n.glowColor}, ${0.25 + pulse * 0.25})`;
-        ctx.lineWidth = 1.0;
-        ctx.stroke();
-      }
-
-      // Outer Glow Halo
-      const nodeGlow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius * 3.5);
-      nodeGlow.addColorStop(0, `rgba(${n.glowColor}, ${0.5 + pulse * 0.3})`);
-      nodeGlow.addColorStop(1, "transparent");
-      ctx.fillStyle = nodeGlow;
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.radius * 3.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Node Core
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-      ctx.fillStyle = n.isHub ? "#ffffff" : n.color;
-      ctx.fill();
-
-      if (n.isHub) {
-        ctx.strokeStyle = n.color;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Hub Micro Tag Text
-        ctx.font = "600 9px 'JetBrains Mono', monospace";
-        ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
-        ctx.textAlign = "center";
-        ctx.fillText(n.label, n.x, n.y + n.radius + 14);
-      }
+      ctx.moveTo(p.prevX, p.prevY);
+      ctx.lineTo(p.x, p.y);
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = p.radius;
+      ctx.lineCap = "round";
+      ctx.stroke();
     }
 
     requestAnimationFrame(draw);
