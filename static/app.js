@@ -4,7 +4,35 @@ let currentCatalogData = [];
 document.addEventListener("DOMContentLoaded", () => {
   loadDashboardData();
   loadAuditLedger();
+  updateElasticitySimulation();
 });
+
+function updateElasticitySimulation() {
+  const slider = document.getElementById("sim-discount-slider");
+  if (!slider) return;
+  const discount = parseFloat(slider.value);
+  document.getElementById("sim-discount-val").textContent = `${discount}%`;
+
+  const baseMargin = 35.0; // Baseline catalog margin
+  const postMargin = Math.max(0, baseMargin - discount);
+  const breakevenUplift = postMargin > 0 ? (baseMargin / postMargin).toFixed(2) : "∞";
+  const recoveryRate = (Math.min(75, discount * 3.5 + 5)).toFixed(1);
+
+  document.getElementById("sim-post-margin").textContent = `${postMargin.toFixed(1)}%`;
+  document.getElementById("sim-breakeven-uplift").textContent = `${breakevenUplift}x`;
+  document.getElementById("sim-recovery-rate").textContent = `+${recoveryRate}%`;
+
+  const badge = document.getElementById("simulator-guardrail-badge");
+  if (discount > 20.0 || postMargin < 8.0) {
+    badge.style.background = "rgba(239, 68, 68, 0.2)";
+    badge.style.color = "#f87171";
+    badge.textContent = "⚠️ GUARDRAIL BREACH: BLOCKED BY G-01 / G-02";
+  } else {
+    badge.style.background = "rgba(16, 185, 129, 0.15)";
+    badge.style.color = "#34d399";
+    badge.textContent = "🛡️ GUARDRAIL STATUS: SAFE ZONE";
+  }
+}
 
 function switchTab(tabId) {
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));

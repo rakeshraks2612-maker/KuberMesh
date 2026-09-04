@@ -93,6 +93,47 @@
         </div>
       </div>
 
+      <!-- INTERACTIVE WHAT-IF ELASTICITY SIMULATOR -->
+      <div class="card" style="border: 1px solid var(--border-accent); background: linear-gradient(180deg, rgba(17,24,39,0.9), rgba(15,23,42,0.95));">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <div>
+            <h3>🧮 Interactive "What-If" Elasticity & Guardrail Simulator</h3>
+            <p>Drag the discount slider to test break-even unit volumes and watch Zero-LLM guardrail thresholds react in real-time.</p>
+          </div>
+          <span id="simulator-guardrail-badge" class="badge" style="background: rgba(16,185,129,0.15); color: #34d399; font-weight: 700;">
+            🛡️ GUARDRAIL STATUS: SAFE ZONE
+          </span>
+        </div>
+        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: center;">
+          <div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <label style="font-size: 13px; font-weight: 600; color: var(--text-main);">Simulated Promotional Discount</label>
+              <span id="sim-discount-val" style="font-family: 'JetBrains Mono', monospace; font-weight: 800; color: #818cf8; font-size: 16px;">14%</span>
+            </div>
+            <input type="range" id="sim-discount-slider" min="0" max="35" step="1" value="14" style="width: 100%; accent-color: var(--primary);" oninput="updateElasticitySimulation()">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-top: 4px;">
+              <span>0% (Full Margin)</span>
+              <span style="color: #fbbf24;">20% (Guardrail Ceiling)</span>
+              <span style="color: #f87171;">35% (Danger Zone)</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div style="font-size: 11px; color: var(--text-muted);">Post-Discount Margin</div>
+              <div id="sim-post-margin" style="font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #38bdf8;">21.0%</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div style="font-size: 11px; color: var(--text-muted);">Break-Even Vol Uplift</div>
+              <div id="sim-breakeven-uplift" style="font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #fbbf24;">1.67x</div>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div style="font-size: 11px; color: var(--text-muted);">Est. Recovery Rate</div>
+              <div id="sim-recovery-rate" style="font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #34d399;">+52.4%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- CATALOG TABLE -->
       <div class="card table-card">
         <div class="table-responsive">

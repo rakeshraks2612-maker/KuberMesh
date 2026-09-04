@@ -2,10 +2,14 @@
 > **Autonomous Revenue Optimizer & Agent-to-Agent (A2A) Commerce Protocol for Razorpay Merchants**  
 > *Built for Razorpay Buildathon — Track 01: AI Growth & Agentic Commerce*
 
+[![Live Public Demo](https://img.shields.io/badge/Live%20Demo-HTTPS%20Active-brightgreen.svg)](https://steam-situated-campaigns-knife.trycloudflare.com)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Razorpay Test APIs](https://img.shields.io/badge/Razorpay-Test%20Mode-0C2340.svg)](https://razorpay.com/)
+[![Razorpay Test APIs](https://img.shields.io/badge/Razorpay-Live%20Test%20Connected-0C2340.svg)](https://razorpay.com/)
+
+👉 **Live Public HTTPS Demo**: **[https://steam-situated-campaigns-knife.trycloudflare.com](https://steam-situated-campaigns-knife.trycloudflare.com)**  
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/rakeshraks2612-maker/KuberMesh)
 
 ---
 
