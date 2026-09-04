@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=23.0">
+  <link rel="stylesheet" href="/static/style.css?v=26.0">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
@@ -566,7 +566,9 @@
               <span class="dot-indicator blue"></span>
               <span>Autonomous Reasoning, Guardrail &amp; Unit Economics Trace</span>
             </div>
-            <button class="btn-close-light" onclick="closeTracePanel()">✕</button>
+            <button class="btn-close-light" onclick="closeTracePanel()" aria-label="Close trace panel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
           <div class="trace-body-content" id="trace-content">
             <!-- Populated dynamically -->
@@ -739,7 +741,10 @@
               <!-- NAIVE LLM CARD -->
               <div class="exploit-comparison-card naive">
                 <div class="exploit-card-header">
-                  <span class="status-tag red">🚨 Unshielded / Naive LLM Agent</span>
+                  <span class="status-tag red">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Unshielded / Naive LLM Agent
+                  </span>
                   <span class="exploit-badge-sub">Standard GenAI Failure</span>
                 </div>
                 <div class="exploit-card-body" id="adv-naive-result">
@@ -750,7 +755,10 @@
               <!-- KUBERMESH DEFENSE CARD -->
               <div class="exploit-comparison-card secure">
                 <div class="exploit-card-header">
-                  <span class="status-tag green">🛡️ KuberMesh Zero-LLM Invariants</span>
+                  <span class="status-tag green">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    KuberMesh Zero-LLM Invariants
+                  </span>
                   <span class="exploit-badge-sub">Deterministic Protection</span>
                 </div>
                 <div class="exploit-card-body" id="adv-kubermesh-result">
@@ -858,16 +866,16 @@
             </div>
             <div class="control-bar-actions" style="flex-wrap: wrap;">
               <button class="btn-table-action" onclick="simulateWebhookEvent('payment.captured')">
-                ⚡ payment.captured
+                <span class="event-indicator-dot green"></span>payment.captured
               </button>
               <button class="btn-table-action" onclick="simulateWebhookEvent('order.paid')">
-                ⚡ order.paid
+                <span class="event-indicator-dot blue"></span>order.paid
               </button>
               <button class="btn-table-action" onclick="simulateWebhookEvent('refund.processed')">
-                ⚡ refund.processed
+                <span class="event-indicator-dot amber"></span>refund.processed
               </button>
               <button class="btn-table-action" onclick="simulateWebhookEvent('payment.failed')">
-                ⚡ payment.failed
+                <span class="event-indicator-dot red"></span>payment.failed
               </button>
             </div>
           </div>
@@ -883,8 +891,8 @@
                   <th>Entity ID</th>
                   <th>Reconciled Amount</th>
                   <th>Validation Hash</th>
-                  <th>Reconciliation Status</th>
-                  <th class="text-right">Inspect Payload</th>
+                  <th>Audit Status</th>
+                  <th class="text-right">Action</th>
                 </tr>
               </thead>
               <tbody id="webhook-table-body">
@@ -944,7 +952,9 @@
       <div class="modal-dialog-box" style="max-width: 680px;">
         <div class="modal-dialog-header">
           <h3 class="modal-dialog-title">Cryptographic Compliance Certificate</h3>
-          <button class="btn-close-light" onclick="closeMerkleCertificateModal()">✕</button>
+          <button class="btn-close-light" onclick="closeMerkleCertificateModal()" aria-label="Close modal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
         <div class="modal-dialog-body">
           <div class="cert-banner">
@@ -993,7 +1003,9 @@
       <div class="modal-dialog-box" style="max-width: 640px;">
         <div class="modal-dialog-header">
           <h3 class="modal-dialog-title" id="wh-modal-title">Razorpay Webhook Payload</h3>
-          <button class="btn-close-light" onclick="closeWebhookInspectorModal()">✕</button>
+          <button class="btn-close-light" onclick="closeWebhookInspectorModal()" aria-label="Close modal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
         <div class="modal-dialog-body">
           <div class="light-terminal-view" style="max-height: 400px; overflow-y: auto;">
@@ -1008,7 +1020,9 @@
       <div class="modal-dialog-box">
         <div class="modal-dialog-header">
           <h3 class="modal-dialog-title">Razorpay Test Credentials</h3>
-          <button class="btn-close-light" onclick="closeSettingsModal()">✕</button>
+          <button class="btn-close-light" onclick="closeSettingsModal()" aria-label="Close modal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
         <div class="modal-dialog-body">
           <p class="modal-dialog-desc">
@@ -1066,6 +1080,6 @@
   <!-- TOAST ALERTS CONTAINER -->
   <div id="toast-container" class="toast-alert-stack"></div>
 
-  <script src="/static/app.js?v=25.0"></script>
+  <script src="/static/app.js?v=26.0"></script>
 </body>
 </html>
