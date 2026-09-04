@@ -1,11 +1,87 @@
-// KUBERMESH CONTROLLER — APPLE LIGHT ENTERPRISE EDITION
+// KUBERMESH CONTROLLER — MONEY MANAGEMENT PLATFORM EDITION
 let currentCatalogData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
+  initAmbientCanvas();
   loadDashboardData();
   loadAuditLedger();
   updateElasticitySimulation();
 });
+
+// Ambient Canvas Animation Engine (Fintech Constellation Wave)
+function initAmbientCanvas() {
+  const canvas = document.getElementById("ambient-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let width, height;
+  let particles = [];
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  const colors = [
+    "rgba(2, 132, 199, 0.45)",  // Fintech Cobalt Blue
+    "rgba(16, 185, 129, 0.40)", // Emerald Green
+    "rgba(139, 92, 246, 0.40)", // Violet
+    "rgba(245, 158, 11, 0.35)"  // Amber
+  ];
+
+  const particleCount = Math.min(45, Math.floor(window.innerWidth / 30));
+  for (let i = 0; i < particleCount; i++) {
+    particles.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      radius: Math.random() * 3 + 1.5,
+      color: colors[Math.floor(Math.random() * colors.length)]
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Connect particles within distance
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 140) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(15, 23, 42, ${0.06 * (1 - dist / 140)})`;
+          ctx.lineWidth = 1;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw and update particles
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0 || p.x > width) p.vx *= -1;
+      if (p.y < 0 || p.y > height) p.vy *= -1;
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+}
 
 function scrollToDashboard() {
   const el = document.getElementById("dashboard");
