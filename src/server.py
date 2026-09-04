@@ -1,6 +1,7 @@
 import os
+import uuid
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Literal
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -8,6 +9,9 @@ from pydantic import BaseModel
 
 from src.config import settings
 from src.models import (
+    Item,
+    Order,
+    Payment,
     CampaignAction,
     AuditEntry,
     A2ANegotiationRequest,
@@ -33,9 +37,66 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
+@app.get("/")
+def serve_index():
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        with open(index_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse("<h1>KuberMesh API Active</h1>")
+
+@app.get("/api/catalog")
+def get_catalog_metrics():
+    catalog = discovery_engine.get_catalog()
+    orders = discovery_engine.get_orders()
+    payments = discovery_engine.get_payments()
+    
+    profiles = profiler_engine.profile_catalog(catalog, orders, payments)
+    scores = scoring_engine.score_all(profiles)
+    
+    combined = []
+    total_at_risk = 0.0
+    for item in catalog:
+        prof = profiles.get(item.id)
+        sc = scores.get(item.id)
+        if prof and sc:
+            combined.append({
+                "item": item.model_dump(),
+                "profile": prof.model_dump(),
+                "rars": sc.model_dump()
+            })
+            total_at_risk += sc.revenue_at_risk_inr
+            
+    return {
+        "items": combined,
+        "total_revenue_at_risk_inr": round(total_at_risk, 2)
+    }
+
+@app.post("/api/scan")
+def run_autonomous_scan():
+    catalog = discovery_engine.get_catalog()
+    orders = discovery_engine.get_orders()
+    payments = discovery_engine.get_payments()
+    
+    profiles = profiler_engine.profile_catalog(catalog, orders, payments)
+    scores = scoring_engine.score_all(profiles)
+    
+    sorted_items = sorted(catalog, key=lambda x: scores.get(x.id).score if scores.get(x.id) else 0.0, reverse=True)
+    top_risk_item = sorted_items[0] if sorted_items else None
+    
+    return {
+        "status": "scan_complete",
+        "scanned_skus_count": len(catalog),
+        "top_risk_sku": top_risk_item.id if top_risk_item else None,
+        "top_rars_score": scores.get(top_risk_item.id).score if top_risk_item and scores.get(top_risk_item.id) else 0.0
+    }
+
 class OptimizeRequest(BaseModel):
     item_id: Optional[str] = None
     force_scenario: str = "none"  # "discount_cap_breach", "margin_floor_breach", "volatility_breach", "none"
+
+class RollbackRequest(BaseModel):
+    entry_id: str
 
 class SimulateTrafficRequest(BaseModel):
     item_id: str
@@ -48,9 +109,10 @@ def simulate_traffic(req: SimulateTrafficRequest):
     from datetime import datetime, timezone, timedelta
     from src.models import Order, Payment
 
-    state = discovery_engine._load_local_state()
-    catalog = [Item(**i) for i in state.get("catalog", [])]
-    target_item = next((i for i in catalog if i.id == req.item_id), None)
+    catalog = discovery_engine.get_catalog()
+    target_item = next((i for i in catalog if i.id == req.item_id or req.item_id in i.id or i.name.lower() in req.item_id.lower()), None)
+    if not target_item and catalog:
+        target_item = catalog[0]
     if not target_item:
         raise HTTPException(status_code=404, detail="Item not found")
 
@@ -94,15 +156,23 @@ def simulate_traffic(req: SimulateTrafficRequest):
                 status="captured", method="upi", created_at=created_at
             ))
 
+    state = discovery_engine._load_local_state()
     state.setdefault("orders", []).extend([o.model_dump() for o in new_orders])
     state.setdefault("payments", []).extend([p.model_dump() for p in new_payments])
     discovery_engine._save_local_state(state)
 
+    orders = discovery_engine.get_orders()
+    payments = discovery_engine.get_payments()
+    profiles = profiler_engine.profile_catalog(catalog, orders, payments)
+    new_profile = profiles.get(target_item.id)
+
     return {
         "status": "traffic_injected",
+        "message": f"Successfully simulated {req.count} events for {target_item.name}",
         "anomaly": req.anomaly_type,
-        "item_id": req.item_id,
-        "injected_events_count": req.count
+        "item_id": target_item.id,
+        "injected_events_count": req.count,
+        "new_profile": new_profile.model_dump() if new_profile else {}
     }
 
 @app.post("/api/optimize")
