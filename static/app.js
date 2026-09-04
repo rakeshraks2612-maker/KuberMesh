@@ -1,4 +1,4 @@
-// KUBERMESH // APPLE INTELLIGENCE CONTROLLER
+// KUBERMESH CONTROLLER — APPLE LIGHT ENTERPRISE EDITION
 let currentCatalogData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,33 +15,33 @@ function scrollToDashboard() {
 }
 
 // Toast Alert Engine
-function showToast(message, type = "info", duration = 4000) {
+function showToast(message, type = "info", duration = 3500) {
   const container = document.getElementById("toast-container");
   if (!container) return;
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
   
-  let icon = "✦";
+  let icon = "ℹ";
   if (type === "success") icon = "✓";
   if (type === "warning") icon = "⚠";
   if (type === "error") icon = "✕";
 
-  toast.innerHTML = `<span style="font-weight: 800;">${icon}</span> <span>${message}</span>`;
+  toast.innerHTML = `<span style="font-weight: 700;">${icon}</span> <span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
     toast.style.opacity = "0";
-    toast.style.transform = "translateY(10px)";
-    toast.style.transition = "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
-    setTimeout(() => toast.remove(), 300);
+    toast.style.transform = "translateY(6px)";
+    toast.style.transition = "all 0.2s ease";
+    setTimeout(() => toast.remove(), 200);
   }, duration);
 }
 
 function copyProtocolUrl() {
   const url = `${window.location.origin}/api/a2a/catalog`;
   navigator.clipboard.writeText(url).then(() => {
-    showToast(`Copied kubermesh.json endpoint: ${url}`, "success");
+    showToast(`Copied protocol endpoint: ${url}`, "success");
   }).catch(() => {
     prompt("Copy protocol manifest URL:", url);
   });
@@ -65,17 +65,17 @@ function updateElasticitySimulation() {
   const badge = document.getElementById("simulator-guardrail-badge");
   const badgeText = document.getElementById("simulator-badge-text");
   if (discount > 20.0 || postMargin < 8.0) {
-    badge.className = "guardrail-pill breach";
+    badge.className = "guardrail-status-chip breach";
     badgeText.textContent = "Guardrail Breach: Blocked by Rules G-01 & G-02";
   } else {
-    badge.className = "guardrail-pill safe";
+    badge.className = "guardrail-status-chip safe";
     badgeText.textContent = "Safe Zone: Rules G-01 & G-02 Verified";
   }
 }
 
 function switchTab(tabId) {
-  document.querySelectorAll(".dash-tab-btn").forEach(btn => btn.classList.remove("active"));
-  document.querySelectorAll(".dash-panel").forEach(content => content.classList.remove("active"));
+  document.querySelectorAll(".tab-pill-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(content => content.classList.remove("active"));
 
   const btn = document.getElementById(`tab-btn-${tabId}`);
   const content = document.getElementById(`tab-${tabId}`);
@@ -87,9 +87,10 @@ function switchTab(tabId) {
   }
 }
 
-async function loadDashboardData() {
+async function loadDashboardData(retryCount = 0) {
   try {
     const res = await fetch("/api/catalog");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     currentCatalogData = data.items || [];
 
@@ -104,15 +105,19 @@ async function loadDashboardData() {
     renderCatalogTable(currentCatalogData);
     populateA2ASelect(currentCatalogData);
   } catch (err) {
-    console.error("Failed to load catalog data:", err);
-    showToast("Error connecting to catalog backend", "error");
+    console.warn("Catalog fetch attempt failed:", err);
+    if (retryCount < 2) {
+      setTimeout(() => loadDashboardData(retryCount + 1), 1000);
+    } else {
+      showToast("Syncing with live Razorpay catalog...", "info");
+    }
   }
 }
 
 function renderCatalogTable(items) {
   const tbody = document.getElementById("catalog-table-body");
   if (!items || items.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6">No catalog items available.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6">No catalog items discovered yet.</td></tr>`;
     return;
   }
 
@@ -129,17 +134,17 @@ function renderCatalogTable(items) {
     return `
       <tr>
         <td>
-          <div style="font-weight: 700; color: #ffffff;">${item.name}</div>
-          <div style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">SKU: ${item.id}</div>
+          <div style="font-weight: 700; color: var(--text-dark);">${item.name}</div>
+          <div style="font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono);">SKU: ${item.id}</div>
         </td>
         <td style="font-family: var(--font-mono); font-weight: 600;">₹${item.amount_inr.toFixed(2)}</td>
-        <td style="color: #34d399; font-weight: 600; font-family: var(--font-mono);">${item.base_margin_pct}%</td>
+        <td style="color: #166534; font-weight: 600; font-family: var(--font-mono);">${item.base_margin_pct}%</td>
         <td>
           <div style="font-weight: 600;">${(prof.cart_abandonment_rate * 100).toFixed(1)}%</div>
-          <div style="font-size: 11px; color: var(--text-dim);">${prof.total_orders_abandoned}/${prof.total_orders_created} carts</div>
+          <div style="font-size: 11px; color: var(--text-subtle);">${prof.total_orders_abandoned}/${prof.total_orders_created} carts</div>
         </td>
-        <td>${prof.sales_velocity_7d} <span style="font-size: 11px; color: var(--text-dim);">orders/day</span></td>
-        <td>${prof.stagnation_days} <span style="font-size: 11px; color: var(--text-dim);">days</span></td>
+        <td>${prof.sales_velocity_7d} <span style="font-size: 11px; color: var(--text-subtle);">orders/day</span></td>
+        <td>${prof.stagnation_days} <span style="font-size: 11px; color: var(--text-subtle);">days</span></td>
         <td>
           <span class="rars-badge ${rarsClass}">
             ${rars.score.toFixed(2)} • ${rars.risk_level}
@@ -147,11 +152,11 @@ function renderCatalogTable(items) {
         </td>
         <td class="text-right">
           <div style="display: inline-flex; gap: 8px; align-items: center;">
-            <button class="btn-apple-primary btn-sm" onclick="optimizeSingleItem('${item.id}')">
+            <button class="btn-light-primary btn-sm" onclick="optimizeSingleItem('${item.id}')">
               Optimize
             </button>
-            <button class="btn-apple-glass btn-sm" title="Simulate 15 cart drop-offs" onclick="injectChaos('${item.id}', 'abandonment_spike')">
-              ⚡ Drop-off
+            <button class="btn-light-secondary btn-sm" title="Simulate 15 cart drop-offs" onclick="injectChaos('${item.id}', 'abandonment_spike')">
+              + Drop-off
             </button>
           </div>
         </td>
@@ -172,7 +177,7 @@ async function injectChaos(itemId, anomalyType) {
     await loadDashboardData();
   } catch (err) {
     console.error("Traffic injection failed:", err);
-    showToast("Failed to simulate drop-off traffic", "error");
+    showToast("Traffic simulation failed", "error");
   }
 }
 
@@ -286,30 +291,30 @@ function renderExecutionTrace(result) {
 
   let html = `
     <div style="margin-bottom: 14px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-      <div>Target: <strong style="color: #ffffff;">${result.item_name}</strong> | Initial RARS: <span class="rars-badge rars-critical">${result.rars_score}</span></div>
-      <div style="font-family: var(--font-mono); font-size: 11px; color: #38bdf8;">Deterministic Hash: ${result.validator_hash || 'SHA256-GATED'}</div>
+      <div>Target: <strong style="color: var(--text-dark);">${result.item_name}</strong> | Initial RARS: <span class="rars-badge rars-critical">${result.rars_score}</span></div>
+      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--apple-blue);">Deterministic Hash: ${result.validator_hash || 'SHA256-GATED'}</div>
     </div>
   `;
 
   // Unit Economics Card
   if (ue) {
     html += `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; background: rgba(0,0,0,0.45); padding: 14px; border-radius: 16px; border: 1px solid var(--border-subtle); font-size: 12px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; background: #ffffff; padding: 14px; border-radius: 12px; border: 1px solid var(--border-light); font-size: 12px;">
         <div>
           <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Base Margin</div>
-          <div style="font-weight: 800; font-size: 16px; color: #34d399; font-family: var(--font-mono);">${ue.base_margin_pct}%</div>
+          <div style="font-weight: 800; font-size: 16px; color: var(--emerald); font-family: var(--font-mono);">${ue.base_margin_pct}%</div>
         </div>
         <div>
           <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Post-Discount Margin</div>
-          <div style="font-weight: 800; font-size: 16px; color: #38bdf8; font-family: var(--font-mono);">${ue.post_discount_margin_pct}%</div>
+          <div style="font-weight: 800; font-size: 16px; color: var(--apple-blue); font-family: var(--font-mono);">${ue.post_discount_margin_pct}%</div>
         </div>
         <div>
           <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Break-Even Multiplier</div>
-          <div style="font-weight: 800; font-size: 16px; color: #fbbf24; font-family: var(--font-mono);">${ue.breakeven_volume_multiplier}x</div>
+          <div style="font-weight: 800; font-size: 16px; color: #b45309; font-family: var(--font-mono);">${ue.breakeven_volume_multiplier}x</div>
         </div>
         <div>
           <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Forecast Recovery</div>
-          <div style="font-weight: 800; font-size: 16px; color: #d8b4fe; font-family: var(--font-mono);">+₹${ue.net_gmv_recovery_inr.toLocaleString('en-IN')}</div>
+          <div style="font-weight: 800; font-size: 16px; color: var(--purple); font-family: var(--font-mono);">+₹${ue.net_gmv_recovery_inr.toLocaleString('en-IN')}</div>
         </div>
       </div>
     `;
@@ -324,21 +329,21 @@ function renderExecutionTrace(result) {
       <div class="trace-step ${stepClass}">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span class="step-badge ${badgeClass}">STEP ${idx + 1}: ${trace.stage.toUpperCase()}</span>
-          <span style="font-family: var(--font-mono); font-size: 11px; color: ${isApproved ? '#34d399' : '#f87171'}; font-weight: 700;">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: ${isApproved ? '#166534' : '#991b1b'}; font-weight: 700;">
             ${isApproved ? 'VERIFIED PASSED' : 'GUARDRAIL REJECTED (AUTO-REPAIRED)'}
           </span>
         </div>
         
         ${trace.violations && trace.violations.length > 0 ? `
-          <div style="color: #f87171; font-size: 12px; margin: 8px 0; padding: 10px; background: rgba(239, 68, 68, 0.12); border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.25);">
+          <div style="color: #991b1b; font-size: 12px; margin: 8px 0; padding: 10px; background: var(--crimson-soft); border-radius: 8px; border: 1px solid #fecaca;">
             ⚠️ <strong>Violations Intercepted:</strong><br>
             ${trace.violations.map(v => `• ${v}`).join("<br>")}
           </div>
         ` : ''}
 
-        <div style="font-size: 12px; color: var(--text-white); margin-top: 6px; line-height: 1.5;">
+        <div style="font-size: 12px; color: var(--text-dark); margin-top: 6px; line-height: 1.5;">
           ${trace.action ? `<div><span style="color: var(--text-muted);">Supervisor Proposal:</span> ${trace.action.reasoning}</div>` : ''}
-          ${trace.repaired_action ? `<div style="margin-top: 4px;"><span style="color: #38bdf8; font-weight: 700;">Auto-Repaired Action:</span> ${trace.repaired_action.reasoning}</div>` : ''}
+          ${trace.repaired_action ? `<div style="margin-top: 4px;"><span style="color: var(--apple-blue); font-weight: 700;">Auto-Repaired Action:</span> ${trace.repaired_action.reasoning}</div>` : ''}
         </div>
       </div>
     `;
@@ -349,10 +354,10 @@ function renderExecutionTrace(result) {
     html += `
       <div class="trace-step approved">
         <span class="step-badge pass">FINAL STEP: RAZORPAY API EXECUTION & AUDIT</span>
-        <div style="font-size: 12px; margin-top: 8px; font-family: var(--font-mono); color: #38bdf8; line-height: 1.6;">
+        <div style="font-size: 12px; margin-top: 8px; font-family: var(--font-mono); color: var(--apple-blue); line-height: 1.6;">
           • Action Executed: <strong>${result.executed_action.action_type}</strong><br>
-          • Target Identifier: ${resp.offer_id || resp.payment_link_id || resp.bundle_id || 'rzp_ack'}<br>
-          ${resp.magic_checkout_link ? `• Live Payment Link: <a href="${resp.magic_checkout_link}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 700;">${resp.magic_checkout_link}</a><br>` : ''}
+          • Identifier: ${resp.offer_id || resp.payment_link_id || resp.bundle_id || 'rzp_ack'}<br>
+          ${resp.magic_checkout_link ? `• Live Payment Link: <a href="${resp.magic_checkout_link}" target="_blank" style="color: var(--apple-blue); text-decoration: underline; font-weight: 700;">${resp.magic_checkout_link}</a><br>` : ''}
           • Reversal Compensation Spec: ${result.executed_action.rollback_spec?.endpoint || result.executed_action.rollback_spec?.type || 'N/A'}
         </div>
       </div>
@@ -398,7 +403,7 @@ async function submitA2ANegotiation() {
 
     if (data.decision === "ACCEPTED" || data.decision === "COUNTER_OFFER") {
       checkoutAction.style.display = "block";
-      showToast(`A2A Negotiation Result: ${data.decision} (Total: ₹${(data.total_amount_paise/100).toFixed(2)})`, "success");
+      showToast(`A2A Negotiation: ${data.decision} (Total: ₹${(data.total_amount_paise/100).toFixed(2)})`, "success");
     } else {
       showToast(`A2A Negotiation Rejected: ${data.reason}`, "warning");
     }
@@ -420,7 +425,7 @@ function launchLiveRazorpayCheckout() {
     image: "https://razorpay.com/favicon.ico",
     order_id: lastA2AResponse.razorpay_order_id,
     handler: function (response) {
-      showToast(`🎉 Test Payment Successful! Payment ID: ${response.razorpay_payment_id}`, "success", 6000);
+      showToast(`Test Payment Successful! Payment ID: ${response.razorpay_payment_id}`, "success", 5000);
       loadDashboardData();
       loadAuditLedger();
     },
@@ -430,14 +435,14 @@ function launchLiveRazorpayCheckout() {
       contact: "9876543210"
     },
     theme: {
-      color: "#9333ea"
+      color: "#0071e3"
     }
   };
 
   try {
     const rzp = new Razorpay(options);
     rzp.on("payment.failed", function (response) {
-      showToast(`⚠️ Test Payment Failed: ${response.error.description}`, "error");
+      showToast(`Test Payment Failed: ${response.error.description}`, "error");
     });
     rzp.open();
   } catch (e) {
@@ -466,7 +471,7 @@ async function saveCredentials() {
     });
     const data = await res.json();
     if (data.key_id_set) {
-      document.getElementById("badge-rzp-status").innerHTML = `<span class="status-pulse"></span><span>Live Keys Active (${keyId.slice(0, 12)}...)</span>`;
+      document.getElementById("badge-rzp-status").innerHTML = `<span class="status-dot-green"></span><span>Live Keys (${keyId.slice(0, 12)}...)</span>`;
     }
     showToast("Credentials saved! Live test sync initialized.", "success");
     closeSettingsModal();
@@ -487,31 +492,31 @@ async function loadAuditLedger() {
 
     const tbody = document.getElementById("audit-table-body");
     if (entries.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6">No audit entries recorded yet. Run an optimization to generate verified records.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6">No audit records yet. Execute an optimization to log verified events.</td></tr>`;
       return;
     }
 
     tbody.innerHTML = entries.map(e => {
       const isRolledBack = e.rolled_back;
       const statusBadge = isRolledBack ? 
-        `<span style="color: #f87171; font-weight: 700; font-size: 11px; background: rgba(239, 68, 68, 0.12); padding: 3px 8px; border-radius: 12px;">ROLLED_BACK</span>` : 
-        `<span style="color: #38bdf8; font-weight: 700; font-size: 11px; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 12px;">EXECUTED</span>`;
+        `<span style="color: #991b1b; font-weight: 700; font-size: 11px; background: var(--crimson-soft); padding: 3px 8px; border-radius: 6px;">ROLLED_BACK</span>` : 
+        `<span style="color: var(--apple-blue); font-weight: 700; font-size: 11px; background: var(--apple-blue-soft); padding: 3px 8px; border-radius: 6px;">EXECUTED</span>`;
 
       return `
         <tr>
-          <td style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim);">${new Date(e.timestamp).toLocaleTimeString()}</td>
-          <td style="font-weight: 700; color: #ffffff;">${e.item_name}</td>
-          <td><code style="color: #d8b4fe; background: rgba(168, 85, 247, 0.1); padding: 2px 6px; border-radius: 6px;">${e.action_type}</code></td>
-          <td style="font-family: var(--font-mono); font-size: 11px; color: #38bdf8;">${e.guardrail_result.validator_hash}</td>
-          <td style="font-family: var(--font-mono);">${e.rars_before.toFixed(2)} → <span style="color: #34d399; font-weight: 700;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
-          <td style="color: #34d399; font-weight: 700; font-family: var(--font-mono);">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
+          <td style="font-size: 11px; font-family: var(--font-mono); color: var(--text-subtle);">${new Date(e.timestamp).toLocaleTimeString()}</td>
+          <td style="font-weight: 700; color: var(--text-dark);">${e.item_name}</td>
+          <td><code style="color: var(--purple); background: var(--purple-soft); padding: 2px 6px; border-radius: 4px;">${e.action_type}</code></td>
+          <td style="font-family: var(--font-mono); font-size: 11px; color: var(--apple-blue);">${e.guardrail_result.validator_hash}</td>
+          <td style="font-family: var(--font-mono);">${e.rars_before.toFixed(2)} → <span style="color: var(--emerald); font-weight: 700;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
+          <td style="color: #166534; font-weight: 700; font-family: var(--font-mono);">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
           <td>${statusBadge}</td>
           <td class="text-right">
             ${!isRolledBack ? `
-              <button class="btn-apple-amber btn-sm" onclick="triggerRollback('${e.id}')">
+              <button class="btn-light-amber btn-sm" onclick="triggerRollback('${e.id}')">
                 Rollback
               </button>
-            ` : `<span style="font-size: 11px; color: var(--text-dim);">Reversed</span>`}
+            ` : `<span style="font-size: 11px; color: var(--text-subtle);">Reversed</span>`}
           </td>
         </tr>
       `;
