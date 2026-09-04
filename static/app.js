@@ -1,4 +1,4 @@
-// KuberMesh Enterprise Command Center Controller
+// KUBERMESH // ARCHITECTURAL REVENUE CONTROLLER (SHARPLINK STYLE)
 let currentCatalogData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,22 +14,11 @@ function showToast(message, type = "info", duration = 3500) {
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
-  
-  let iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>`;
-  if (type === "success") {
-    iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`;
-  } else if (type === "warning") {
-    iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>`;
-  } else if (type === "error") {
-    iconSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" x2="9" y1="9" y2="15"/><line x1="9" x2="15" y1="9" y2="15"/></svg>`;
-  }
-
-  toast.innerHTML = `${iconSvg} <span>${message}</span>`;
+  toast.innerHTML = `<span>[${type.toUpperCase()}]</span> <span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
     toast.style.opacity = "0";
-    toast.style.transform = "translateY(6px)";
     toast.style.transition = "all 0.2s ease";
     setTimeout(() => toast.remove(), 200);
   }, duration);
@@ -38,9 +27,9 @@ function showToast(message, type = "info", duration = 3500) {
 function copyProtocolUrl() {
   const url = `${window.location.origin}/api/a2a/catalog`;
   navigator.clipboard.writeText(url).then(() => {
-    showToast(`Copied kubermesh.json endpoint: ${url}`, "success");
+    showToast(`COPIED PROTOCOL MANIFEST URL: ${url}`, "success");
   }).catch(() => {
-    prompt("Copy protocol manifest URL:", url);
+    prompt("COPY MANIFEST URL:", url);
   });
 }
 
@@ -62,17 +51,17 @@ function updateElasticitySimulation() {
   const badge = document.getElementById("simulator-guardrail-badge");
   const badgeText = document.getElementById("simulator-badge-text");
   if (discount > 20.0 || postMargin < 8.0) {
-    badge.className = "guardrail-status-pill breach";
-    badgeText.textContent = "GUARDRAIL BREACH: BLOCKED BY G-01 / G-02";
+    badge.className = "guardrail-chip breach";
+    badgeText.textContent = "STATUS: BREACH BLOCKED BY G-01 / G-02";
   } else {
-    badge.className = "guardrail-status-pill safe";
-    badgeText.textContent = "GUARDRAIL STATUS: SAFE ZONE";
+    badge.className = "guardrail-chip safe";
+    badgeText.textContent = "STATUS: SAFE ZONE (G-01 & G-02 VERIFIED)";
   }
 }
 
 function switchTab(tabId) {
-  document.querySelectorAll(".tab-item").forEach(btn => btn.classList.remove("active"));
-  document.querySelectorAll(".tab-panel").forEach(content => content.classList.remove("active"));
+  document.querySelectorAll(".matrix-nav-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".matrix-panel").forEach(content => content.classList.remove("active"));
 
   const btn = document.getElementById(`tab-btn-${tabId}`);
   const content = document.getElementById(`tab-${tabId}`);
@@ -99,14 +88,14 @@ async function loadDashboardData() {
     populateA2ASelect(currentCatalogData);
   } catch (err) {
     console.error("Failed to load catalog data:", err);
-    showToast("Error connecting to catalog backend", "error");
+    showToast("FAILED TO SYNC CATALOG TELEMETRY", "error");
   }
 }
 
 function renderCatalogTable(items) {
   const tbody = document.getElementById("catalog-table-body");
   if (!items || items.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6">No catalog items discovered.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8">NO ACTIVE CATALOG SKUS DISCOVERED.</td></tr>`;
     return;
   }
 
@@ -123,29 +112,29 @@ function renderCatalogTable(items) {
     return `
       <tr>
         <td>
-          <div style="font-weight: 600; color: var(--text-primary);">${item.name}</div>
-          <div style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">SKU: ${item.id}</div>
+          <div style="font-weight: 700; color: #ffffff;">${item.name}</div>
+          <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-code);">SKU: ${item.id}</div>
         </td>
-        <td style="font-family: var(--font-mono); font-weight: 600;">₹${item.amount_inr.toFixed(2)}</td>
-        <td style="color: var(--emerald); font-weight: 600; font-family: var(--font-mono);">${item.base_margin_pct}%</td>
+        <td style="font-family: var(--font-code); font-weight: 700;">₹${item.amount_inr.toFixed(2)}</td>
+        <td style="color: var(--emerald); font-weight: 700; font-family: var(--font-code);">${item.base_margin_pct}%</td>
         <td>
-          <div style="font-weight: 600;">${(prof.cart_abandonment_rate * 100).toFixed(1)}%</div>
-          <div style="font-size: 10px; color: var(--text-tertiary);">${prof.total_orders_abandoned}/${prof.total_orders_created} abandoned</div>
+          <div style="font-weight: 700; font-family: var(--font-code);">${(prof.cart_abandonment_rate * 100).toFixed(1)}%</div>
+          <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">${prof.total_orders_abandoned}/${prof.total_orders_created} CARTS</div>
         </td>
-        <td style="font-family: var(--font-mono);">${prof.sales_velocity_7d} <span style="font-size: 10px; color: var(--text-tertiary);">orders/day</span></td>
-        <td style="font-family: var(--font-mono);">${prof.stagnation_days} <span style="font-size: 10px; color: var(--text-tertiary);">days</span></td>
+        <td style="font-family: var(--font-code);">${prof.sales_velocity_7d} <span style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">ORD/DAY</span></td>
+        <td style="font-family: var(--font-code);">${prof.stagnation_days} <span style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">DAYS</span></td>
         <td>
           <span class="rars-badge ${rarsClass}">
-            ${rars.score.toFixed(2)} • ${rars.risk_level}
+            ${rars.score.toFixed(2)} // ${rars.risk_level}
           </span>
         </td>
-        <td class="text-right">
+        <td class="col-actions">
           <div style="display: inline-flex; gap: 6px; align-items: center;">
-            <button class="btn btn-primary btn-sm" onclick="optimizeSingleItem('${item.id}')">
-              Optimize
+            <button class="industrial-btn btn-indigo" onclick="optimizeSingleItem('${item.id}')">
+              OPTIMIZE
             </button>
-            <button class="btn btn-secondary btn-sm" title="Simulate 15 cart drop-offs" onclick="injectChaos('${item.id}', 'abandonment_spike')">
-              + Drop-off
+            <button class="industrial-btn btn-amber" title="Simulate 15 cart drop-offs" onclick="injectChaos('${item.id}', 'abandonment_spike')">
+              + DROP-OFF
             </button>
           </div>
         </td>
@@ -162,11 +151,11 @@ async function injectChaos(itemId, anomalyType) {
       body: JSON.stringify({ item_id: itemId, anomaly_type: anomalyType, count: 15 })
     });
     const data = await res.json();
-    showToast(`Injected 15 simulated drop-offs for SKU ${itemId}. RARS updated.`, "warning");
+    showToast(`INJECTED 15 SIMULATED DROP-OFFS FOR SKU ${itemId}`, "warning");
     await loadDashboardData();
   } catch (err) {
     console.error("Traffic injection failed:", err);
-    showToast("Failed to simulate traffic", "error");
+    showToast("TRAFFIC SIMULATION FAILED", "error");
   }
 }
 
@@ -174,7 +163,7 @@ async function triggerMultiScenarioDemo() {
   const scenario = document.getElementById("select-failure-scenario").value;
   const btn = document.getElementById("btn-fail-demo");
   btn.disabled = true;
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> <span>Intercepting &amp; Auto-Repairing...</span>`;
+  btn.innerHTML = `<span>INTERCEPTING &amp; AUTO-REPAIRING...</span>`;
 
   try {
     const res = await fetch("/api/optimize", {
@@ -184,15 +173,15 @@ async function triggerMultiScenarioDemo() {
     });
     const result = await res.json();
     renderExecutionTrace(result);
-    showToast(`Guardrail Intercepted & Auto-Repaired!`, "success");
+    showToast(`GUARDRAIL INTERCEPTED &amp; AUTO-REPAIRED`, "success");
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
     console.error("Scenario demo failed:", err);
-    showToast("Scenario execution failed", "error");
+    showToast("SCENARIO EXECUTION FAILED", "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> <span>Test Selected Guardrail</span>`;
+    btn.innerHTML = `<span>TEST GUARDRAIL DEFENSE</span>`;
   }
 }
 
@@ -221,32 +210,32 @@ function updateA2APriceHint() {
   const qty = parseInt(document.getElementById("a2a-qty")?.value || "1", 10);
 
   document.getElementById("a2a-price-hint").textContent = 
-    `Retail: ₹${retail.toFixed(2)}/unit | Floor Price (8% Margin Floor): ₹${floorPrice.toFixed(2)}/unit | Qty: ${qty}`;
+    `RETAIL: ₹${retail.toFixed(2)}/UNIT | FLOOR PRICE (8% MARGIN FLOOR): ₹${floorPrice.toFixed(2)}/UNIT | QTY: ${qty}`;
 }
 
 async function runCatalogScan() {
   const btn = document.getElementById("btn-scan");
   btn.disabled = true;
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> <span>Scanning...</span>`;
+  btn.innerHTML = `<span>SCANNING CATALOG...</span>`;
 
   try {
     const res = await fetch("/api/scan", { method: "POST" });
     const result = await res.json();
     
     if (result.top_risk_sku) {
-      showToast(`Scan complete. Top risk SKU: ${result.top_risk_sku}`, "info");
+      showToast(`IDENTIFIED TOP RISK SKU: ${result.top_risk_sku}`, "info");
       await optimizeSingleItem(result.top_risk_sku, true);
     } else {
-      showToast("Scan complete. Catalog is within safe thresholds.", "success");
+      showToast("ALL CATALOG SKUS WITHIN HEALTHY BOUNDS", "success");
     }
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
     console.error("Scan failed:", err);
-    showToast("Catalog scan failed", "error");
+    showToast("CATALOG SCAN FAILED", "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg> <span>Run Autonomous Growth Scan</span>`;
+    btn.innerHTML = `<span>EXECUTE GROWTH SCAN</span>`;
   }
 }
 
@@ -261,12 +250,12 @@ async function optimizeSingleItem(itemId, showTrace = true) {
     if (showTrace) {
       renderExecutionTrace(result);
     }
-    showToast(`Autonomous optimization applied for ${result.item_name}`, "success");
+    showToast(`OPTIMIZATION APPLIED FOR ${result.item_name}`, "success");
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
     console.error("Optimization failed:", err);
-    showToast("Optimization failed", "error");
+    showToast("OPTIMIZATION FAILED", "error");
   }
 }
 
@@ -280,30 +269,30 @@ function renderExecutionTrace(result) {
 
   let html = `
     <div style="margin-bottom: 14px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-      <div>Target: <strong style="color: var(--text-primary);">${result.item_name}</strong> | Initial RARS: <span class="rars-badge rars-critical">${result.rars_score}</span></div>
-      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--cyan);">Deterministic Hash: ${result.validator_hash || 'SHA256-GATED'}</div>
+      <div>TARGET: <strong style="color: #ffffff;">${result.item_name}</strong> | INITIAL RARS: <span class="rars-badge rars-critical">${result.rars_score}</span></div>
+      <div style="font-family: var(--font-code); font-size: 11px; color: var(--cyan);">DETERMINISTIC HASH: ${result.validator_hash || 'SHA256-GATED'}</div>
     </div>
   `;
 
   // Unit Economics Card
   if (ue) {
     html += `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; background: var(--bg-surface-elevated); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-subtle); font-size: 12px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; background: var(--bg-main); padding: 12px 14px; border: 1px solid var(--border-line); font-size: 12px;">
         <div>
-          <div style="color: var(--text-tertiary); font-size: 11px; font-weight: 600;">Base Margin</div>
-          <div style="font-weight: 700; font-size: 15px; color: var(--emerald); font-family: var(--font-mono);">${ue.base_margin_pct}%</div>
+          <div style="color: var(--text-tertiary); font-size: 10px; font-family: var(--font-mono); font-weight: 700;">BASE MARGIN</div>
+          <div style="font-weight: 700; font-size: 16px; color: var(--emerald); font-family: var(--font-code);">${ue.base_margin_pct}%</div>
         </div>
         <div>
-          <div style="color: var(--text-tertiary); font-size: 11px; font-weight: 600;">Post-Discount Margin</div>
-          <div style="font-weight: 700; font-size: 15px; color: var(--cyan); font-family: var(--font-mono);">${ue.post_discount_margin_pct}%</div>
+          <div style="color: var(--text-tertiary); font-size: 10px; font-family: var(--font-mono); font-weight: 700;">POST-DISCOUNT MARGIN</div>
+          <div style="font-weight: 700; font-size: 16px; color: var(--cyan); font-family: var(--font-code);">${ue.post_discount_margin_pct}%</div>
         </div>
         <div>
-          <div style="color: var(--text-tertiary); font-size: 11px; font-weight: 600;">Break-Even Multiplier</div>
-          <div style="font-weight: 700; font-size: 15px; color: var(--amber); font-family: var(--font-mono);">${ue.breakeven_volume_multiplier}x</div>
+          <div style="color: var(--text-tertiary); font-size: 10px; font-family: var(--font-mono); font-weight: 700;">BREAK-EVEN MULTIPLIER</div>
+          <div style="font-weight: 700; font-size: 16px; color: var(--amber); font-family: var(--font-code);">${ue.breakeven_volume_multiplier}x</div>
         </div>
         <div>
-          <div style="color: var(--text-tertiary); font-size: 11px; font-weight: 600;">Forecast Recovery</div>
-          <div style="font-weight: 700; font-size: 15px; color: var(--indigo); font-family: var(--font-mono);">+₹${ue.net_gmv_recovery_inr.toLocaleString('en-IN')}</div>
+          <div style="color: var(--text-tertiary); font-size: 10px; font-family: var(--font-mono); font-weight: 700;">FORECAST RECOVERY</div>
+          <div style="font-weight: 700; font-size: 16px; color: #b388ff; font-family: var(--font-code);">+₹${ue.net_gmv_recovery_inr.toLocaleString('en-IN')}</div>
         </div>
       </div>
     `;
@@ -317,22 +306,22 @@ function renderExecutionTrace(result) {
     html += `
       <div class="trace-step ${stepClass}">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span class="step-badge ${badgeClass}">STEP ${idx + 1}: ${trace.stage}</span>
-          <span style="font-family: var(--font-mono); font-size: 11px; color: ${isApproved ? 'var(--emerald)' : 'var(--crimson)'}; font-weight: 600;">
+          <span class="step-badge ${badgeClass}">STEP ${idx + 1}: ${trace.stage.toUpperCase()}</span>
+          <span style="font-family: var(--font-code); font-size: 11px; color: ${isApproved ? 'var(--emerald)' : 'var(--crimson)'}; font-weight: 700;">
             ${isApproved ? 'VERIFIED PASSED' : 'GUARDRAIL REJECTED (AUTO-REPAIRED)'}
           </span>
         </div>
         
         ${trace.violations && trace.violations.length > 0 ? `
-          <div style="color: var(--crimson); font-size: 12px; margin: 6px 0; padding: 8px 10px; background: var(--crimson-soft); border-radius: 6px; border: 1px solid rgba(244, 63, 94, 0.2);">
-            <strong>Violations Intercepted:</strong><br>
+          <div style="color: var(--crimson); font-size: 12px; margin: 6px 0; padding: 8px 10px; background: var(--crimson-soft); border: 1px solid rgba(255, 23, 68, 0.3);">
+            <strong>VIOLATIONS INTERCEPTED:</strong><br>
             ${trace.violations.map(v => `• ${v}`).join("<br>")}
           </div>
         ` : ''}
 
         <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5;">
-          ${trace.action ? `<div><span style="color: var(--text-tertiary);">Supervisor Proposal:</span> ${trace.action.reasoning}</div>` : ''}
-          ${trace.repaired_action ? `<div style="margin-top: 3px;"><span style="color: var(--cyan); font-weight: 600;">Auto-Repaired Action:</span> ${trace.repaired_action.reasoning}</div>` : ''}
+          ${trace.action ? `<div><span style="color: var(--text-tertiary);">SUPERVISOR PROPOSAL:</span> ${trace.action.reasoning}</div>` : ''}
+          ${trace.repaired_action ? `<div style="margin-top: 3px;"><span style="color: var(--cyan); font-weight: 700;">AUTO-REPAIRED ACTION:</span> ${trace.repaired_action.reasoning}</div>` : ''}
         </div>
       </div>
     `;
@@ -343,11 +332,11 @@ function renderExecutionTrace(result) {
     html += `
       <div class="trace-step approved">
         <span class="step-badge pass">FINAL STEP: RAZORPAY API EXECUTION & AUDIT</span>
-        <div style="font-size: 12px; margin-top: 6px; font-family: var(--font-mono); color: var(--cyan); line-height: 1.6;">
-          • Action Executed: <strong>${result.executed_action.action_type}</strong><br>
-          • Identifier: ${resp.offer_id || resp.payment_link_id || resp.bundle_id || 'rzp_ack'}<br>
-          ${resp.magic_checkout_link ? `• Live Payment Link: <a href="${resp.magic_checkout_link}" target="_blank" style="color: var(--cyan); text-decoration: underline; font-weight: 600;">${resp.magic_checkout_link}</a><br>` : ''}
-          • Reversal Compensation Spec: ${result.executed_action.rollback_spec?.endpoint || result.executed_action.rollback_spec?.type || 'N/A'}
+        <div style="font-size: 12px; margin-top: 6px; font-family: var(--font-code); color: var(--cyan); line-height: 1.6;">
+          • ACTION EXECUTED: <strong>${result.executed_action.action_type}</strong><br>
+          • IDENTIFIER: ${resp.offer_id || resp.payment_link_id || resp.bundle_id || 'rzp_ack'}<br>
+          ${resp.magic_checkout_link ? `• LIVE PAYMENT LINK: <a href="${resp.magic_checkout_link}" target="_blank" style="color: var(--cyan); text-decoration: underline; font-weight: 700;">${resp.magic_checkout_link}</a><br>` : ''}
+          • REVERSAL SPEC: ${result.executed_action.rollback_spec?.endpoint || result.executed_action.rollback_spec?.type || 'N/A'}
         </div>
       </div>
     `;
@@ -373,7 +362,7 @@ async function submitA2ANegotiation() {
   const terminal = document.getElementById("a2a-result-terminal");
   const checkoutAction = document.getElementById("a2a-checkout-action");
   checkoutAction.style.display = "none";
-  terminal.innerHTML = `<span style="color: var(--amber);">// Transmitting UAP / x402 Handshake Payload to Merchant Agent Endpoint...</span>`;
+  terminal.innerHTML = `<span style="color: var(--amber);">// TRANSMITTING UAP / x402 HANDSHAKE PAYLOAD TO MERCHANT AGENT ENDPOINT...</span>`;
 
   try {
     const res = await fetch("/api/a2a/negotiate", {
@@ -392,13 +381,13 @@ async function submitA2ANegotiation() {
 
     if (data.decision === "ACCEPTED" || data.decision === "COUNTER_OFFER") {
       checkoutAction.style.display = "block";
-      showToast(`A2A Negotiation Result: ${data.decision} (Total: ₹${(data.total_amount_paise/100).toFixed(2)})`, "success");
+      showToast(`NEGOTIATION RESULT: ${data.decision} (TOTAL: ₹${(data.total_amount_paise/100).toFixed(2)})`, "success");
     } else {
-      showToast(`A2A Negotiation Rejected: ${data.reason}`, "warning");
+      showToast(`NEGOTIATION REJECTED: ${data.reason}`, "warning");
     }
   } catch (err) {
-    terminal.innerHTML = `<span style="color: var(--crimson);">// A2A Handshake Failed: ${err.message}</span>`;
-    showToast("A2A Handshake Failed", "error");
+    terminal.innerHTML = `<span style="color: var(--crimson);">// A2A HANDSHAKE FAILED: ${err.message}</span>`;
+    showToast("A2A HANDSHAKE FAILED", "error");
   }
 }
 
@@ -414,7 +403,7 @@ function launchLiveRazorpayCheckout() {
     image: "https://razorpay.com/favicon.ico",
     order_id: lastA2AResponse.razorpay_order_id,
     handler: function (response) {
-      showToast(`Payment Successful! ID: ${response.razorpay_payment_id}`, "success", 5000);
+      showToast(`PAYMENT CONFIRMED: ID ${response.razorpay_payment_id}`, "success", 5000);
       loadDashboardData();
       loadAuditLedger();
     },
@@ -424,18 +413,18 @@ function launchLiveRazorpayCheckout() {
       contact: "9876543210"
     },
     theme: {
-      color: "#6366f1"
+      color: "#651fff"
     }
   };
 
   try {
     const rzp = new Razorpay(options);
     rzp.on("payment.failed", function (response) {
-      showToast(`Payment Failed: ${response.error.description}`, "error");
+      showToast(`PAYMENT FAILED: ${response.error.description}`, "error");
     });
     rzp.open();
   } catch (e) {
-    showToast(`Razorpay SDK launched for order ${lastA2AResponse.razorpay_order_id}`, "info");
+    showToast(`LAUNCHED CHECKOUT FOR ORDER ${lastA2AResponse.razorpay_order_id}`, "info");
   }
 }
 
@@ -460,13 +449,13 @@ async function saveCredentials() {
     });
     const data = await res.json();
     if (data.key_id_set) {
-      document.getElementById("pill-rzp-status").innerHTML = `<span class="live-dot"></span><span>Live Keys Active (${keyId.slice(0, 12)}...)</span>`;
+      document.getElementById("node-rzp-status").innerHTML = `<span class="node-indicator online"></span><span class="node-text">RZP_LIVE: ${keyId.slice(0, 12)}...</span>`;
     }
-    showToast("Credentials saved! Live test sync initialized.", "success");
+    showToast("CREDENTIALS SAVED &amp; SYNC INITIALIZED", "success");
     closeSettingsModal();
     loadDashboardData();
   } catch (e) {
-    showToast(`Failed to update credentials: ${e.message}`, "error");
+    showToast(`UPDATE FAILED: ${e.message}`, "error");
   }
 }
 
@@ -480,31 +469,31 @@ async function loadAuditLedger() {
 
     const tbody = document.getElementById("audit-table-body");
     if (entries.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6">No audit records yet. Execute an optimization to log verified events.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8">NO AUDIT ENTRIES DISCOVERED. EXECUTE AN OPTIMIZATION TO LOG EVENTS.</td></tr>`;
       return;
     }
 
     tbody.innerHTML = entries.map(e => {
       const isRolledBack = e.rolled_back;
       const statusBadge = isRolledBack ? 
-        `<span class="pill" style="background: var(--crimson-soft); color: var(--crimson); border-color: rgba(244, 63, 94, 0.3);">ROLLED_BACK</span>` : 
-        `<span class="pill pill-live">EXECUTED</span>`;
+        `<span style="color: var(--crimson); font-family: var(--font-code); font-weight: 700;">ROLLED_BACK</span>` : 
+        `<span style="color: var(--cyan); font-family: var(--font-code); font-weight: 700;">EXECUTED</span>`;
 
       return `
         <tr>
-          <td style="font-size: 11px; font-family: var(--font-mono); color: var(--text-tertiary);">${new Date(e.timestamp).toLocaleTimeString()}</td>
-          <td style="font-weight: 600; color: var(--text-primary);">${e.item_name}</td>
-          <td><code style="color: var(--indigo); font-family: var(--font-mono); font-size: 11px;">${e.action_type}</code></td>
-          <td style="font-family: var(--font-mono); font-size: 11px; color: var(--cyan);">${e.guardrail_result.validator_hash}</td>
-          <td style="font-family: var(--font-mono);">${e.rars_before.toFixed(2)} → <span style="color: var(--emerald); font-weight: 600;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
-          <td style="color: var(--emerald); font-weight: 600; font-family: var(--font-mono);">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
+          <td style="font-size: 11px; font-family: var(--font-code); color: var(--text-tertiary);">${new Date(e.timestamp).toLocaleTimeString()}</td>
+          <td style="font-weight: 700; color: #ffffff;">${e.item_name}</td>
+          <td><code style="color: var(--cyan); font-family: var(--font-code); font-size: 11px;">${e.action_type}</code></td>
+          <td style="font-family: var(--font-code); font-size: 11px; color: var(--cyan);">${e.guardrail_result.validator_hash}</td>
+          <td style="font-family: var(--font-code);">${e.rars_before.toFixed(2)} → <span style="color: var(--emerald); font-weight: 700;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
+          <td style="color: var(--emerald); font-weight: 700; font-family: var(--font-code);">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
           <td>${statusBadge}</td>
-          <td class="text-right">
+          <td class="col-actions">
             ${!isRolledBack ? `
-              <button class="btn btn-danger btn-sm" onclick="triggerRollback('${e.id}')">
-                Rollback
+              <button class="industrial-btn btn-amber" onclick="triggerRollback('${e.id}')">
+                ROLLBACK
               </button>
-            ` : `<span style="font-size: 11px; color: var(--text-tertiary);">Reversed</span>`}
+            ` : `<span style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">REVERSED</span>`}
           </td>
         </tr>
       `;
@@ -515,7 +504,7 @@ async function loadAuditLedger() {
 }
 
 async function triggerRollback(entryId) {
-  if (!confirm(`Confirm reverse compensation rollback on audit entry ${entryId}?`)) return;
+  if (!confirm(`CONFIRM REVERSE COMPENSATION ROLLBACK ON AUDIT ENTRY ${entryId}?`)) return;
 
   try {
     const res = await fetch("/api/rollback", {
@@ -524,22 +513,22 @@ async function triggerRollback(entryId) {
       body: JSON.stringify({ entry_id: entryId })
     });
     const result = await res.json();
-    showToast(`Rollback Confirmed: ${result.reversal_details}`, "warning", 5000);
+    showToast(`ROLLBACK CONFIRMED: ${result.reversal_details}`, "warning", 5000);
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
-    showToast(`Rollback failed: ${err.message}`, "error");
+    showToast(`ROLLBACK FAILED: ${err.message}`, "error");
   }
 }
 
 async function resetDemo() {
-  if (!confirm("Reset merchant catalog and simulated transactions to baseline state?")) return;
+  if (!confirm("RESET MERCHANT STATE TO BASELINE BENCHMARK?")) return;
   try {
     await fetch("/api/reset", { method: "POST" });
-    showToast("Merchant state reset to baseline benchmark", "info");
+    showToast("STATE RESET TO BENCHMARK", "info");
     await loadDashboardData();
     await loadAuditLedger();
   } catch (e) {
-    showToast("Reset failed", "error");
+    showToast("RESET FAILED", "error");
   }
 }
