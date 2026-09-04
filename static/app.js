@@ -9,100 +9,70 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
-// Fluid Perlin Smoke & Magnetic Streamline Vortex Engine (Stripe Press / Apple Style)
+// Live Financial Verdicts & Guardrail Invariant Telemetry Canvas Engine (KuberMesh Defense Edition)
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let width, height;
-  let mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000, vx: 0, vy: 0, active: false };
+  let mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000, active: false };
   let time = 0;
 
-  // Ultra-fast Simplex / Perlin Noise Approximation for Fluid Vector Fields
-  const PERLIN_SIZE = 256;
-  const p = new Uint8Array(PERLIN_SIZE * 2);
-  for (let i = 0; i < PERLIN_SIZE; i++) p[i] = i;
-  for (let i = PERLIN_SIZE - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = p[i];
-    p[i] = p[j];
-    p[j] = temp;
-  }
-  for (let i = 0; i < PERLIN_SIZE; i++) p[PERLIN_SIZE + i] = p[i];
-
-  function grad(hash, x, y, z) {
-    const h = hash & 15;
-    const u = h < 8 ? x : y;
-    const v = h < 4 ? y : (h === 12 || h === 14 ? x : z);
-    return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
-  }
-
-  function noise3D(x, y, z) {
-    const X = Math.floor(x) & 255;
-    const Y = Math.floor(y) & 255;
-    const Z = Math.floor(z) & 255;
-    x -= Math.floor(x);
-    y -= Math.floor(y);
-    z -= Math.floor(z);
-    const u = x * x * x * (x * (x * 6 - 15) + 10);
-    const v = y * y * y * (y * (y * 6 - 15) + 10);
-    const w = z * z * z * (z * (z * 6 - 15) + 10);
-    const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
-    const B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
-
-    const res = (1 - w) * (
-      (1 - v) * ((1 - u) * grad(p[AA], x, y, z) + u * grad(p[BA], x - 1, y, z)) +
-      v * ((1 - u) * grad(p[AB], x, y - 1, z) + u * grad(p[BB], x - 1, y - 1, z))
-    ) + w * (
-      (1 - v) * ((1 - u) * grad(p[AA + 1], x, y, z - 1) + u * grad(p[BA + 1], x - 1, y, z - 1)) +
-      v * ((1 - u) * grad(p[AB + 1], x, y - 1, z - 1) + u * grad(p[BB + 1], x - 1, y - 1, z - 1))
-    );
-    return res;
-  }
-
-  // Particle System
-  let particles = [];
-  const PARTICLE_COUNT = Math.min(1100, Math.max(650, Math.floor((window.innerWidth * window.innerHeight) / 1400)));
-
-  const COLOR_PALETTE = [
-    { r: 2, g: 132, b: 199, a: 0.65 },   // Electric Azure
-    { r: 99, g: 102, b: 241, a: 0.60 },  // Royal Indigo
-    { r: 6, g: 182, b: 212, a: 0.55 },   // Luminous Cyan
-    { r: 16, g: 185, b: 129, a: 0.50 },  // Emerald Mint
-    { r: 168, g: 85, b: 247, a: 0.55 }   // Ethereal Violet
+  const VERDICT_STREAM = [
+    { tag: "VERDICT", text: "APPROVED • ₹2,699.10 • G-01 PASS", type: "approved" },
+    { tag: "DEFENSE", text: "REVENUE DEFENDED • ₹1,31,692", type: "defense" },
+    { tag: "PROTOCOL", text: "NPCI UAP / x402 AGENT HANDSHAKE", type: "protocol" },
+    { tag: "VERDICT", text: "COUNTER-OFFER • 8.0% FLOOR", type: "counter" },
+    { tag: "GUARDRAIL", text: "G-02 SAFE • MAX 20% DISCOUNT", type: "guardrail" },
+    { tag: "SECURITY", text: "SHA256 IMMUTABLE AUDIT LOGGED", type: "security" },
+    { tag: "GATEWAY", text: "RAZORPAY TESTNET LIVE CAPTURE", type: "approved" },
+    { tag: "GUARDRAIL", text: "G-01 BLOCKED • PREDATORY BID -70%", type: "blocked" },
+    { tag: "RARS", text: "VELOCITY DEFICIT RECOVERY +35%", type: "defense" },
+    { tag: "ESCROW", text: "A2A ESCROW SETTLED • ₹4,85,230", type: "protocol" },
+    { tag: "INVARIANT", text: "G-04 FRAUD SPIKE LIMITER ACTIVE", type: "security" },
+    { tag: "VERDICT", text: "APPROVED • CHRONOS WATCH ₹2,699", type: "approved" },
+    { tag: "GUARDRAIL", text: "G-03 INVENTORY SCARCITY SAFE", type: "guardrail" },
+    { tag: "AUTONOMOUS", text: "AGENT COMMERCE HANDSHAKE 200 OK", type: "protocol" }
   ];
 
-  function createParticle() {
-    const col = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
-    return {
-      x: Math.random() * width,
-      y: Math.random() * height,
-      prevX: 0,
-      prevY: 0,
-      vx: 0,
-      vy: 0,
-      speed: Math.random() * 1.6 + 0.8,
-      radius: Math.random() * 1.5 + 0.8,
-      age: Math.random() * 200,
-      maxAge: Math.random() * 250 + 200,
-      color: `rgba(${col.r}, ${col.g}, ${col.b}, ${col.a})`,
-      colorGlow: `rgba(${col.r}, ${col.g}, ${col.b}, 0.25)`
-    };
-  }
+  const TYPE_THEMES = {
+    approved: { dot: "#10b981", border: "rgba(16, 185, 129, 0.40)", text: "#065f46", bg: "rgba(255, 255, 255, 0.92)", tagBg: "rgba(16, 185, 129, 0.15)", tagColor: "#047857" },
+    defense: { dot: "#0284c7", border: "rgba(2, 132, 199, 0.40)", text: "#0369a1", bg: "rgba(255, 255, 255, 0.92)", tagBg: "rgba(2, 132, 199, 0.15)", tagColor: "#0284c7" },
+    counter: { dot: "#f59e0b", border: "rgba(245, 158, 11, 0.40)", text: "#b45309", bg: "rgba(255, 255, 255, 0.92)", tagBg: "rgba(245, 158, 11, 0.15)", tagColor: "#b45309" },
+    blocked: { dot: "#f43f5e", border: "rgba(244, 63, 94, 0.40)", text: "#be123c", bg: "rgba(255, 255, 255, 0.92)", tagBg: "rgba(244, 63, 94, 0.15)", tagColor: "#be123c" },
+    protocol: { dot: "#6366f1", border: "rgba(99, 102, 241, 0.40)", text: "#4338ca", bg: "rgba(255, 255, 255, 0.92)", tagBg: "rgba(99, 102, 241, 0.15)", tagColor: "#4338ca" },
+    guardrail: { dot: "#0f766e", border: "rgba(15, 118, 110, 0.35)", text: "#0f766e", bg: "rgba(255, 255, 255, 0.92)", tagBg: "rgba(20, 184, 166, 0.15)", tagColor: "#0f766e" },
+    security: { dot: "#0f172a", border: "rgba(15, 23, 42, 0.30)", text: "#0f172a", bg: "rgba(255, 255, 255, 0.92)", tagBg: "rgba(15, 23, 42, 0.12)", tagColor: "#0f172a" }
+  };
+
+  let capsules = [];
 
   function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
-    particles = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const p = createParticle();
-      p.prevX = p.x;
-      p.prevY = p.y;
-      particles.push(p);
+    initCapsules();
+  }
+
+  function initCapsules() {
+    capsules = [];
+    const count = Math.min(14, Math.max(8, Math.floor((width * height) / 85000)));
+
+    for (let i = 0; i < count; i++) {
+      const data = VERDICT_STREAM[i % VERDICT_STREAM.length];
+      const theme = TYPE_THEMES[data.type] || TYPE_THEMES.approved;
+      capsules.push({
+        data,
+        theme,
+        x: Math.random() * (width - 240) + 40,
+        y: Math.random() * height,
+        speedY: Math.random() * 0.35 + 0.22,
+        seed: Math.random() * 100,
+        scale: Math.random() * 0.15 + 0.92,
+        w: 0,
+        h: 28,
+        pingGlow: 0
+      });
     }
-    // Fill initial canvas background
-    ctx.fillStyle = "#f8fafc";
-    ctx.fillRect(0, 0, width, height);
   }
 
   window.addEventListener("resize", resize);
@@ -118,91 +88,144 @@ function initAmbientCanvas() {
   resize();
 
   function draw() {
-    time += 0.0028;
+    ctx.clearRect(0, 0, width, height);
+    time += 0.015;
 
-    // Smooth partial clear to leave silky smoke trails
-    ctx.fillStyle = "rgba(248, 250, 252, 0.07)";
-    ctx.fillRect(0, 0, width, height);
-
-    // Mouse velocity & position damping
+    // Smooth Mouse Tracking
     if (mouse.active) {
-      const prevMx = mouse.x;
-      const prevMy = mouse.y;
-      mouse.x += (mouse.targetX - mouse.x) * 0.14;
-      mouse.y += (mouse.targetY - mouse.y) * 0.14;
-      mouse.vx = mouse.x - prevMx;
-      mouse.vy = mouse.y - prevMy;
+      mouse.x += (mouse.targetX - mouse.x) * 0.12;
+      mouse.y += (mouse.targetY - mouse.y) * 0.12;
 
-      // Radiant Cursor Ambient Glow
-      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 200);
-      grad.addColorStop(0, "rgba(2, 132, 199, 0.05)");
-      grad.addColorStop(0.5, "rgba(99, 102, 241, 0.02)");
-      grad.addColorStop(1, "transparent");
-      ctx.fillStyle = grad;
+      // Interactive Radar Verification Ping Waves around Cursor
+      const pingPulse = (time * 2.5) % Math.PI;
+      const pingRadius = Math.sin(pingPulse) * 160;
+
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 200, 0, Math.PI * 2);
+      ctx.arc(mouse.x, mouse.y, pingRadius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(16, 185, 129, ${(1 - pingRadius / 160) * 0.35})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      const lens = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
+      lens.addColorStop(0, "rgba(2, 132, 199, 0.06)");
+      lens.addColorStop(0.5, "rgba(16, 185, 129, 0.025)");
+      lens.addColorStop(1, "transparent");
+      ctx.fillStyle = lens;
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, 220, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    const noiseScale = 0.0016;
-
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-      p.prevX = p.x;
-      p.prevY = p.y;
-      p.age++;
-
-      // Compute Perlin flow field angle
-      const nVal = noise3D(p.x * noiseScale, p.y * noiseScale, time);
-      const angle = nVal * Math.PI * 3.5;
-
-      const targetVx = Math.cos(angle) * p.speed;
-      const targetVy = Math.sin(angle) * p.speed;
-
-      p.vx += (targetVx - p.vx) * 0.08;
-      p.vy += (targetVy - p.vy) * 0.08;
-
-      // Interactive Magnetic Mouse Vortex
-      if (mouse.active) {
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist < 260 && dist > 1) {
-          const force = (1 - dist / 260);
-          // Vortex tangential whirlpool velocity
-          const vortexAngle = Math.atan2(dy, dx) + Math.PI / 2;
-          p.vx += Math.cos(vortexAngle) * force * 1.8;
-          p.vy += Math.sin(vortexAngle) * force * 1.8;
-
-          // Drag along mouse velocity
-          p.vx += mouse.vx * force * 0.12;
-          p.vy += mouse.vy * force * 0.12;
+    // 1. Draw Connecting Telemetry Rays between near capsules
+    for (let i = 0; i < capsules.length; i++) {
+      for (let j = i + 1; j < capsules.length; j++) {
+        const c1 = capsules[i];
+        const c2 = capsules[j];
+        const dist = Math.hypot(c1.x - c2.x, c1.y - c2.y);
+        if (dist < 200) {
+          const alpha = (1 - dist / 200) * 0.22;
+          ctx.beginPath();
+          ctx.moveTo(c1.x + 60, c1.y + 14);
+          ctx.lineTo(c2.x + 60, c2.y + 14);
+          ctx.strokeStyle = `rgba(2, 132, 199, ${alpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
         }
       }
+    }
 
-      p.x += p.vx;
-      p.y += p.vy;
+    // 2. Update and Render Verdict Capsules
+    ctx.font = "600 10.5px 'JetBrains Mono', monospace";
 
-      // Wrap around or regenerate if aged
-      if (p.x < -20 || p.x > width + 20 || p.y < -20 || p.y > height + 20 || p.age > p.maxAge) {
-        p.x = Math.random() * width;
-        p.y = Math.random() * height;
-        p.prevX = p.x;
-        p.prevY = p.y;
-        p.vx = 0;
-        p.vy = 0;
-        p.age = 0;
+    for (let i = 0; i < capsules.length; i++) {
+      const c = capsules[i];
+
+      // Vertical drift with gentle horizontal oscillation
+      c.y -= c.speedY;
+      c.x += Math.sin(time + c.seed) * 0.35;
+
+      // Mouse Gravitational Spring & Verification Trigger
+      let isVerifiedHover = false;
+      if (mouse.active) {
+        const dx = c.x + 80 - mouse.x;
+        const dy = c.y + 14 - mouse.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 180 && dist > 1) {
+          const force = (1 - dist / 180);
+          c.x += (dx / dist) * force * 1.5;
+          c.y += (dy / dist) * force * 1.5;
+          c.pingGlow = Math.min(1, c.pingGlow + 0.1);
+          isVerifiedHover = true;
+        } else {
+          c.pingGlow = Math.max(0, c.pingGlow - 0.04);
+        }
+      } else {
+        c.pingGlow = Math.max(0, c.pingGlow - 0.04);
       }
 
-      // Draw Silky Streamline Ribbon
+      // Screen wrapping
+      if (c.y < -40) {
+        c.y = height + 40;
+        c.x = Math.random() * (width - 260) + 40;
+      }
+      if (c.x < 20) c.x = width - 260;
+      if (c.x > width - 240) c.x = 20;
+
+      // Render Capsule Pill
+      const tagText = c.data.tag;
+      const mainText = isVerifiedHover ? `✓ ${c.data.text}` : c.data.text;
+
+      const tagWidth = ctx.measureText(tagText).width + 12;
+      const mainWidth = ctx.measureText(mainText).width + 16;
+      const pillWidth = tagWidth + mainWidth + 14;
+      const pillHeight = 26;
+
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.scale(c.scale, c.scale);
+
+      // Capsule Shadow & Glow
+      ctx.shadowColor = c.pingGlow > 0.1 ? c.theme.dot : "rgba(15, 23, 42, 0.08)";
+      ctx.shadowBlur = c.pingGlow > 0.1 ? 14 : 8;
+      ctx.shadowOffsetY = 2;
+
+      // Capsule Background Pill
       ctx.beginPath();
-      ctx.moveTo(p.prevX, p.prevY);
-      ctx.lineTo(p.x, p.y);
-      ctx.strokeStyle = p.color;
-      ctx.lineWidth = p.radius;
-      ctx.lineCap = "round";
+      ctx.roundRect(0, 0, pillWidth, pillHeight, 999);
+      ctx.fillStyle = c.theme.bg;
+      ctx.fill();
+
+      // Capsule Border
+      ctx.strokeStyle = c.pingGlow > 0.1 ? c.theme.dot : c.theme.border;
+      ctx.lineWidth = c.pingGlow > 0.1 ? 1.5 : 1;
       ctx.stroke();
+
+      ctx.shadowColor = "transparent";
+
+      // Tag Pill Badge (e.g. [VERDICT], [DEFENSE])
+      ctx.beginPath();
+      ctx.roundRect(4, 4, tagWidth, pillHeight - 8, 999);
+      ctx.fillStyle = c.theme.tagBg;
+      ctx.fill();
+
+      ctx.fillStyle = c.theme.tagColor;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(tagText, 4 + tagWidth / 2, pillHeight / 2);
+
+      // Live Status Dot
+      ctx.beginPath();
+      ctx.arc(tagWidth + 12, pillHeight / 2, 3, 0, Math.PI * 2);
+      ctx.fillStyle = c.theme.dot;
+      ctx.fill();
+
+      // Main Text
+      ctx.fillStyle = c.theme.text;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(mainText, tagWidth + 20, pillHeight / 2);
+
+      ctx.restore();
     }
 
     requestAnimationFrame(draw);
