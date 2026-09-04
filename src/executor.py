@@ -84,22 +84,53 @@ class ExecutionEngine:
                 "target_id": bundle_id
             }
 
-        # 3. Recovery Sequence Dispatch
+        # 3. Recovery Sequence Dispatch (with Live Razorpay Payment Links API)
         elif action.action_type == "send_recovery_sequence":
             batch_id = f"batch_rec_{uuid.uuid4().hex[:8]}"
             targets = payload.get("target_customer_ids", ["cust_eb_100", "cust_eb_101", "cust_eb_102"])
-            discount = payload.get("incentive_discount_pct", 10.0)
+            discount_pct = payload.get("incentive_discount_pct", 10.0)
+            discounted_amount = int(item.amount * (1.0 - (discount_pct / 100.0)))
+            
+            payment_link_id = f"plink_rzp_{uuid.uuid4().hex[:10]}"
+            short_url = f"https://rzp.io/i/{payment_link_id}"
+
+            # Real Razorpay Payment Link API Call if live client is active
+            if discovery_engine.client:
+                try:
+                    plink = discovery_engine.client.payment_link.create({
+                        "amount": discounted_amount,
+                        "currency": "INR",
+                        "accept_partial": False,
+                        "description": f"Cart Recovery: {item.name[:25]} ({discount_pct:.0f}% Off)",
+                        "customer": {
+                            "name": "Target Customer",
+                            "contact": "+919876543210",
+                            "email": "customer@kubermesh.internal"
+                        },
+                        "notify": {"sms": False, "email": False},
+                        "reminder_enable": True,
+                        "notes": {"item_id": item.id, "recovery_batch": batch_id, "source": "KuberMesh_Agent"}
+                    })
+                    payment_link_id = plink.get("id", payment_link_id)
+                    short_url = plink.get("short_url", short_url)
+                    logger.info(f"Live Razorpay Payment Link created: {payment_link_id} ({short_url})")
+                except Exception as e:
+                    logger.warning(f"Live payment link creation failed: {e}. Falling back to container link.")
 
             razorpay_response = {
                 "status": "dispatched",
+                "payment_link_id": payment_link_id,
                 "recovery_batch_id": batch_id,
+                "discounted_amount_paise": discounted_amount,
+                "discount_pct": discount_pct,
                 "recipients_count": len(targets),
                 "channel": "whatsapp_sms_integrated",
-                "magic_checkout_link_generated": f"https://rzp.io/i/rec_{batch_id}?disc={discount}"
+                "magic_checkout_link": short_url
             }
             
             rollback_spec = {
-                "type": "REVOKE_MAGIC_LINKS",
+                "type": "REVOKE_PAYMENT_LINK",
+                "payment_link_id": payment_link_id,
                 "batch_id": batch_id
             }
 

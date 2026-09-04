@@ -61,24 +61,19 @@ class MerchantAgent:
         profile: ItemProfile,
         score: RARSScore,
         catalog: List[Item],
-        force_failure_scenario: bool = False
+        force_scenario: str = "none"
     ) -> CampaignAction:
-        """
-        Generate an initial intervention proposal for an SKU.
-        If force_failure_scenario is True, intentionally proposes a 25% discount to demonstrate
-        the graceful failure & self-correction loop.
-        """
         action_id = f"act_{uuid.uuid4().hex[:8]}"
 
-        if force_failure_scenario:
-            # Deliberately propose an out-of-bounds discount to trigger G-01 & G-02
+        # Scenario 1: Discount Cap Breach (Propose 25% > 20% cap)
+        if force_scenario == "discount_cap_breach":
             return CampaignAction(
                 action_id=action_id,
                 action_type="create_discount_offer",
                 target_item_id=item.id,
                 item_name=item.name,
                 payload={
-                    "discount_pct": 25.0,  # > 20.0% cap
+                    "discount_pct": 25.0,
                     "duration_hours": 48,
                     "max_redemptions": 100
                 },
@@ -87,10 +82,42 @@ class MerchantAgent:
                 status="proposed"
             )
 
-        # 1. High abandonment & decent margin -> Discount Offer
-        if profile.cart_abandonment_rate >= 0.65:
-            # Bound discount safely below cap (e.g. 12% to 15%)
-            discount = min(14.0, max(5.0, item.base_margin_pct - 10.0))
+        # Scenario 2: Margin Floor Breach (Proposing 10% discount on low 11.4% margin SKU)
+        elif force_scenario == "margin_floor_breach":
+            return CampaignAction(
+                action_id=action_id,
+                action_type="create_discount_offer",
+                target_item_id=item.id,
+                item_name=item.name,
+                payload={
+                    "discount_pct": 10.0,
+                    "duration_hours": 24,
+                    "max_redemptions": 50
+                },
+                reasoning=f"Attempting 10% discount on '{item.name}'. (Warning: base margin is only {item.base_margin_pct:.1f}%).",
+                estimated_recovery_inr=round(score.revenue_at_risk_inr * 0.30, 2),
+                status="proposed"
+            )
+
+        # Scenario 3: Price Volatility Breach (Proposing 30% price reduction > 15% cap)
+        elif force_scenario == "volatility_breach":
+            new_amount = int(item.amount * 0.70)
+            return CampaignAction(
+                action_id=action_id,
+                action_type="adjust_item_price",
+                target_item_id=item.id,
+                item_name=item.name,
+                payload={
+                    "new_amount_paise": new_amount
+                },
+                reasoning=f"Proposing deep 30% price drop from ₹{item.amount_inr:.0f} to ₹{new_amount/100:.0f} to liquidate stagnant inventory.",
+                estimated_recovery_inr=round(score.revenue_at_risk_inr * 0.50, 2),
+                status="proposed"
+            )
+
+        # Normal Bounded Operation
+        if profile.cart_abandonment_rate >= 0.60:
+            discount = min(15.0, max(5.0, item.base_margin_pct - 10.0))
             return CampaignAction(
                 action_id=action_id,
                 action_type="create_discount_offer",
@@ -101,32 +128,24 @@ class MerchantAgent:
                     "duration_hours": 48,
                     "max_redemptions": 75
                 },
-                reasoning=f"Cart abandonment is {profile.cart_abandonment_rate*100:.1f}%. A bounded {discount:.1f}% time-limited offer captures price-sensitive abandoners while preserving {item.base_margin_pct - discount:.1f}% profit margin.",
+                reasoning=f"Cart abandonment is {profile.cart_abandonment_rate*100:.1f}%. A bounded {discount:.1f}% offer captures price-sensitive abandoners while preserving {item.base_margin_pct - discount:.1f}% profit margin.",
                 estimated_recovery_inr=round(score.revenue_at_risk_inr * 0.55, 2),
                 status="proposed"
             )
-
-        # 2. Inventory stagnation -> Price elasticity adjustment or bundle
         elif profile.stagnation_days >= 14:
-            # Apply a safe 8% downward price calibration
             new_amount_paise = int(item.amount * 0.92)
             return CampaignAction(
                 action_id=action_id,
                 action_type="adjust_item_price",
                 target_item_id=item.id,
                 item_name=item.name,
-                payload={
-                    "new_amount_paise": new_amount_paise
-                },
+                payload={"new_amount_paise": new_amount_paise},
                 reasoning=f"Inventory has stagnated for {profile.stagnation_days} days. Calibrating price from ₹{item.amount_inr:.0f} to ₹{new_amount_paise/100:.0f} (8% reduction) to trigger algorithmic demand pickup.",
                 estimated_recovery_inr=round(score.revenue_at_risk_inr * 0.40, 2),
                 status="proposed"
             )
-
-        # 3. Moderate drop-off -> Cross-sell bundle
         else:
-            # Find an accessory SKU
-            accessory = next((i for i in catalog if i.id != item.id and i.category == "accessories"), catalog[0])
+            accessory = next((i for i in catalog if i.id != item.id and i.category in ["accessories", "general"]), catalog[0])
             return CampaignAction(
                 action_id=action_id,
                 action_type="create_upsell_bundle",
@@ -134,9 +153,9 @@ class MerchantAgent:
                 item_name=item.name,
                 payload={
                     "secondary_sku": accessory.id,
-                    "bundle_discount_pct": 12.0
+                    "bundle_discount_pct": 10.0
                 },
-                reasoning=f"Attaching complementary SKU '{accessory.name}' with a 12% combined bundle discount to elevate Average Order Value (AOV).",
+                reasoning=f"Attaching complementary SKU '{accessory.name}' with a 10% combined bundle discount to elevate Average Order Value (AOV).",
                 estimated_recovery_inr=round(score.revenue_at_risk_inr * 0.35, 2),
                 status="proposed"
             )
@@ -147,24 +166,19 @@ class MerchantAgent:
         profile: ItemProfile,
         score: RARSScore,
         catalog: List[Item],
-        demonstrate_graceful_failure: bool = False
+        force_scenario: str = "none"
     ) -> Dict[str, Any]:
-        """
-        Executes the closed-loop reasoning -> validation -> self-correction cycle.
-        """
         catalog_map = {i.id: i for i in catalog}
         decision_trace: List[Dict[str, Any]] = []
 
-        # Step 1: Initial proposal (optionally forced failure for demo)
         initial_action = self.propose_intervention(
-            item, profile, score, catalog, force_failure_scenario=demonstrate_graceful_failure
+            item, profile, score, catalog, force_scenario=force_scenario
         )
         
         secondary_item = None
         if "secondary_sku" in initial_action.payload:
             secondary_item = catalog_map.get(initial_action.payload["secondary_sku"])
 
-        # Step 2: Zero-LLM Deterministic Validation
         guardrail_result = safety_validator.validate_action(
             initial_action, item, profile, secondary_item=secondary_item
         )
@@ -179,11 +193,8 @@ class MerchantAgent:
 
         final_action = initial_action
 
-        # Step 3: If rejected, trigger Self-Correction Feedback Loop
+        # Self-Correction Feedback Loop
         if not guardrail_result.approved:
-            logger.info(f"Guardrail intercepted action {initial_action.action_id}. Violations: {guardrail_result.rule_violations}")
-            
-            # Re-reasoning and Auto-Repair
             corrected_action = self._repair_action(initial_action, item, profile, guardrail_result, catalog)
             
             sec_item = None
@@ -208,12 +219,27 @@ class MerchantAgent:
         else:
             final_action.status = "approved"
 
+        # Compute Unit Economics
+        base_margin = item.base_margin_pct
+        effective_discount = final_action.payload.get("discount_pct", final_action.payload.get("bundle_discount_pct", 0.0))
+        post_discount_margin = max(0.0, base_margin - effective_discount)
+        breakeven_multiplier = round((base_margin / post_discount_margin), 2) if post_discount_margin > 0 else 1.0
+
+        unit_economics = {
+            "base_margin_pct": base_margin,
+            "effective_discount_pct": effective_discount,
+            "post_discount_margin_pct": round(post_discount_margin, 2),
+            "breakeven_volume_multiplier": breakeven_multiplier,
+            "net_gmv_recovery_inr": final_action.estimated_recovery_inr
+        }
+
         return {
             "item_id": item.id,
             "item_name": item.name,
             "rars_score": score.score,
             "initial_action": initial_action,
             "final_action": final_action,
+            "unit_economics": unit_economics,
             "graceful_failure_handled": not initial_action.guardrail_result.approved and final_action.guardrail_result.approved,
             "decision_trace": decision_trace
         }

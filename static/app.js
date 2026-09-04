@@ -72,13 +72,57 @@ function renderCatalogTable(items) {
           </span>
         </td>
         <td>
-          <button class="btn btn-primary btn-sm" onclick="optimizeSingleItem('${item.id}')">
-            Optimize
-          </button>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="btn btn-primary btn-sm" onclick="optimizeSingleItem('${item.id}')">
+              Optimize
+            </button>
+            <button class="btn btn-secondary btn-sm" title="Simulate 15 cart drop-offs" onclick="injectChaos('${item.id}', 'abandonment_spike')">
+              ⚡ Drop-off
+            </button>
+          </div>
         </td>
       </tr>
     `;
   }).join("");
+}
+
+async function injectChaos(itemId, anomalyType) {
+  try {
+    const res = await fetch("/api/simulate/traffic", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item_id: itemId, anomaly_type: anomalyType, count: 15 })
+    });
+    const data = await res.json();
+    alert(`⚡ Injected 15 simulated cart drop-offs for SKU ${itemId}. Recalculating RARS...`);
+    await loadDashboardData();
+  } catch (err) {
+    console.error("Traffic injection failed:", err);
+  }
+}
+
+async function triggerMultiScenarioDemo() {
+  const scenario = document.getElementById("select-failure-scenario").value;
+  const btn = document.getElementById("btn-fail-demo");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="btn-icon">⏳</span> Intercepting Breach & Auto-Repairing...`;
+
+  try {
+    const res = await fetch("/api/optimize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ force_scenario: scenario })
+    });
+    const result = await res.json();
+    renderExecutionTrace(result);
+    await loadDashboardData();
+    await loadAuditLedger();
+  } catch (err) {
+    console.error("Scenario demo failed:", err);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<span class="btn-icon">🛡️</span> Test Selected Guardrail`;
+  }
 }
 
 function populateA2ASelect(items) {
@@ -111,8 +155,9 @@ async function runCatalogScan() {
     const res = await fetch("/api/scan", { method: "POST" });
     const result = await res.json();
     
-    // Auto optimize top risk SKU
-    await optimizeSingleItem(result.top_risk_sku, false);
+    if (result.top_risk_sku) {
+      await optimizeSingleItem(result.top_risk_sku, false);
+    }
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
@@ -123,36 +168,12 @@ async function runCatalogScan() {
   }
 }
 
-async function triggerGracefulFailureDemo() {
-  const btn = document.getElementById("btn-fail-demo");
-  btn.disabled = true;
-  btn.innerHTML = `<span class="btn-icon">⏳</span> Simulating Rejection & Auto-Repair...`;
-
-  try {
-    // Find critical item
-    const res = await fetch("/api/optimize", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ item_id: "item_earbuds_pro", demonstrate_failure: true })
-    });
-    const result = await res.json();
-    renderExecutionTrace(result);
-    await loadDashboardData();
-    await loadAuditLedger();
-  } catch (err) {
-    console.error("Failure demo failed:", err);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<span class="btn-icon">🛡️</span> Demo Graceful Failure & Auto-Repair`;
-  }
-}
-
 async function optimizeSingleItem(itemId, showTrace = true) {
   try {
     const res = await fetch("/api/optimize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ item_id: itemId, demonstrate_failure: false })
+      body: JSON.stringify({ item_id: itemId, force_scenario: "none" })
     });
     const result = await res.json();
     if (showTrace) {
@@ -171,11 +192,37 @@ function renderExecutionTrace(result) {
   panel.style.display = "block";
 
   const traces = result.decision_trace || [];
+  const ue = result.unit_economics;
+
   let html = `
     <div style="margin-bottom: 14px; font-size: 13px;">
       Target: <strong>${result.item_name}</strong> | Initial RARS: <span class="rars-badge rars-critical">${result.rars_score}</span>
     </div>
   `;
+
+  // Unit Economics Card
+  if (ue) {
+    html += `
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px;">
+        <div>
+          <div style="color: var(--text-muted); font-size: 11px;">Base Margin</div>
+          <div style="font-weight: 700; color: #34d399;">${ue.base_margin_pct}%</div>
+        </div>
+        <div>
+          <div style="color: var(--text-muted); font-size: 11px;">Post-Discount Margin</div>
+          <div style="font-weight: 700; color: #38bdf8;">${ue.post_discount_margin_pct}%</div>
+        </div>
+        <div>
+          <div style="color: var(--text-muted); font-size: 11px;">Break-Even Vol Multiplier</div>
+          <div style="font-weight: 700; color: #fbbf24;">${ue.breakeven_volume_multiplier}x</div>
+        </div>
+        <div>
+          <div style="color: var(--text-muted); font-size: 11px;">Forecast Recovery</div>
+          <div style="font-weight: 700; color: #a78bfa;">+₹${ue.net_gmv_recovery_inr.toLocaleString('en-IN')}</div>
+        </div>
+      </div>
+    `;
+  }
 
   traces.forEach((trace, idx) => {
     const isApproved = trace.guardrail_verdict === "APPROVED";
@@ -207,13 +254,15 @@ function renderExecutionTrace(result) {
   });
 
   if (result.executed_action && result.executed_action.razorpay_response) {
+    const resp = result.executed_action.razorpay_response;
     html += `
       <div class="trace-step approved">
-        <span class="step-badge pass">FINAL STEP: RAZORPAY EXECUTION & AUDIT</span>
+        <span class="step-badge pass">FINAL STEP: RAZORPAY API EXECUTION & AUDIT</span>
         <div style="font-size: 12px; margin-top: 6px; font-family: monospace; color: #38bdf8;">
           • Action Executed: ${result.executed_action.action_type}<br>
-          • Razorpay ID: ${result.executed_action.razorpay_response.offer_id || result.executed_action.razorpay_response.bundle_id || 'rzp_ack'}<br>
-          • Reverse Compensation Rollback Ready: ${result.executed_action.rollback_spec.endpoint || 'CONFIGURED'}
+          • Target Identifier: ${resp.offer_id || resp.payment_link_id || resp.bundle_id || 'rzp_ack'}<br>
+          ${resp.magic_checkout_link ? `• Live Payment Link: <a href="${resp.magic_checkout_link}" target="_blank" style="color: #38bdf8; text-decoration: underline;">${resp.magic_checkout_link}</a><br>` : ''}
+          • Reversal Compensation Spec: ${result.executed_action.rollback_spec.endpoint || result.executed_action.rollback_spec.type}
         </div>
       </div>
     `;

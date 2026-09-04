@@ -78,12 +78,17 @@
           <h2>Catalog Risk Analysis & Autonomous Growth</h2>
           <p>Real-time computation of Revenue At Risk Score (RARS) with deterministic intervention gating.</p>
         </div>
-        <div class="toolbar-buttons">
+        <div class="toolbar-buttons" style="align-items: center;">
+          <select id="select-failure-scenario" class="form-input" style="padding: 8px 12px; font-size: 12px;">
+            <option value="discount_cap_breach">🛡️ Scenario A: Discount Cap Breach (25% > 20%)</option>
+            <option value="margin_floor_breach">🛡️ Scenario B: Margin Floor Breach (10% on 11% margin)</option>
+            <option value="volatility_breach">🛡️ Scenario C: Price Volatility Breach (30% drop)</option>
+          </select>
+          <button id="btn-fail-demo" class="btn btn-warning" onclick="triggerMultiScenarioDemo()">
+            <span class="btn-icon">🛡️</span> Test Selected Guardrail
+          </button>
           <button id="btn-scan" class="btn btn-primary" onclick="runCatalogScan()">
             <span class="btn-icon">⚡</span> Run Autonomous Growth Scan
-          </button>
-          <button id="btn-fail-demo" class="btn btn-warning" onclick="triggerGracefulFailureDemo()">
-            <span class="btn-icon">🛡️</span> Demo Graceful Failure & Auto-Repair
           </button>
         </div>
       </div>

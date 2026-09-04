@@ -35,76 +35,74 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 class OptimizeRequest(BaseModel):
     item_id: Optional[str] = None
-    demonstrate_failure: bool = False
+    force_scenario: str = "none"  # "discount_cap_breach", "margin_floor_breach", "volatility_breach", "none"
 
-class RollbackRequest(BaseModel):
-    entry_id: str
+class SimulateTrafficRequest(BaseModel):
+    item_id: str
+    anomaly_type: Literal["abandonment_spike", "upi_failure_wave", "velocity_surge"]
+    count: int = 15
 
-@app.get("/", response_class=HTMLResponse)
-def serve_dashboard():
-    index_file = STATIC_DIR / "index.html"
-    if index_file.exists():
-        with open(index_file, "r", encoding="utf-8") as f:
-            return f.read()
-    return "<h1>KuberMesh Backend Active. Place static dashboard in /static/index.html</h1>"
+@app.post("/api/simulate/traffic")
+def simulate_traffic(req: SimulateTrafficRequest):
+    import random
+    from datetime import datetime, timezone, timedelta
+    from src.models import Order, Payment
 
-@app.get("/api/health")
-def get_health():
+    state = discovery_engine._load_local_state()
+    catalog = [Item(**i) for i in state.get("catalog", [])]
+    target_item = next((i for i in catalog if i.id == req.item_id), None)
+    if not target_item:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    now = datetime.now(timezone.utc)
+    new_orders = []
+    new_payments = []
+
+    for idx in range(req.count):
+        order_id = f"order_sim_{uuid.uuid4().hex[:8]}"
+        cust_id = f"cust_sim_{idx+100}"
+        created_at = (now - timedelta(minutes=random.randint(1, 120))).isoformat() + "Z"
+
+        if req.anomaly_type == "abandonment_spike":
+            status = "abandoned"
+            new_orders.append(Order(
+                id=order_id, item_id=target_item.id, amount=target_item.amount,
+                status=status, customer_id=cust_id, created_at=created_at
+            ))
+
+        elif req.anomaly_type == "upi_failure_wave":
+            status = "failed"
+            pay_id = f"pay_sim_{uuid.uuid4().hex[:8]}"
+            new_orders.append(Order(
+                id=order_id, item_id=target_item.id, amount=target_item.amount,
+                status=status, customer_id=cust_id, created_at=created_at, payment_id=pay_id
+            ))
+            new_payments.append(Payment(
+                id=pay_id, order_id=order_id, amount=target_item.amount,
+                status="failed", method="upi", error_code="PSP_TIMEOUT", created_at=created_at
+            ))
+
+        elif req.anomaly_type == "velocity_surge":
+            status = "paid"
+            pay_id = f"pay_sim_{uuid.uuid4().hex[:8]}"
+            new_orders.append(Order(
+                id=order_id, item_id=target_item.id, amount=target_item.amount,
+                status=status, customer_id=cust_id, created_at=created_at, payment_id=pay_id
+            ))
+            new_payments.append(Payment(
+                id=pay_id, order_id=order_id, amount=target_item.amount,
+                status="captured", method="upi", created_at=created_at
+            ))
+
+    state.setdefault("orders", []).extend([o.model_dump() for o in new_orders])
+    state.setdefault("payments", []).extend([p.model_dump() for p in new_payments])
+    discovery_engine._save_local_state(state)
+
     return {
-        "status": "healthy",
-        "app_name": settings.app_name,
-        "version": settings.version,
-        "environment": settings.environment,
-        "guardrails": settings.guardrails.model_dump(),
-        "razorpay_mode": "test_mode" if discovery_engine.client else "synthetic_container"
-    }
-
-@app.get("/api/catalog")
-def get_catalog_and_scores():
-    catalog = discovery_engine.get_catalog()
-    orders = discovery_engine.get_orders()
-    payments = discovery_engine.get_payments()
-    
-    profiles = profiler_engine.profile_catalog(catalog, orders, payments)
-    scores = scoring_engine.score_all(profiles)
-    
-    combined = []
-    total_leakage = 0.0
-    for item in catalog:
-        prof = profiles.get(item.id)
-        sc = scores.get(item.id)
-        if sc:
-            total_leakage += sc.revenue_at_risk_inr
-        combined.append({
-            "item": item.model_dump(),
-            "profile": prof.model_dump() if prof else None,
-            "rars": sc.model_dump() if sc else None
-        })
-        
-    return {
-        "count": len(catalog),
-        "total_revenue_at_risk_inr": round(total_leakage, 2),
-        "items": combined
-    }
-
-@app.post("/api/scan")
-def run_scan():
-    catalog = discovery_engine.get_catalog()
-    orders = discovery_engine.get_orders()
-    payments = discovery_engine.get_payments()
-    
-    profiles = profiler_engine.profile_catalog(catalog, orders, payments)
-    scores = scoring_engine.score_all(profiles)
-    
-    # Sort items by highest RARS score
-    sorted_items = sorted(catalog, key=lambda x: scores.get(x.id).score if scores.get(x.id) else 0.0, reverse=True)
-    
-    return {
-        "scanned_items_count": len(catalog),
-        "total_orders_analyzed": len(orders),
-        "top_risk_sku": sorted_items[0].id if sorted_items else None,
-        "top_risk_score": scores.get(sorted_items[0].id).score if sorted_items and scores.get(sorted_items[0].id) else 0.0,
-        "timestamp": "now"
+        "status": "traffic_injected",
+        "anomaly": req.anomaly_type,
+        "item_id": req.item_id,
+        "injected_events_count": req.count
     }
 
 @app.post("/api/optimize")
@@ -121,7 +119,6 @@ def run_optimization(req: OptimizeRequest):
         if not target_item:
             raise HTTPException(status_code=404, detail=f"SKU {req.item_id} not found.")
     else:
-        # Default to highest RARS score
         sorted_catalog = sorted(catalog, key=lambda x: scores.get(x.id).score if scores.get(x.id) else 0.0, reverse=True)
         target_item = sorted_catalog[0]
 
@@ -129,16 +126,14 @@ def run_optimization(req: OptimizeRequest):
     score = scores[target_item.id]
 
     cycle_result = merchant_agent.run_bounded_optimization_cycle(
-        target_item, profile, score, catalog, demonstrate_graceful_failure=req.demonstrate_failure
+        target_item, profile, score, catalog, force_scenario=req.force_scenario
     )
 
     final_action: CampaignAction = cycle_result["final_action"]
     
-    # Execute approved action
     if final_action.status == "approved":
         executed_action = execution_engine.execute_action(final_action, target_item)
         
-        # Record into immutable audit ledger
         audit_entry = AuditEntry(
             id=f"audit_{executed_action.action_id}",
             timestamp=executed_action.created_at,
@@ -152,7 +147,7 @@ def run_optimization(req: OptimizeRequest):
             razorpay_response=executed_action.razorpay_response,
             rollback_spec=executed_action.rollback_spec,
             rars_before=score.score,
-            rars_after=round(max(0.15, score.score - 0.45), 2),
+            rars_after=round(max(0.15, score.score - 0.35), 2),
             revenue_impact_inr=executed_action.estimated_recovery_inr,
             rolled_back=False,
             status="EXECUTED"
