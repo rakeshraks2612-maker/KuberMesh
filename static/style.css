@@ -60,7 +60,8 @@
   --shadow-float: 0 24px 48px -12px rgba(16, 24, 40, 0.18);
 
   /* Fonts */
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
 }
 
@@ -149,7 +150,8 @@ body {
 }
 
 .brand-name {
-  font-size: 19px;
+  font-family: var(--font-display);
+  font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--text-primary);
@@ -168,6 +170,7 @@ body {
 .nav-item {
   color: var(--text-secondary);
   text-decoration: none;
+  font-family: var(--font-sans);
   font-size: 13.5px;
   font-weight: 600;
   padding: 6px 14px;
@@ -255,7 +258,7 @@ body {
 }
 
 /* ==========================================================================
-   DYNAMIC ANIMATED BACKGROUND (MONEY MANAGEMENT PLATFORM)
+   SEAMLESS ANIMATED BACKGROUND (MONEY MANAGEMENT PLATFORM)
    ========================================================================== */
 .animated-bg-layer {
   position: fixed;
@@ -263,7 +266,7 @@ body {
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
-  background-color: var(--bg-app);
+  background: radial-gradient(circle at 50% 0%, #f1f5f9 0%, #eaecf0 60%, #e2e8f0 100%);
 }
 
 #ambient-canvas {
@@ -279,91 +282,26 @@ body {
 .bg-blueprint-grid {
   position: absolute;
   inset: 0;
-  background-size: 56px 56px;
+  background-size: 48px 48px;
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.055) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
   z-index: 2;
 }
 
 .bg-grid-lattice {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(15, 23, 42, 0.12) 1.5px, transparent 1.5px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse at 50% 35%, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
+  background-image: radial-gradient(rgba(15, 23, 42, 0.075) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
   z-index: 2;
-}
-
-/* Floating Isometric Fintech Tokens on Background Flanks */
-.bg-floating-tokens {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  overflow: hidden;
-}
-
-.bg-token {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.90);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.95);
-  border-radius: 980px;
-  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(226, 232, 240, 0.8);
-  font-size: 12px;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.01em;
-  will-change: transform;
-}
-
-.bg-token svg {
-  flex-shrink: 0;
-}
-
-.token-shield {
-  top: 180px;
-  left: max(15px, calc(50% - 660px));
-  color: var(--fintech-blue);
-  animation: float-token-slow 13s ease-in-out infinite alternate;
-}
-
-.token-crypto {
-  top: 490px;
-  left: max(15px, calc(50% - 640px));
-  color: var(--emerald-dark);
-  animation: float-token-slow 16s ease-in-out infinite alternate-reverse;
-}
-
-.token-hash {
-  top: 320px;
-  right: max(15px, calc(50% - 660px));
-  color: var(--purple);
-  animation: float-token-slow 15s ease-in-out infinite alternate;
-}
-
-@keyframes float-token-slow {
-  0% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-18px) rotate(2deg); }
-  100% { transform: translateY(10px) rotate(-2deg); }
-}
-
-@media (max-width: 1200px) {
-  .bg-floating-tokens { display: none; }
 }
 
 .mesh-orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.70;
+  opacity: 0.65;
   will-change: transform;
   z-index: 1;
 }
@@ -373,7 +311,7 @@ body {
   left: 10%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(2, 132, 199, 0.35) 0%, rgba(56, 189, 248, 0.18) 60%, transparent 80%);
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.30) 0%, rgba(56, 189, 248, 0.15) 60%, transparent 80%);
   animation: float-orb-1 16s ease-in-out infinite alternate;
 }
 
@@ -382,7 +320,7 @@ body {
   right: 5%;
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, rgba(99, 102, 241, 0.16) 60%, transparent 80%);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, rgba(99, 102, 241, 0.14) 60%, transparent 80%);
   animation: float-orb-2 20s ease-in-out infinite alternate;
 }
 
@@ -391,7 +329,7 @@ body {
   left: 10%;
   width: 550px;
   height: 550px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(52, 211, 153, 0.12) 60%, transparent 80%);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(52, 211, 153, 0.10) 60%, transparent 80%);
   animation: float-orb-3 18s ease-in-out infinite alternate;
 }
 
@@ -400,7 +338,7 @@ body {
   left: 40%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.20) 0%, rgba(251, 191, 36, 0.10) 60%, transparent 80%);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, rgba(251, 191, 36, 0.08) 60%, transparent 80%);
   animation: float-orb-4 22s ease-in-out infinite alternate;
 }
 
@@ -432,6 +370,17 @@ body {
    3D FLOATING CREDIT CARDS SHOWCASE (HERO STAGE)
    ========================================================================== */
 .hero-cards-stage {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  height: 250px;
+  margin: 36px auto 24px auto;
+  perspective: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 15;
+}
   position: relative;
   width: 100%;
   max-width: 960px;
@@ -584,7 +533,8 @@ body {
 }
 
 .card-balance {
-  font-size: 19px;
+  font-family: var(--font-display);
+  font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -618,12 +568,14 @@ body {
 }
 
 .card-val {
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
 }
 
 .card-logo-badge {
+  font-family: var(--font-display);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -691,7 +643,7 @@ body {
 
 /* ==========================================================================
    PAGE CONTAINER & CRISP LAYOUT
-   ========================================================================== */
+   ========================================================================= */
 .page-body {
   max-width: 1280px;
   margin: 0 auto;
@@ -718,6 +670,7 @@ body {
   border: 1px solid rgba(2, 132, 199, 0.2);
   padding: 6px 16px;
   border-radius: 980px;
+  font-family: var(--font-display);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -725,10 +678,11 @@ body {
 }
 
 .hero-heading {
-  font-size: 54px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.035em;
+  font-family: var(--font-display);
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
   color: var(--text-primary);
   margin-bottom: 20px;
 }
@@ -755,7 +709,7 @@ body {
   background: var(--bg-dark-accent);
   color: #ffffff;
   border: none;
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 700;
   padding: 14px 30px;
@@ -775,9 +729,9 @@ body {
   background: #ffffff;
   color: var(--text-primary);
   border: 1px solid var(--border-light);
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 13px 26px;
   border-radius: 980px;
   text-decoration: none;
@@ -901,7 +855,8 @@ body {
 }
 
 .stat-number {
-  font-size: 28px;
+  font-family: var(--font-display);
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -940,6 +895,7 @@ body {
 
 .section-tagline {
   display: inline-block;
+  font-family: var(--font-display);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -949,10 +905,11 @@ body {
 }
 
 .section-title {
-  font-size: 38px;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 900;
   line-height: 1.15;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   color: var(--text-primary);
   margin-bottom: 14px;
 }
@@ -988,6 +945,7 @@ body {
 
 .bento-tile-badge {
   align-self: flex-start;
+  font-family: var(--font-display);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1016,9 +974,10 @@ body {
 }
 
 .bento-tile-title {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
   margin-bottom: 12px;
 }
@@ -1070,9 +1029,9 @@ body {
   background: transparent;
   color: var(--text-secondary);
   border: none;
-  font-family: var(--font-sans);
-  font-size: 13.5px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
   padding: 8px 20px;
   border-radius: 980px;
   cursor: pointer;
