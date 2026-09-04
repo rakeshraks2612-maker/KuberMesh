@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -22,7 +23,8 @@
         </div>
       </div>
       <div class="nav-actions">
-        <div class="badge badge-rzp">
+        <button class="btn btn-secondary btn-sm" onclick="openSettingsModal()">⚙️ API Keys</button>
+        <div class="badge badge-rzp" id="badge-rzp-mode">
           <span class="status-dot green"></span> Razorpay Test Mode
         </div>
         <div class="badge badge-protocol">
@@ -180,10 +182,45 @@
             <div class="code-terminal" id="a2a-result-terminal">
               <span class="text-muted">// Awaiting incoming A2A negotiation request...</span>
             </div>
+            <div id="a2a-checkout-action" style="margin-top: 14px; display: none;">
+              <button class="btn btn-primary btn-block" id="btn-launch-rzp-checkout" onclick="launchLiveRazorpayCheckout()">
+                💳 Launch Interactive Razorpay Test Checkout Modal
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </main>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>⚙️ Live API Credentials Configuration</h3>
+          <button class="btn-close" onclick="closeSettingsModal()">×</button>
+        </div>
+        <div class="modal-body form-grid">
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Connect your real Razorpay Test Mode dashboard to create live offers & orders in real-time.
+          </p>
+          <div class="form-group">
+            <label for="cfg-key-id">Razorpay Test Key ID (rzp_test_...)</label>
+            <input type="text" id="cfg-key-id" class="form-input" placeholder="rzp_test_your_key_id">
+          </div>
+          <div class="form-group">
+            <label for="cfg-key-secret">Razorpay Key Secret</label>
+            <input type="password" id="cfg-key-secret" class="form-input" placeholder="your_key_secret">
+          </div>
+          <div class="form-group">
+            <label for="cfg-gemini-key">Gemini API Key (Optional)</label>
+            <input type="password" id="cfg-gemini-key" class="form-input" placeholder="AIzaSy...">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="saveCredentials()">
+            Save Credentials & Enable Live Sync
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- TAB 3: IMMUTABLE AUDIT LEDGER -->
     <main id="tab-audit" class="tab-content">

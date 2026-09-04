@@ -227,6 +227,8 @@ function closeTracePanel() {
   document.getElementById("execution-trace-panel").style.display = "none";
 }
 
+let lastA2AResponse = null;
+
 async function submitA2ANegotiation() {
   const buyerId = document.getElementById("a2a-buyer-id").value;
   const sku = document.getElementById("a2a-sku").value;
@@ -235,6 +237,8 @@ async function submitA2ANegotiation() {
   const offeredPaise = Math.round(offeredInr * 100);
 
   const terminal = document.getElementById("a2a-result-terminal");
+  const checkoutAction = document.getElementById("a2a-checkout-action");
+  checkoutAction.style.display = "none";
   terminal.innerHTML = `<span style="color: #fbbf24;">// Transmitting UAP / x402 Handshake Payload to Merchant Agent Endpoint...</span>`;
 
   try {
@@ -249,9 +253,82 @@ async function submitA2ANegotiation() {
       })
     });
     const data = await res.json();
+    lastA2AResponse = data;
     terminal.textContent = JSON.stringify(data, null, 2);
+
+    if (data.decision === "ACCEPTED" || data.decision === "COUNTER_OFFER") {
+      checkoutAction.style.display = "block";
+    }
   } catch (err) {
     terminal.innerHTML = `<span style="color: #f87171;">// A2A Handshake Failed: ${err.message}</span>`;
+  }
+}
+
+function launchLiveRazorpayCheckout() {
+  if (!lastA2AResponse) return;
+
+  const options = {
+    key: "rzp_test_kubermesh_demo",
+    amount: lastA2AResponse.total_amount_paise,
+    currency: "INR",
+    name: "Apex Electronics Hub",
+    description: `A2A Purchase: ${lastA2AResponse.sku} (${lastA2AResponse.quantity} unit)`,
+    image: "https://razorpay.com/favicon.ico",
+    order_id: lastA2AResponse.razorpay_order_id,
+    handler: function (response) {
+      alert(`🎉 Test Payment Successful!\nPayment ID: ${response.razorpay_payment_id}\nOrder ID: ${response.razorpay_order_id}\nSignature: ${response.razorpay_signature}`);
+      loadDashboardData();
+      loadAuditLedger();
+    },
+    prefill: {
+      name: "AI Buyer Agent (Automated)",
+      email: "buyer_agent@protocol.mesh",
+      contact: "9876543210"
+    },
+    theme: {
+      color: "#4f46e5"
+    }
+  };
+
+  try {
+    const rzp = new Razorpay(options);
+    rzp.on("payment.failed", function (response) {
+      alert(`⚠️ Test Payment Failed: ${response.error.description}`);
+    });
+    rzp.open();
+  } catch (e) {
+    alert(`Interactive Checkout Simulation: Razorpay SDK launched for order ${lastA2AResponse.razorpay_order_id} (Amount: ₹${(lastA2AResponse.total_amount_paise/100).toFixed(2)})`);
+  }
+}
+
+function openSettingsModal() {
+  document.getElementById("settings-modal").style.display = "flex";
+}
+
+function closeSettingsModal() {
+  document.getElementById("settings-modal").style.display = "none";
+}
+
+async function saveCredentials() {
+  const keyId = document.getElementById("cfg-key-id").value.trim();
+  const keySecret = document.getElementById("cfg-key-secret").value.trim();
+  const geminiKey = document.getElementById("cfg-gemini-key").value.trim();
+
+  try {
+    const res = await fetch("/api/credentials", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key_id: keyId, key_secret: keySecret, gemini_key: geminiKey })
+    });
+    const data = await res.json();
+    if (data.key_id_set) {
+      document.getElementById("badge-rzp-mode").innerHTML = `<span class="status-dot green"></span> Live Test Keys Active`;
+    }
+    alert("Credentials saved! Live test sync initialized.");
+    closeSettingsModal();
+    loadDashboardData();
+  } catch (e) {
+    alert(`Failed to update credentials: ${e.message}`);
   }
 }
 

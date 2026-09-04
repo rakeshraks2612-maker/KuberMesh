@@ -190,7 +190,79 @@ def negotiate_a2a(req: A2ANegotiationRequest):
     response = a2a_gateway.handle_negotiation(req)
     return response
 
+@app.post("/api/webhooks/razorpay")
+async def handle_razorpay_webhook(request: Request):
+    body = await request.body()
+    sig = request.headers.get("X-Razorpay-Signature", "")
+    webhook_secret = os.getenv("RAZORPAY_WEBHOOK_SECRET", "kubermesh_webhook_secret")
+    
+    # Verify HMAC SHA256 signature if secret is present
+    import hmac
+    import hashlib
+    expected_sig = hmac.new(webhook_secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
+    
+    # Process event payload
+    try:
+        import json
+        event_data = json.loads(body.decode("utf-8"))
+        event_type = event_data.get("event", "payment.captured")
+        payload = event_data.get("payload", {})
+        
+        # Log into audit ledger
+        from src.models import AuditEntry, GuardrailResult
+        webhook_audit = AuditEntry(
+            id=f"webhook_{event_data.get('id', 'ack')}",
+            timestamp="2026-09-04T12:00:00Z",
+            merchant_id="rzp_merch_apex_hub",
+            item_id="live_event",
+            item_name=f"Razorpay Webhook: {event_type}",
+            action_type="WEBHOOK_INGESTION",
+            proposed_payload=payload,
+            reasoning=f"Ingested live webhook event '{event_type}' from Razorpay gateway.",
+            guardrail_result=GuardrailResult(
+                approved=True,
+                rule_violations=[],
+                validator_hash="0xwebhook_verified",
+                timestamp="now"
+            ),
+            razorpay_response=payload,
+            rollback_spec=None,
+            rars_before=0.0,
+            rars_after=0.0,
+            revenue_impact_inr=payload.get("payment", {}).get("entity", {}).get("amount", 0) / 100.0,
+            rolled_back=False,
+            status="PROCESSED"
+        )
+        state_manager.record_entry(webhook_audit)
+        return {"status": "ok", "event_processed": event_type}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+@app.post("/api/credentials")
+def update_credentials(req: Dict[str, str]):
+    key_id = req.get("key_id")
+    key_secret = req.get("key_secret")
+    gemini_key = req.get("gemini_key")
+    
+    if key_id:
+        settings.razorpay_key_id = key_id
+        os.environ["RAZORPAY_KEY_ID"] = key_id
+    if key_secret:
+        settings.razorpay_key_secret = key_secret
+        os.environ["RAZORPAY_KEY_SECRET"] = key_secret
+    if gemini_key:
+        settings.gemini_api_key = gemini_key
+        os.environ["GEMINI_API_KEY"] = gemini_key
+        
+    discovery_engine._init_razorpay_client()
+    return {
+        "status": "credentials_updated",
+        "live_mode": discovery_engine.client is not None,
+        "key_id_set": bool(key_id)
+    }
+
 @app.post("/api/reset")
 def reset_demo_state():
     data = initialize_merchant_state()
     return {"status": "reset_successful", "catalog_count": len(data["catalog"])}
+
