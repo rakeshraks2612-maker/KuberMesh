@@ -367,60 +367,14 @@ body {
 }
 
 /* ==========================================================================
-   3D FLOATING CREDIT CARDS SHOWCASE (HERO STAGE)
-   ========================================================================== */
-.hero-cards-stage {
-  position: relative;
-  width: 100%;
-  max-width: 860px;
-  height: 250px;
-  margin: 36px auto 24px auto;
-  perspective: 1200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 15;
-}
-  position: relative;
-  width: 100%;
-  max-width: 960px;
-  height: 280px;
-  margin: 36px auto 20px auto;
-  perspective: 1400px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 15;
-}
-
-.fintech-credit-card {
-  width: 320px;
-  height: 196px;
-  border-radius: 20px;
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: absolute;
-  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.32), 0 12px 24px -8px rgba(15, 23, 42, 0.16);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  will-change: transform;
-  user-select: none;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-}
-
-/* ==========================================================================
    3D FLOATING CREDIT CARDS SHOWCASE (GOLDEN RATIO LUXURY CARDS)
    ========================================================================== */
 .hero-cards-stage {
   position: relative;
   width: 100%;
-  max-width: 1100px;
-  height: 320px;
-  margin: 36px auto 30px auto;
+  max-width: 1080px;
+  height: 290px;
+  margin: 30px auto 40px auto;
   perspective: 1400px;
   display: flex;
   justify-content: center;
