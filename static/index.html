@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=20.0">
+  <link rel="stylesheet" href="/static/style.css?v=22.0">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
@@ -124,7 +124,7 @@
         </div>
 
         <!-- Card 2: Frosted Pearl Sapphire Glass (Luxury Wide Card) -->
-        <div class="fintech-credit-card card-glass">
+        <div class="fintech-credit-card card-glass" onclick="navigateToTab('a2a')" style="cursor: pointer;" title="Click to open A2A Gateway">
           <div class="card-inner-sheen"></div>
           <div class="card-header-bar">
             <div class="card-chip silver">
@@ -271,13 +271,13 @@
           <div class="bento-tile-footer">Closed-Loop Auto-Recalibration</div>
         </div>
 
-        <div class="bento-tile">
+        <div class="bento-tile" onclick="navigateToTab('a2a')" style="cursor: pointer;" title="Click to open A2A Commerce Gateway">
           <div class="bento-tile-badge purple">Protocol</div>
           <h3 class="bento-tile-title">Agent-to-Agent (A2A) Commerce</h3>
           <p class="bento-tile-text">
             External AI buyer agents discover catalog manifests via <code>kubermesh.json</code>, negotiate within merchant-approved margin floors, and create verified Razorpay orders.
           </p>
-          <div class="bento-tile-footer">NPCI UAP / AP2 / x402 Specification</div>
+          <div class="bento-tile-footer">Explore A2A Protocol Gateway &rarr;</div>
         </div>
       </div>
     </section>
@@ -1058,6 +1058,6 @@
   <!-- TOAST ALERTS CONTAINER -->
   <div id="toast-container" class="toast-alert-stack"></div>
 
-  <script src="/static/app.js?v=21.0"></script>
+  <script src="/static/app.js?v=22.0"></script>
 </body>
 </html>

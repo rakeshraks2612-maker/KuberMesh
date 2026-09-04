@@ -71,10 +71,20 @@ function initHeroCardsParallax() {
   updateTilt();
 }
 
+let isProgrammaticScrolling = false;
+let programmaticScrollTimeout = null;
+
 function scrollToSection(sectionId) {
+  isProgrammaticScrolling = true;
+  clearTimeout(programmaticScrollTimeout);
+
   if (sectionId === 'hero' || sectionId === 'overview') {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setActiveNavButton('nav-btn-overview');
+    programmaticScrollTimeout = setTimeout(() => {
+      isProgrammaticScrolling = false;
+      setActiveNavButton('nav-btn-overview');
+    }, 700);
     return;
   }
 
@@ -92,6 +102,11 @@ function scrollToSection(sectionId) {
   if (sectionId === 'capabilities') {
     setActiveNavButton('nav-btn-architecture');
   }
+
+  programmaticScrollTimeout = setTimeout(() => {
+    isProgrammaticScrolling = false;
+    if (sectionId === 'capabilities') setActiveNavButton('nav-btn-architecture');
+  }, 700);
 }
 
 function setActiveNavButton(btnId) {
@@ -102,6 +117,9 @@ function setActiveNavButton(btnId) {
 
 function navigateToTab(tabId) {
   switchTab(tabId);
+
+  isProgrammaticScrolling = true;
+  clearTimeout(programmaticScrollTimeout);
 
   // Synchronize top navbar active pill
   if (tabId === 'growth') {
@@ -118,8 +136,8 @@ function navigateToTab(tabId) {
     setActiveNavButton('nav-btn-audit');
   }
 
-  // Smooth scroll to workspace dashboard with header offset
-  const el = document.getElementById("dashboard");
+  // Smooth scroll directly to workspace tab panel with header offset
+  const el = document.getElementById(`tab-${tabId}`) || document.getElementById("dashboard");
   if (el) {
     const navHeight = 72;
     const elementPosition = el.getBoundingClientRect().top;
@@ -129,11 +147,20 @@ function navigateToTab(tabId) {
       behavior: 'smooth'
     });
   }
+
+  programmaticScrollTimeout = setTimeout(() => {
+    isProgrammaticScrolling = false;
+    if (tabId === 'a2a') setActiveNavButton('nav-btn-a2a');
+    else if (tabId === 'growth') setActiveNavButton('nav-btn-workspace');
+    else if (tabId === 'audit') setActiveNavButton('nav-btn-audit');
+  }, 700);
 }
 
 // Enterprise ScrollSpy: synchronizes active nav button as user scrolls
 function initNavScrollSpy() {
   window.addEventListener('scroll', () => {
+    if (isProgrammaticScrolling) return;
+
     const scrollPos = window.scrollY + 140;
 
     // At top of page
@@ -145,7 +172,7 @@ function initNavScrollSpy() {
     const dashboardEl = document.getElementById("dashboard");
     const capEl = document.getElementById("capabilities");
 
-    if (dashboardEl && scrollPos >= dashboardEl.offsetTop) {
+    if (dashboardEl && scrollPos >= dashboardEl.offsetTop - 60) {
       const activeTab = document.querySelector(".tab-panel.active");
       if (activeTab && activeTab.id === 'tab-a2a') {
         setActiveNavButton('nav-btn-a2a');
@@ -160,7 +187,7 @@ function initNavScrollSpy() {
       } else {
         setActiveNavButton('nav-btn-workspace');
       }
-    } else if (capEl && scrollPos >= capEl.offsetTop) {
+    } else if (capEl && scrollPos >= capEl.offsetTop - 60) {
       setActiveNavButton('nav-btn-architecture');
     }
   }, { passive: true });
