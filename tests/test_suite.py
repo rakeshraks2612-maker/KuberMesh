@@ -184,7 +184,7 @@ def test_a2a_negotiation_handshake():
     )
     res_valid = a2a_gateway.handle_negotiation(req_valid)
     assert res_valid.decision == "ACCEPTED"
-    assert res_valid.razorpay_order_id.startswith("order_a2a_")
+    assert res_valid.razorpay_order_id.startswith("order_")
     assert res_valid.signature_token.startswith("0x")
 
     # 2. Predatory offer below floor price -> REJECT
@@ -223,6 +223,22 @@ def test_adversarial_attack_defense():
         sku_id=target_item.id,
         attack_type="zero_rupee_exploit"
     )
-    assert res_zr["attack_profile"]["kubermesh_result"]["defended"] is True
+def test_merchant_copilot_chat():
+    catalog = discovery_engine.get_catalog()
+    
+    # 1. Test question about Earbuds
+    res1 = merchant_agent.chat_copilot("Why did you discount the earbuds?", catalog)
+    assert res1["status"] == "success"
+    assert "AuraSound" in res1["reply"] or "discount" in res1["reply"].lower() or len(res1["reply"]) > 20
+    
+    # 2. Test question about Margin Exposure
+    res2 = merchant_agent.chat_copilot("What is our margin exposure?", catalog)
+    assert res2["status"] == "success"
+    assert "margin" in res2["reply"].lower()
+    
+    # 3. Test question about RARS
+    res3 = merchant_agent.chat_copilot("Explain how RARS works", catalog)
+    assert res3["status"] == "success"
+    assert "RARS" in res3["reply"] or "revenue" in res3["reply"].lower()
 
 

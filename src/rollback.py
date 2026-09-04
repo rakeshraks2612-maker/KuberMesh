@@ -36,9 +36,19 @@ class RollbackEngine:
             initial_count = len(active_offers)
             state["active_offers"] = [o for o in active_offers if o.get("offer_id") != offer_id]
             discovery_engine._save_local_state(state)
-            
+
+            # Live Razorpay API Rollback Execution
+            live_api_invoked = False
+            if discovery_engine.client and offer_id:
+                try:
+                    if hasattr(discovery_engine.client, "offer") and hasattr(discovery_engine.client.offer, "deactivate"):
+                        discovery_engine.client.offer.deactivate(offer_id)
+                        live_api_invoked = True
+                except Exception as e:
+                    logger.warning(f"Live Razorpay offer deactivation notice ({offer_id}): {e}")
+
             success = True
-            reversal_details = f"Successfully revoked promotional offer {offer_id}."
+            reversal_details = f"Successfully revoked promotional offer {offer_id}." + (" [Live Razorpay API Synchronized]" if live_api_invoked else "")
 
         # 2. Revert Item Price
         elif spec_type == "REVERT_PRICE":
@@ -50,9 +60,18 @@ class RollbackEngine:
                 if cat_item["id"] == item_id:
                     cat_item["amount"] = revert_amount
             discovery_engine._save_local_state(state)
-            
+
+            # Live Razorpay Item Price Reversion
+            live_api_invoked = False
+            if discovery_engine.client and item_id and item_id.startswith("item_"):
+                try:
+                    discovery_engine.client.item.edit(item_id, {"amount": int(revert_amount)})
+                    live_api_invoked = True
+                except Exception as e:
+                    logger.warning(f"Live Razorpay item price edit notice ({item_id}): {e}")
+
             success = True
-            reversal_details = f"Successfully reverted SKU {item_id} price back to ₹{revert_amount/100:.2f}."
+            reversal_details = f"Successfully reverted SKU {item_id} price back to ₹{revert_amount/100:.2f}." + (" [Live Razorpay API Synchronized]" if live_api_invoked else "")
 
         # 3. Deactivate Bundle
         elif spec_type == "DEACTIVATE_BUNDLE":

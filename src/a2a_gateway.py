@@ -127,6 +127,28 @@ class A2AGateway:
         rzp_order_id = f"order_a2a_{uuid.uuid4().hex[:10]}"
         payment_link = f"https://rzp.io/i/{rzp_order_id}"
 
+        # Real Live Razorpay Order Creation if Client Active
+        if discovery_engine.client and (decision in ["ACCEPTED", "COUNTER_OFFER"]):
+            try:
+                real_order = discovery_engine.client.order.create({
+                    "amount": int(total_amount),
+                    "currency": "INR",
+                    "receipt": f"a2a_{uuid.uuid4().hex[:8]}",
+                    "notes": {
+                        "protocol": "NPCI_UAP_x402_KuberMesh",
+                        "buyer_agent_id": req.buyer_agent_id,
+                        "sku": item.id,
+                        "requested_quantity": str(req.requested_quantity),
+                        "agreed_discount_pct": str(discount_pct)
+                    }
+                })
+                if real_order and "id" in real_order:
+                    rzp_order_id = real_order["id"]
+                    payment_link = f"https://rzp.io/i/{rzp_order_id}"
+            except Exception as e:
+                # Fallback to simulated ID if Razorpay order API encounters network issue
+                pass
+
         # Generate cryptographic authorization signature token
         sig_payload = f"{req.buyer_agent_id}:{req.sku}:{agreed_unit}:{total_amount}:{rzp_order_id}"
         sig_token = "0x" + hashlib.sha256(sig_payload.encode("utf-8")).hexdigest()[:24]

@@ -1077,9 +1077,56 @@
     </footer>
   </main>
 
+  <!-- FLOATING MERCHANT AI COPILOT LAUNCHER -->
+  <div class="floating-copilot-launcher" id="copilot-launcher" onclick="toggleCopilotDrawer()">
+    <div class="copilot-launcher-inner">
+      <span class="copilot-pulse-dot"></span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Merchant Copilot</span>
+    </div>
+  </div>
+
+  <!-- CONVERSATIONAL COPILOT DRAWER -->
+  <div class="copilot-drawer" id="copilot-drawer" style="display: none;">
+    <div class="copilot-drawer-header">
+      <div class="copilot-header-title">
+        <span class="copilot-header-dot"></span>
+        <strong>Merchant AI Copilot</strong>
+        <span class="copilot-badge">Gemini 1.5 Flash</span>
+      </div>
+      <button class="btn-close-light" onclick="toggleCopilotDrawer()" aria-label="Close copilot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="copilot-messages-box" id="copilot-messages">
+      <div class="copilot-msg bot">
+        <div class="copilot-msg-bubble">
+          Hello! I am your <strong>KuberMesh Copilot</strong>. I actively analyze your Razorpay catalog, RARS cart drop-offs, and A2A negotiations within zero-LLM margin guardrails. How can I help you today?
+        </div>
+      </div>
+    </div>
+
+    <div class="copilot-quick-chips">
+      <button class="copilot-chip" onclick="sendCopilotPreset('Why did you discount the earbuds?')">Why discount earbuds?</button>
+      <button class="copilot-chip" onclick="sendCopilotPreset('What is our current margin exposure?')">Margin exposure?</button>
+      <button class="copilot-chip" onclick="sendCopilotPreset('Explain the A2A negotiation for Boat Rockerz')">Explain A2A negotiation</button>
+      <button class="copilot-chip" onclick="sendCopilotPreset('How does RARS prevent cart abandonment?')">How does RARS work?</button>
+    </div>
+
+    <div class="copilot-input-bar">
+      <input type="text" id="copilot-input" class="copilot-input-field" placeholder="Ask anything about catalog, RARS, or margins..." onkeydown="if(event.key==='Enter') sendCopilotMessage()">
+      <button class="copilot-send-btn" onclick="sendCopilotMessage()" id="btn-copilot-send" aria-label="Send message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
   <!-- TOAST ALERTS CONTAINER -->
   <div id="toast-container" class="toast-alert-stack"></div>
 
-  <script src="/static/app.js?v=26.0"></script>
+  <script src="/static/app.js?v=27.0"></script>
 </body>
 </html>

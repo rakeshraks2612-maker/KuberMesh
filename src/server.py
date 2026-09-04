@@ -512,4 +512,12 @@ def reset_demo_state():
     data = initialize_merchant_state()
     return {"status": "reset_successful", "catalog_count": len(data["catalog"])}
 
+class CopilotChatRequest(BaseModel):
+    message: str
+
+@app.post("/api/chat")
+def chat_with_copilot(req: CopilotChatRequest):
+    catalog = discovery_engine.get_catalog()
+    return merchant_agent.chat_copilot(req.message, catalog)
+
 

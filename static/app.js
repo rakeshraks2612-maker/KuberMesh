@@ -1166,3 +1166,66 @@ async function resetDemo() {
     showToast("Reset failed", "error");
   }
 }
+
+// MERCHANT AI COPILOT CONVERSATIONAL HANDLERS
+function toggleCopilotDrawer() {
+  const drawer = document.getElementById("copilot-drawer");
+  if (!drawer) return;
+  const isVisible = drawer.style.display === "flex";
+  drawer.style.display = isVisible ? "none" : "flex";
+  if (!isVisible) {
+    setTimeout(() => {
+      document.getElementById("copilot-input")?.focus();
+    }, 100);
+  }
+}
+
+function sendCopilotPreset(text) {
+  const input = document.getElementById("copilot-input");
+  if (input) {
+    input.value = text;
+    sendCopilotMessage();
+  }
+}
+
+async function sendCopilotMessage() {
+  const input = document.getElementById("copilot-input");
+  const msgContainer = document.getElementById("copilot-messages");
+  const sendBtn = document.getElementById("btn-copilot-send");
+  if (!input || !msgContainer) return;
+
+  const query = input.value.trim();
+  if (!query) return;
+
+  // Add User Message
+  const userDiv = document.createElement("div");
+  userDiv.className = "copilot-msg user";
+  userDiv.innerHTML = `<div class="copilot-msg-bubble">${query}</div>`;
+  msgContainer.appendChild(userDiv);
+  input.value = "";
+  msgContainer.scrollTop = msgContainer.scrollHeight;
+
+  // Add Loading Bot Message
+  const loadingDiv = document.createElement("div");
+  loadingDiv.className = "copilot-msg bot";
+  loadingDiv.innerHTML = `<div class="copilot-msg-bubble text-subtle" style="font-style: italic;">Analyzing catalog telemetry &amp; RARS scores...</div>`;
+  msgContainer.appendChild(loadingDiv);
+  msgContainer.scrollTop = msgContainer.scrollHeight;
+
+  if (sendBtn) sendBtn.disabled = true;
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: query })
+    });
+    const data = await res.json();
+    loadingDiv.innerHTML = `<div class="copilot-msg-bubble">${data.reply || "No response generated."}</div>`;
+  } catch (err) {
+    loadingDiv.innerHTML = `<div class="copilot-msg-bubble" style="color: #b91c1c;">Error communicating with Copilot: ${err.message}</div>`;
+  } finally {
+    if (sendBtn) sendBtn.disabled = false;
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+  }
+}

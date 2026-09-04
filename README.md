@@ -39,12 +39,12 @@ graph TD
         PROF --> SCORER[scorer.py<br>Quantified RARS Formula 0.0 - 1.0]
     end
 
-    subgraph REASONING["3. Agentic Layer"]
-        SCORER --> AGENT[agent.py<br>Gemini 1.5 Flash Supervisor]
+    subgraph REASONING["3. Agentic & Conversational Layer"]
+        SCORER --> AGENT[agent.py<br>Gemini 1.5 Flash Reasoning & Copilot]
     end
 
-    subgraph SAFETY["4. Safety & Guardrail Layer (Zero-LLM)"]
-        AGENT -->|Proposes Action| VAL[validator.py<br>Deterministic Guardrails]
+    subgraph SAFETY["4. Safety & Guardrail Layer (Zero-LLM Deterministic)"]
+        AGENT -->|Proposes Action / Reason| VAL[validator.py<br>Deterministic Guardrails G01-G08]
         VAL -->|Rejected: Margin / Cap Breach| REPAIR[Auto-Repair Feedback Loop]
         REPAIR --> AGENT
     end
@@ -127,7 +127,7 @@ External AI buyer agents query `GET /api/a2a/catalog` to ingest machine-readable
 
 ### 1. Installation
 ```bash
-git clone https://github.com/your-username/KuberMesh.git
+git clone https://github.com/rakeshraks2612-maker/KuberMesh.git
 cd KuberMesh
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
