@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
-// Geometric Holographic Matrix & Ambient Radiant Flow Canvas Engine
+// Minimalist Ambient Flow & Dynamic Constellation Engine
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
@@ -33,70 +33,78 @@ function initAmbientCanvas() {
   });
   resize();
 
+  // Generate delicate minimalist floating nodes
+  const particleCount = Math.min(36, Math.floor((window.innerWidth * window.innerHeight) / 28000));
+  const particles = [];
+  for (let i = 0; i < particleCount; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      radius: Math.random() * 1.8 + 1.2,
+      speedY: Math.random() * 0.35 + 0.15,
+      seed: Math.random() * 100,
+      alpha: Math.random() * 0.25 + 0.15,
+      color: i % 3 === 0 ? "2, 132, 199" : (i % 3 === 1 ? "99, 102, 241" : "16, 185, 129")
+    });
+  }
+
   function draw() {
     ctx.clearRect(0, 0, width, height);
-    time += 0.012;
+    time += 0.015;
 
-    const spacing = 48;
-    const cols = Math.ceil(width / spacing);
-    const rows = Math.ceil(height / spacing);
-
-    // 1. Interactive Cursor Ambient Spotlight
+    // 1. Subtle Ambient Cursor Light
     if (mouse.active) {
-      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
-      grad.addColorStop(0, "rgba(2, 132, 199, 0.08)");
-      grad.addColorStop(0.6, "rgba(99, 102, 241, 0.03)");
+      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 240);
+      grad.addColorStop(0, "rgba(2, 132, 199, 0.06)");
+      grad.addColorStop(0.5, "rgba(99, 102, 241, 0.025)");
       grad.addColorStop(1, "transparent");
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 220, 0, Math.PI * 2);
+      ctx.arc(mouse.x, mouse.y, 240, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // 2. Fine Architectural Micro Crosshairs & Luminous Pulse Nodes
-    for (let c = 0; c <= cols; c++) {
-      for (let r = 0; r <= rows; r++) {
-        const x = c * spacing;
-        const y = r * spacing;
+    // 2. Update & Draw Floating Particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.y -= p.speedY;
+      p.x += Math.sin(time + p.seed) * 0.35;
 
-        // Wave modulation
-        const wave = Math.sin((x * 0.005) + (y * 0.005) + time);
-        const distToMouse = mouse.active ? Math.hypot(x - mouse.x, y - mouse.y) : 9999;
-        const mouseFactor = distToMouse < 180 ? (1 - distToMouse / 180) * 0.25 : 0;
+      // Wrap around screen
+      if (p.y < -10) p.y = height + 10;
+      if (p.x < -10) p.x = width + 10;
+      if (p.x > width + 10) p.x = -10;
 
-        const baseAlpha = 0.035 + (wave + 1) * 0.015 + mouseFactor;
-
-        // Draw crosshair '+' at grid intersection
-        if ((c + r) % 2 === 0) {
-          ctx.strokeStyle = `rgba(15, 23, 42, ${baseAlpha * 1.5})`;
-          ctx.lineWidth = 1;
-          const arm = 3;
-          ctx.beginPath();
-          ctx.moveTo(x - arm, y);
-          ctx.lineTo(x + arm, y);
-          ctx.moveTo(x, y - arm);
-          ctx.lineTo(x, y + arm);
-          ctx.stroke();
+      // Mouse gentle repulsion
+      if (mouse.active) {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 140 && dist > 0) {
+          const force = (1 - dist / 140) * 0.8;
+          p.x += (dx / dist) * force;
+          p.y += (dy / dist) * force;
         }
+      }
 
-        // Luminous accent node at major intervals
-        if (c % 4 === 0 && r % 4 === 0) {
-          const nodePulse = (Math.sin(time * 1.5 + (c * 0.5) + (r * 0.3)) + 1) * 0.5;
-          const isEmerald = (c + r) % 8 === 0;
-          const colorStr = isEmerald ? "16, 185, 129" : "2, 132, 199";
+      // Draw particle
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+      ctx.fill();
 
+      // Constellation connection lines
+      for (let j = i + 1; j < particles.length; j++) {
+        const p2 = particles[j];
+        const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+        if (dist < 110) {
+          const lineAlpha = (1 - dist / 110) * 0.12;
           ctx.beginPath();
-          ctx.arc(x, y, 2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${colorStr}, ${0.15 + nodePulse * 0.25 + mouseFactor})`;
-          ctx.fill();
-
-          if (nodePulse > 0.8) {
-            ctx.beginPath();
-            ctx.arc(x, y, 5 * (nodePulse - 0.7) * 3, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(${colorStr}, ${(1 - nodePulse) * 0.3})`;
-            ctx.lineWidth = 0.75;
-            ctx.stroke();
-          }
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(2, 132, 199, ${lineAlpha})`;
+          ctx.lineWidth = 0.75;
+          ctx.stroke();
         }
       }
     }
@@ -361,6 +369,23 @@ async function triggerMultiScenarioDemo() {
   }
 }
 
+// Built-in catalog metadata dictionary for instantaneous reactivity
+const defaultCatalogFallbacks = {
+  "item_TXtg5qNcyOuOI5": { item: { id: "item_TXtg5qNcyOuOI5", name: "VortexRGB Mechanical Keyboard", amount_inr: 3499.0, base_cost_paise: 227435 } },
+  "item_TXtg4gEDvC6yTI": { item: { id: "item_TXtg4gEDvC6yTI", name: "Chronos AMOLED Smartwatch", amount_inr: 2999.0, base_cost_paise: 194935 } },
+  "item_TXtg3FXJM6HJzP": { item: { id: "item_TXtg3FXJM6HJzP", name: "AuraSound Pro ANC Earbuds", amount_inr: 1499.0, base_cost_paise: 97435 } },
+  "item_TXtg5MKgWaUz7b": { item: { id: "item_TXtg5MKgWaUz7b", name: "VoltPulse 65W GaN Dual-Port Charger", amount_inr: 1199.0, base_cost_paise: 77935 } },
+  "item_TXtg43cU40UXDq": { item: { id: "item_TXtg43cU40UXDq", name: "AuraSound Armour Silicone Case", amount_inr: 399.0, base_cost_paise: 25935 } }
+};
+
+function getCatalogEntry(sku) {
+  if (currentCatalogData && currentCatalogData.length > 0) {
+    const found = currentCatalogData.find(e => e.item && e.item.id === sku);
+    if (found) return found;
+  }
+  return defaultCatalogFallbacks[sku] || Object.values(defaultCatalogFallbacks)[0];
+}
+
 function populateA2ASelect(items) {
   const select = document.getElementById("a2a-sku");
   if (!select) return;
@@ -372,23 +397,19 @@ function populateA2ASelect(items) {
     select.value = currentVal;
   } else if (items.length > 0) {
     select.value = items[0].item.id;
-    const input = document.getElementById("a2a-offered-inr");
-    if (input && (!input.value || input.value === "1349")) {
-      input.value = (items[0].item.amount_inr * 0.9).toFixed(2);
-    }
   }
-  updateA2APriceHint();
+  onA2ASkuChange();
 }
 
 function onA2ASkuChange() {
   const select = document.getElementById("a2a-sku");
   if (!select) return;
   const sku = select.value;
-  const entry = currentCatalogData.find(e => e.item.id === sku);
-  if (entry) {
+  const entry = getCatalogEntry(sku);
+  if (entry && entry.item) {
     const input = document.getElementById("a2a-offered-inr");
     if (input) {
-      input.value = (entry.item.amount_inr * 0.9).toFixed(2);
+      input.value = (entry.item.amount_inr * 0.90).toFixed(2);
     }
   }
   updateA2APriceHint();
@@ -398,8 +419,8 @@ function setA2APreset(type) {
   const select = document.getElementById("a2a-sku");
   if (!select) return;
   const sku = select.value;
-  const entry = currentCatalogData.find(e => e.item.id === sku);
-  if (!entry) return;
+  const entry = getCatalogEntry(sku);
+  if (!entry || !entry.item) return;
 
   const retail = entry.item.amount_inr;
   const minMargin = 0.08;
@@ -407,15 +428,12 @@ function setA2APreset(type) {
   const input = document.getElementById("a2a-offered-inr");
 
   if (type === 'valid') {
-    // 10% below retail
     input.value = (retail * 0.90).toFixed(2);
-    showToast(`Preset: Valid 10% discount applied (₹${input.value})`, "info");
+    showToast(`Preset: 10% discount applied (₹${input.value})`, "info");
   } else if (type === 'floor') {
-    // Exactly at floor price
     input.value = Math.ceil(floorPrice).toFixed(2);
-    showToast(`Preset: Offer set at minimum margin floor (₹${input.value})`, "info");
+    showToast(`Preset: Margin floor applied (₹${input.value})`, "info");
   } else if (type === 'reject') {
-    // 70% below cost (predatory)
     input.value = (retail * 0.30).toFixed(2);
     showToast(`Preset: Predatory bid applied (₹${input.value})`, "warning");
   }
@@ -426,24 +444,30 @@ function updateA2APriceHint() {
   const select = document.getElementById("a2a-sku");
   if (!select) return;
   const sku = select.value;
-  const entry = currentCatalogData.find(e => e.item.id === sku);
-  if (!entry) return;
+  const entry = getCatalogEntry(sku);
+  if (!entry || !entry.item) return;
 
   const retail = entry.item.amount_inr;
   const minMargin = 0.08;
   const floorPrice = (entry.item.base_cost_paise / (1.0 - minMargin)) / 100.0;
-  const qty = parseInt(document.getElementById("a2a-qty")?.value || "1", 10);
-  const offered = parseFloat(document.getElementById("a2a-offered-inr")?.value || (retail * 0.9).toFixed(2));
+  const input = document.getElementById("a2a-offered-inr");
+  const offered = parseFloat(input?.value || (retail * 0.9).toFixed(2));
 
   let statusNote = "Valid Range (Approved)";
+  let statusColor = "#10b981";
   if (offered < floorPrice * 0.85) {
     statusNote = "Predatory Bid (Will Reject)";
+    statusColor = "#f43f5e";
   } else if (offered < floorPrice) {
     statusNote = "Near Floor (Counter-Offer)";
+    statusColor = "#f59e0b";
   }
 
-  document.getElementById("a2a-price-hint").innerHTML = 
-    `Retail: <strong>₹${retail.toFixed(2)}</strong> | Margin Floor (8% Floor): <strong>₹${floorPrice.toFixed(2)}</strong> | Expected: <span style="font-weight:700;">${statusNote}</span>`;
+  const hintEl = document.getElementById("a2a-price-hint");
+  if (hintEl) {
+    hintEl.innerHTML = 
+      `Retail: <strong>₹${retail.toFixed(2)}</strong> &bull; Margin Floor: <strong>₹${floorPrice.toFixed(2)}</strong> &bull; Status: <span style="font-weight:700; color:${statusColor};">${statusNote}</span>`;
+  }
 }
 
 async function runCatalogScan() {

@@ -8,18 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=11.0">
+  <link rel="stylesheet" href="/static/style.css?v=12.0">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-  <!-- SEAMLESS ANIMATED FINTECH BACKGROUND -->
+  <!-- MINIMALIST AMBIENT FINTECH BACKGROUND -->
   <div class="animated-bg-layer" aria-hidden="true">
     <canvas id="ambient-canvas"></canvas>
-    <div class="mesh-orb orb-cyan"></div>
-    <div class="mesh-orb orb-indigo"></div>
-    <div class="mesh-orb orb-emerald"></div>
-    <div class="mesh-orb orb-amber"></div>
-    <div class="bg-grid-lattice"></div>
+    <div class="ambient-glow glow-top"></div>
+    <div class="ambient-glow glow-bottom"></div>
   </div>
 
   <!-- STICKY FROSTED WHITE NAVBAR (MONEY MANAGEMENT PLATFORM) -->
@@ -452,8 +449,12 @@
 
               <div class="form-field-group">
                 <label for="a2a-sku">Target Catalog Product SKU</label>
-                <select id="a2a-sku" class="light-select" onchange="updateA2APriceHint()">
-                  <!-- Populated dynamically -->
+                <select id="a2a-sku" class="light-select" onchange="onA2ASkuChange()">
+                  <option value="item_TXtg5qNcyOuOI5">VortexRGB Mechanical Keyboard — ₹3,499.00</option>
+                  <option value="item_TXtg4gEDvC6yTI">Chronos AMOLED Smartwatch — ₹2,999.00</option>
+                  <option value="item_TXtg3FXJM6HJzP">AuraSound Pro ANC Earbuds — ₹1,499.00</option>
+                  <option value="item_TXtg5MKgWaUz7b">VoltPulse 65W GaN Dual-Port Charger — ₹1,199.00</option>
+                  <option value="item_TXtg43cU40UXDq">AuraSound Armour Silicone Case — ₹399.00</option>
                 </select>
               </div>
 
@@ -611,6 +612,6 @@
   <!-- TOAST ALERTS CONTAINER -->
   <div id="toast-container" class="toast-alert-stack"></div>
 
-  <script src="/static/app.js?v=11.0"></script>
+  <script src="/static/app.js?v=12.0"></script>
 </body>
 </html>
