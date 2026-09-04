@@ -8,14 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
-// Advanced Ambient Canvas Animation Engine (Fintech Harmonic Waves & Neural Mesh)
+// Serene Ambient Canvas Animation Engine (Fintech Constellation & Dynamic Aurora)
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let width, height;
   let particles = [];
-  let mouse = { x: -1000, y: -1000, radius: 180 };
+  let mouse = { x: -1000, y: -1000, active: false };
   let time = 0;
 
   function resize() {
@@ -26,141 +26,104 @@ function initAmbientCanvas() {
   window.addEventListener("mousemove", (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
+    mouse.active = true;
   });
   window.addEventListener("mouseleave", () => {
-    mouse.x = -1000;
-    mouse.y = -1000;
+    mouse.active = false;
   });
   resize();
 
-  const nodeColors = [
-    { r: 2, g: 132, b: 199 },   // Cobalt
+  const palette = [
+    { r: 2, g: 132, b: 199 },   // Fintech Cobalt
     { r: 16, g: 185, b: 129 },  // Emerald
-    { r: 139, g: 92, b: 246 },  // Violet
-    { r: 245, g: 158, b: 11 }   // Amber
+    { r: 99, g: 102, b: 241 },  // Indigo
+    { r: 139, g: 92, b: 246 }   // Violet
   ];
 
-  const count = Math.min(65, Math.max(35, Math.floor(window.innerWidth / 25)));
+  const count = Math.min(50, Math.max(30, Math.floor(window.innerWidth / 30)));
   for (let i = 0; i < count; i++) {
-    const col = nodeColors[Math.floor(Math.random() * nodeColors.length)];
+    const col = palette[Math.floor(Math.random() * palette.length)];
     particles.push({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.75,
-      vy: (Math.random() - 0.5) * 0.75,
-      baseRadius: Math.random() * 2.5 + 2,
+      vx: (Math.random() - 0.5) * 0.45,
+      vy: (Math.random() - 0.5) * 0.45,
+      baseRadius: Math.random() * 2 + 1.5,
       color: col,
+      pulseSpeed: 0.02 + Math.random() * 0.03,
       phase: Math.random() * Math.PI * 2
     });
   }
 
-  function drawSineWaves() {
-    time += 0.012;
-
-    // Wave 1: Electric Cobalt Stream
-    ctx.beginPath();
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = "rgba(2, 132, 199, 0.22)";
-    for (let x = 0; x < width; x += 15) {
-      const y = height * 0.35 + Math.sin(x * 0.003 + time) * 70 + Math.cos(x * 0.0015 + time * 0.6) * 40;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Wave 2: Emerald Liquidity Ribbon
-    ctx.beginPath();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(16, 185, 129, 0.20)";
-    for (let x = 0; x < width; x += 15) {
-      const y = height * 0.55 + Math.sin(x * 0.0025 - time * 0.8) * 85 + Math.sin(x * 0.005 + time) * 30;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // Wave 3: Royal Violet Settlement Wave
-    ctx.beginPath();
-    ctx.lineWidth = 1.8;
-    ctx.strokeStyle = "rgba(139, 92, 246, 0.18)";
-    for (let x = 0; x < width; x += 15) {
-      const y = height * 0.75 + Math.cos(x * 0.002 + time * 0.5) * 60 + Math.sin(x * 0.004 - time) * 35;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-
   function draw() {
     ctx.clearRect(0, 0, width, height);
+    time += 0.015;
 
-    // 1. Draw flowing harmonic fintech ribbons
-    drawSineWaves();
+    // 1. Draw subtle cursor aura spotlight
+    if (mouse.active) {
+      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 160);
+      grad.addColorStop(0, "rgba(2, 132, 199, 0.07)");
+      grad.addColorStop(1, "transparent");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, 160, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    // 2. Draw connections and moving data packets
+    // 2. Draw delicate constellation connection hairlines
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < 150) {
-          const alpha = (1 - dist / 150) * 0.18;
+        if (dist < 135) {
+          const alpha = (1 - dist / 135) * 0.14;
           ctx.beginPath();
           ctx.strokeStyle = `rgba(15, 23, 42, ${alpha})`;
-          ctx.lineWidth = 1;
+          ctx.lineWidth = 0.85;
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
           ctx.stroke();
-
-          // Flowing data packet
-          if ((i + j) % 4 === 0) {
-            const packetPos = (time * 1.5 + (i * 0.3)) % 1;
-            const px = particles[i].x + (particles[j].x - particles[i].x) * packetPos;
-            const py = particles[i].y + (particles[j].y - particles[i].y) * packetPos;
-            ctx.beginPath();
-            ctx.arc(px, py, 1.8, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(2, 132, 199, ${alpha * 2.5})`;
-            ctx.fill();
-          }
         }
       }
     }
 
-    // 3. Draw luminous nodes and interactive magnetic cursor reaction
+    // 3. Draw luminous drifting stars
     particles.forEach(p => {
-      // Mouse interaction
-      const mdx = mouse.x - p.x;
-      const mdy = mouse.y - p.y;
-      const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-      if (mdist < mouse.radius) {
-        const force = (1 - mdist / mouse.radius) * 1.5;
-        p.x -= (mdx / mdist) * force * 3;
-        p.y -= (mdy / mdist) * force * 3;
+      // Gentle cursor repulsion
+      if (mouse.active) {
+        const mdx = mouse.x - p.x;
+        const mdy = mouse.y - p.y;
+        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mdist < 120) {
+          const force = (1 - mdist / 120) * 0.8;
+          p.x -= (mdx / mdist) * force;
+          p.y -= (mdy / mdist) * force;
+        }
       }
 
-      // Pulse radius
-      const currentRadius = p.baseRadius + Math.sin(time * 2 + p.phase) * 0.8;
+      const currentRadius = p.baseRadius + Math.sin(time + p.phase) * 0.6;
 
-      // Glow halo
+      // Soft glow
       ctx.beginPath();
-      ctx.arc(p.x, p.y, currentRadius * 2.5, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, currentRadius * 2.2, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, 0.12)`;
       ctx.fill();
 
-      // Core node
+      // Core particle
       ctx.beginPath();
       ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, 0.85)`;
+      ctx.fillStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, 0.80)`;
       ctx.fill();
 
       p.x += p.vx;
       p.y += p.vy;
 
-      if (p.x < 0) { p.x = width; }
-      if (p.x > width) { p.x = 0; }
-      if (p.y < 0) { p.y = height; }
-      if (p.y > height) { p.y = 0; }
+      if (p.x < -10) p.x = width + 10;
+      if (p.x > width + 10) p.x = -10;
+      if (p.y < -10) p.y = height + 10;
+      if (p.y > height + 10) p.y = -10;
     });
 
     requestAnimationFrame(draw);
