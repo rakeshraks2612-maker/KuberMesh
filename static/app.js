@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
-// Luminous Fluid Aurora & Streamlines Canvas Engine
+// Geometric Holographic Matrix & Ambient Radiant Flow Canvas Engine
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let width, height;
-  let streams = [];
+  let mouse = { x: -1000, y: -1000, active: false };
   let time = 0;
 
   function resize() {
@@ -23,57 +23,83 @@ function initAmbientCanvas() {
     height = canvas.height = window.innerHeight;
   }
   window.addEventListener("resize", resize);
+  window.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+  });
+  window.addEventListener("mouseleave", () => {
+    mouse.active = false;
+  });
   resize();
-
-  // Create fluid flow streams
-  const streamCount = 45;
-  for (let i = 0; i < streamCount; i++) {
-    streams.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      length: Math.random() * 80 + 40,
-      speed: Math.random() * 0.8 + 0.4,
-      radius: Math.random() * 2 + 1,
-      color: i % 3 === 0 
-        ? "rgba(2, 132, 199, 0.45)"  // Cobalt Blue
-        : i % 3 === 1 
-          ? "rgba(16, 185, 129, 0.40)" // Emerald Green
-          : "rgba(139, 92, 246, 0.35)", // Violet
-      seed: Math.random() * 100
-    });
-  }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
-    time += 0.008;
+    time += 0.012;
 
-    // Draw fluid flowing particles & soft trails
-    streams.forEach(s => {
-      // Flow field calculation
-      const angle = Math.sin(s.x * 0.002 + time) * Math.cos(s.y * 0.002 + time) * Math.PI * 2;
-      s.x += Math.cos(angle) * s.speed + 0.5;
-      s.y += Math.sin(angle) * s.speed;
+    const spacing = 48;
+    const cols = Math.ceil(width / spacing);
+    const rows = Math.ceil(height / spacing);
 
-      // Soft glowing particle head
+    // 1. Interactive Cursor Ambient Spotlight
+    if (mouse.active) {
+      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
+      grad.addColorStop(0, "rgba(2, 132, 199, 0.08)");
+      grad.addColorStop(0.6, "rgba(99, 102, 241, 0.03)");
+      grad.addColorStop(1, "transparent");
+      ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.radius * 2, 0, Math.PI * 2);
-      ctx.fillStyle = s.color;
+      ctx.arc(mouse.x, mouse.y, 220, 0, Math.PI * 2);
       ctx.fill();
+    }
 
-      // Delicate trailing stream
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(s.x - Math.cos(angle) * s.length * 0.3, s.y - Math.sin(angle) * s.length * 0.3);
-      ctx.strokeStyle = s.color.replace(/[\d\.]+\)$/, "0.12)");
-      ctx.lineWidth = s.radius;
-      ctx.stroke();
+    // 2. Fine Architectural Micro Crosshairs & Luminous Pulse Nodes
+    for (let c = 0; c <= cols; c++) {
+      for (let r = 0; r <= rows; r++) {
+        const x = c * spacing;
+        const y = r * spacing;
 
-      // Wrap around edges
-      if (s.x > width + 50) s.x = -50;
-      if (s.x < -50) s.x = width + 50;
-      if (s.y > height + 50) s.y = -50;
-      if (s.y < -50) s.y = height + 50;
-    });
+        // Wave modulation
+        const wave = Math.sin((x * 0.005) + (y * 0.005) + time);
+        const distToMouse = mouse.active ? Math.hypot(x - mouse.x, y - mouse.y) : 9999;
+        const mouseFactor = distToMouse < 180 ? (1 - distToMouse / 180) * 0.25 : 0;
+
+        const baseAlpha = 0.035 + (wave + 1) * 0.015 + mouseFactor;
+
+        // Draw crosshair '+' at grid intersection
+        if ((c + r) % 2 === 0) {
+          ctx.strokeStyle = `rgba(15, 23, 42, ${baseAlpha * 1.5})`;
+          ctx.lineWidth = 1;
+          const arm = 3;
+          ctx.beginPath();
+          ctx.moveTo(x - arm, y);
+          ctx.lineTo(x + arm, y);
+          ctx.moveTo(x, y - arm);
+          ctx.lineTo(x, y + arm);
+          ctx.stroke();
+        }
+
+        // Luminous accent node at major intervals
+        if (c % 4 === 0 && r % 4 === 0) {
+          const nodePulse = (Math.sin(time * 1.5 + (c * 0.5) + (r * 0.3)) + 1) * 0.5;
+          const isEmerald = (c + r) % 8 === 0;
+          const colorStr = isEmerald ? "16, 185, 129" : "2, 132, 199";
+
+          ctx.beginPath();
+          ctx.arc(x, y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${colorStr}, ${0.15 + nodePulse * 0.25 + mouseFactor})`;
+          ctx.fill();
+
+          if (nodePulse > 0.8) {
+            ctx.beginPath();
+            ctx.arc(x, y, 5 * (nodePulse - 0.7) * 3, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(${colorStr}, ${(1 - nodePulse) * 0.3})`;
+            ctx.lineWidth = 0.75;
+            ctx.stroke();
+          }
+        }
+      }
+    }
 
     requestAnimationFrame(draw);
   }
@@ -105,21 +131,17 @@ function initHeroCardsParallax() {
     currentX += (targetX - currentX) * 0.08;
     currentY += (targetY - currentY) * 0.08;
 
-    const tiltX = -currentY * 12; // tilt up/down
-    const tiltY = currentX * 16;  // tilt left/right
+    const tiltX = -currentY * 8; // gentle tilt up/down
+    const tiltY = currentX * 10;  // gentle tilt left/right
 
     const obsidian = stage.querySelector(".card-obsidian");
     const glass = stage.querySelector(".card-glass");
-    const cobalt = stage.querySelector(".card-cobalt");
 
     if (obsidian && !obsidian.matches(":hover")) {
-      obsidian.style.transform = `rotateX(${10 + tiltX * 0.6}deg) rotateY(${14 + tiltY * 0.8}deg) rotateZ(-6deg) translateY(${tiltX * 2}px)`;
+      obsidian.style.transform = `rotateX(${8 + tiltX * 0.5}deg) rotateY(${12 + tiltY * 0.6}deg) rotateZ(-4deg) translateY(${tiltX * 1.5}px)`;
     }
     if (glass && !glass.matches(":hover")) {
-      glass.style.transform = `rotateX(${8 + tiltX * 0.8}deg) rotateY(${tiltY}deg) rotateZ(0deg) translateY(${-10 + tiltX * 1.5}px) scale(1.04)`;
-    }
-    if (cobalt && !cobalt.matches(":hover")) {
-      cobalt.style.transform = `rotateX(${10 + tiltX * 0.6}deg) rotateY(${-14 + tiltY * 0.8}deg) rotateZ(6deg) translateY(${tiltX * 2}px)`;
+      glass.style.transform = `rotateX(${8 + tiltX * 0.6}deg) rotateY(${-8 + tiltY * 0.6}deg) rotateZ(3deg) translateY(${-10 + tiltX * 1.5}px) scale(1.02)`;
     }
 
     requestAnimationFrame(updateTilt);
