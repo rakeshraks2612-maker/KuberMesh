@@ -276,14 +276,87 @@ body {
   opacity: 0.95;
 }
 
+.bg-blueprint-grid {
+  position: absolute;
+  inset: 0;
+  background-size: 56px 56px;
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.055) 1px, transparent 1px);
+  z-index: 2;
+}
+
 .bg-grid-lattice {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(15, 23, 42, 0.09) 1.5px, transparent 1.5px);
+  background-image: radial-gradient(rgba(15, 23, 42, 0.12) 1.5px, transparent 1.5px);
   background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse at 50% 35%, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%);
+  mask-image: radial-gradient(ellipse at 50% 35%, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.35) 70%, transparent 100%);
   z-index: 2;
+}
+
+/* Floating Isometric Fintech Tokens on Background Flanks */
+.bg-floating-tokens {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.bg-token {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 980px;
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  will-change: transform;
+}
+
+.bg-token svg {
+  flex-shrink: 0;
+}
+
+.token-shield {
+  top: 180px;
+  left: max(15px, calc(50% - 660px));
+  color: var(--fintech-blue);
+  animation: float-token-slow 13s ease-in-out infinite alternate;
+}
+
+.token-crypto {
+  top: 490px;
+  left: max(15px, calc(50% - 640px));
+  color: var(--emerald-dark);
+  animation: float-token-slow 16s ease-in-out infinite alternate-reverse;
+}
+
+.token-hash {
+  top: 320px;
+  right: max(15px, calc(50% - 660px));
+  color: var(--purple);
+  animation: float-token-slow 15s ease-in-out infinite alternate;
+}
+
+@keyframes float-token-slow {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(2deg); }
+  100% { transform: translateY(10px) rotate(-2deg); }
+}
+
+@media (max-width: 1200px) {
+  .bg-floating-tokens { display: none; }
 }
 
 .mesh-orb {
