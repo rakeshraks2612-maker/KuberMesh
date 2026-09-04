@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
-// Interactive Liquid Aurora Wave & Financial Flow Canvas Engine
+// Interactive Neural Agent Commerce Graph Canvas Engine (OpenAI / Palantir Style)
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
@@ -21,6 +21,7 @@ function initAmbientCanvas() {
   function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
+    initGraph();
   }
   window.addEventListener("resize", resize);
   window.addEventListener("mousemove", (e) => {
@@ -31,173 +32,234 @@ function initAmbientCanvas() {
   window.addEventListener("mouseleave", () => {
     mouse.active = false;
   });
-  resize();
 
-  // Multi-layered fluid aurora ribbons
-  const waves = [
-    {
-      baseYRatio: 0.32,
-      amplitude: 60,
-      speed: 0.012,
-      wavelength: 0.0032,
-      phase: 0,
-      colors: ["rgba(2, 132, 199, 0.14)", "rgba(56, 189, 248, 0.07)", "rgba(99, 102, 241, 0.01)"],
-      lineColor: "rgba(2, 132, 199, 0.38)",
-      lineWidth: 1.5
-    },
-    {
-      baseYRatio: 0.48,
-      amplitude: 75,
-      speed: 0.009,
-      wavelength: 0.0026,
-      phase: Math.PI / 3,
-      colors: ["rgba(99, 102, 241, 0.12)", "rgba(139, 92, 246, 0.06)", "rgba(2, 132, 199, 0.01)"],
-      lineColor: "rgba(99, 102, 241, 0.32)",
-      lineWidth: 1.5
-    },
-    {
-      baseYRatio: 0.64,
-      amplitude: 68,
-      speed: 0.014,
-      wavelength: 0.0038,
-      phase: Math.PI * 0.75,
-      colors: ["rgba(16, 185, 129, 0.10)", "rgba(6, 182, 212, 0.05)", "rgba(16, 185, 129, 0.01)"],
-      lineColor: "rgba(16, 185, 129, 0.28)",
-      lineWidth: 1.2
-    },
-    {
-      baseYRatio: 0.80,
-      amplitude: 52,
-      speed: 0.008,
-      wavelength: 0.0022,
-      phase: Math.PI * 1.2,
-      colors: ["rgba(6, 182, 212, 0.09)", "rgba(2, 132, 199, 0.04)", "rgba(241, 245, 249, 0.0)"],
-      lineColor: "rgba(6, 182, 212, 0.25)",
-      lineWidth: 1.2
-    }
+  // Nodes & Telemetry Network
+  let nodes = [];
+  let packets = [];
+
+  const HUB_LABELS = ["NPCI UAP", "RAZORPAY VAULT", "ZERO-LLM SAFE", "BUYER MESH"];
+  const PALETTE = [
+    { fill: "#0284c7", glow: "2, 132, 199" },   // Azure
+    { fill: "#6366f1", glow: "99, 102, 241" },  // Indigo
+    { fill: "#10b981", glow: "16, 185, 129" },  // Emerald
+    { fill: "#06b6d4", glow: "6, 182, 212" }    // Cyan
   ];
 
-  // Floating luminous pulses along the wave ribbons
-  const pulses = Array.from({ length: 22 }, (_, i) => ({
-    waveIndex: i % waves.length,
-    progress: Math.random(),
-    speed: 0.0006 + Math.random() * 0.0010,
-    radius: Math.random() * 2.2 + 1.4,
-    glowSize: Math.random() * 14 + 8,
-    color: i % 3 === 0 ? "2, 132, 199" : (i % 3 === 1 ? "99, 102, 241" : "16, 185, 129")
-  }));
+  function initGraph() {
+    nodes = [];
+    packets = [];
+    const count = Math.min(52, Math.max(30, Math.floor((width * height) / 22000)));
 
-  function getWaveY(wave, x, t) {
-    const baseY = height * wave.baseYRatio;
-    let y = baseY + 
-      Math.sin(x * wave.wavelength + t * wave.speed * 60 + wave.phase) * wave.amplitude +
-      Math.sin(x * wave.wavelength * 0.5 - t * wave.speed * 30) * (wave.amplitude * 0.35) +
-      Math.cos(x * wave.wavelength * 1.8 + t * wave.speed * 45) * (wave.amplitude * 0.2);
-
-    // Mouse fluid wave ripple & deflection
-    if (mouse.active) {
-      const dx = x - mouse.x;
-      const dy = baseY - mouse.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 260) {
-        const factor = (1 - dist / 260);
-        y += Math.sin(dist * 0.04 - t * 4) * factor * 26;
-      }
+    for (let i = 0; i < count; i++) {
+      const isHub = i < 4;
+      const theme = PALETTE[i % PALETTE.length];
+      nodes.push({
+        id: i,
+        isHub: isHub,
+        label: isHub ? HUB_LABELS[i] : null,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        baseX: Math.random() * width,
+        baseY: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        radius: isHub ? 4.5 : (i % 3 === 0 ? 3.0 : 2.0),
+        color: theme.fill,
+        glowColor: theme.glow,
+        pulseOffset: Math.random() * 10,
+        rippleRadius: 0,
+        rippleAlpha: 0
+      });
     }
-    return y;
+
+    // Initialize Active Transaction Pulses along the graph
+    for (let p = 0; p < 24; p++) {
+      packets.push({
+        from: Math.floor(Math.random() * nodes.length),
+        to: Math.floor(Math.random() * nodes.length),
+        progress: Math.random(),
+        speed: 0.008 + Math.random() * 0.014,
+        color: PALETTE[p % PALETTE.length].fill,
+        glow: PALETTE[p % PALETTE.length].glow
+      });
+    }
   }
+
+  resize();
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
     time += 0.016;
 
-    // Smooth mouse follow
+    // Smooth Mouse Interpolation
     if (mouse.active) {
-      mouse.x += (mouse.targetX - mouse.x) * 0.1;
-      mouse.y += (mouse.targetY - mouse.y) * 0.1;
+      mouse.x += (mouse.targetX - mouse.x) * 0.12;
+      mouse.y += (mouse.targetY - mouse.y) * 0.12;
 
-      // Cursor Ambient Radiant Lens
-      const lens = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
-      lens.addColorStop(0, "rgba(2, 132, 199, 0.07)");
-      lens.addColorStop(0.4, "rgba(99, 102, 241, 0.025)");
-      lens.addColorStop(1, "transparent");
-      ctx.fillStyle = lens;
+      // Radiant Cursor Field
+      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
+      grad.addColorStop(0, "rgba(2, 132, 199, 0.06)");
+      grad.addColorStop(0.5, "rgba(99, 102, 241, 0.02)");
+      grad.addColorStop(1, "transparent");
+      ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(mouse.x, mouse.y, 220, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Draw Aurora Liquid Waves
-    for (let w = 0; w < waves.length; w++) {
-      const wave = waves[w];
-      const step = 8;
-      const points = [];
+    // 1. Update Node Positions with Soft Float & Mouse Gravitational Pull
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      n.x += n.vx;
+      n.y += n.vy;
 
-      for (let x = 0; x <= width + step; x += step) {
-        points.push({ x, y: getWaveY(wave, x, time) });
+      // Gentle Screen Bounding Bounce
+      if (n.x < 30 || n.x > width - 30) n.vx *= -1;
+      if (n.y < 30 || n.y > height - 30) n.vy *= -1;
+
+      // Mouse Gravitational Spring Physics
+      if (mouse.active) {
+        const dx = mouse.x - n.x;
+        const dy = mouse.y - n.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 200 && dist > 0) {
+          const force = (1 - dist / 200) * 0.45;
+          n.x += (dx / dist) * force * 2.5;
+          n.y += (dy / dist) * force * 2.5;
+        }
       }
 
-      // Gradient fill under the wave curve
-      const fillGrad = ctx.createLinearGradient(0, height * (wave.baseYRatio - 0.2), 0, height);
-      fillGrad.addColorStop(0, wave.colors[0]);
-      fillGrad.addColorStop(0.5, wave.colors[1]);
-      fillGrad.addColorStop(1, wave.colors[2]);
-
-      ctx.beginPath();
-      ctx.moveTo(0, height);
-      ctx.lineTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) {
-        const prev = points[i - 1];
-        const curr = points[i];
-        const xc = (prev.x + curr.x) / 2;
-        const yc = (prev.y + curr.y) / 2;
-        ctx.quadraticCurveTo(prev.x, prev.y, xc, yc);
+      // Update ripple ring on transaction receipt
+      if (n.rippleAlpha > 0) {
+        n.rippleRadius += 0.75;
+        n.rippleAlpha -= 0.025;
       }
-      ctx.lineTo(width, height);
-      ctx.closePath();
-      ctx.fillStyle = fillGrad;
-      ctx.fill();
-
-      // Glowing Crest Line
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i < points.length; i++) {
-        const prev = points[i - 1];
-        const curr = points[i];
-        const xc = (prev.x + curr.x) / 2;
-        const yc = (prev.y + curr.y) / 2;
-        ctx.quadraticCurveTo(prev.x, prev.y, xc, yc);
-      }
-      ctx.strokeStyle = wave.lineColor;
-      ctx.lineWidth = wave.lineWidth;
-      ctx.stroke();
     }
 
-    // Draw Luminous Gliding Data Pulses along waves
-    for (let i = 0; i < pulses.length; i++) {
-      const p = pulses[i];
-      p.progress += p.speed;
-      if (p.progress > 1) p.progress = 0;
+    // 2. Draw Synaptic Graph Connections (Edges)
+    const maxDist = 145;
+    for (let i = 0; i < nodes.length; i++) {
+      const n1 = nodes[i];
+      for (let j = i + 1; j < nodes.length; j++) {
+        const n2 = nodes[j];
+        const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+        if (dist < maxDist) {
+          const alpha = (1 - dist / maxDist) * 0.32;
+          
+          // Hover highlighting
+          const isNearMouse = mouse.active && (Math.hypot(mouse.x - n1.x, mouse.y - n1.y) < 160 || Math.hypot(mouse.x - n2.x, mouse.y - n2.y) < 160);
+          const edgeAlpha = isNearMouse ? Math.min(0.65, alpha * 2.2) : alpha;
 
-      const wave = waves[p.waveIndex];
-      const posX = p.progress * width;
-      const posY = getWaveY(wave, posX, time);
+          ctx.beginPath();
+          ctx.moveTo(n1.x, n1.y);
+          ctx.lineTo(n2.x, n2.y);
+          ctx.strokeStyle = `rgba(${n1.glowColor}, ${edgeAlpha})`;
+          ctx.lineWidth = isNearMouse ? 1.4 : 0.85;
+          ctx.stroke();
+        }
+      }
+    }
 
-      // Pulse Glow halo
-      const glowGrad = ctx.createRadialGradient(posX, posY, 0, posX, posY, p.glowSize);
-      glowGrad.addColorStop(0, `rgba(${p.color}, 0.40)`);
-      glowGrad.addColorStop(0.5, `rgba(${p.color}, 0.10)`);
-      glowGrad.addColorStop(1, "transparent");
-      ctx.fillStyle = glowGrad;
+    // 3. Update & Draw Live Transaction Pulses
+    for (let p = 0; p < packets.length; p++) {
+      const pkt = packets[p];
+      pkt.progress += pkt.speed;
+
+      const src = nodes[pkt.from];
+      const tgt = nodes[pkt.to];
+
+      if (!src || !tgt) continue;
+
+      // If finished route or nodes too far, pick new route
+      const dist = Math.hypot(src.x - tgt.x, src.y - tgt.y);
+      if (pkt.progress >= 1 || dist > maxDist * 1.5) {
+        pkt.from = pkt.to;
+        // Pick random nearby neighbor
+        let neighbors = [];
+        for (let k = 0; k < nodes.length; k++) {
+          if (k !== pkt.from && Math.hypot(nodes[pkt.from].x - nodes[k].x, nodes[pkt.from].y - nodes[k].y) < maxDist) {
+            neighbors.push(k);
+          }
+        }
+        pkt.to = neighbors.length > 0 ? neighbors[Math.floor(Math.random() * neighbors.length)] : Math.floor(Math.random() * nodes.length);
+        pkt.progress = 0;
+
+        // Trigger reception ripple on destination
+        if (tgt) {
+          tgt.rippleRadius = tgt.radius;
+          tgt.rippleAlpha = 0.6;
+        }
+      }
+
+      // Packet coordinates
+      const px = src.x + (tgt.x - src.x) * pkt.progress;
+      const py = src.y + (tgt.y - src.y) * pkt.progress;
+
+      // Draw glowing packet comet
+      const glow = ctx.createRadialGradient(px, py, 0, px, py, 8);
+      glow.addColorStop(0, `rgba(${pkt.glow}, 0.7)`);
+      glow.addColorStop(0.5, `rgba(${pkt.glow}, 0.2)`);
+      glow.addColorStop(1, "transparent");
+      ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.arc(posX, posY, p.glowSize, 0, Math.PI * 2);
+      ctx.arc(px, py, 8, 0, Math.PI * 2);
       ctx.fill();
 
-      // Core Particle
       ctx.beginPath();
-      ctx.arc(posX, posY, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.color}, 0.85)`;
+      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
       ctx.fill();
+    }
+
+    // 4. Draw Graph Nodes & Hub Badges
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const pulse = Math.sin(time * 2 + n.pulseOffset) * 0.5 + 0.5;
+
+      // Draw transaction arrival ripple ring
+      if (n.rippleAlpha > 0) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.rippleRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${n.glowColor}, ${n.rippleAlpha})`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+
+      // Hub Outer Orbit Ring
+      if (n.isHub) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius + 6 + pulse * 2.5, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(${n.glowColor}, ${0.25 + pulse * 0.25})`;
+        ctx.lineWidth = 1.0;
+        ctx.stroke();
+      }
+
+      // Outer Glow Halo
+      const nodeGlow = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius * 3.5);
+      nodeGlow.addColorStop(0, `rgba(${n.glowColor}, ${0.5 + pulse * 0.3})`);
+      nodeGlow.addColorStop(1, "transparent");
+      ctx.fillStyle = nodeGlow;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.radius * 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Node Core
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+      ctx.fillStyle = n.isHub ? "#ffffff" : n.color;
+      ctx.fill();
+
+      if (n.isHub) {
+        ctx.strokeStyle = n.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Hub Micro Tag Text
+        ctx.font = "600 9px 'JetBrains Mono', monospace";
+        ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
+        ctx.textAlign = "center";
+        ctx.fillText(n.label, n.x, n.y + n.radius + 14);
+      }
     }
 
     requestAnimationFrame(draw);
