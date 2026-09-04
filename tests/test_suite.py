@@ -241,4 +241,14 @@ def test_merchant_copilot_chat():
     assert res3["status"] == "success"
     assert "RARS" in res3["reply"] or "revenue" in res3["reply"].lower()
 
+def test_batch_benchmark_engine():
+    from src.benchmark import benchmark_engine
+    result = benchmark_engine.run_100_scenario_benchmark()
+    assert result["total_scenarios_tested"] == 100
+    assert result["high_critical_rars_cases"] > 50
+    assert result["guardrail_approved_actions"] > 50
+    assert result["guardrail_violation_escape_rate_pct"] == 0.0
+    assert result["total_revenue_recovered_inr"] > 0.0
+
+
 

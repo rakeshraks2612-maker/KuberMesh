@@ -520,4 +520,11 @@ def chat_with_copilot(req: CopilotChatRequest):
     catalog = discovery_engine.get_catalog()
     return merchant_agent.chat_copilot(req.message, catalog)
 
+@app.get("/api/benchmark/batch")
+@app.post("/api/benchmark/batch")
+def get_batch_benchmark():
+    from src.benchmark import benchmark_engine
+    return benchmark_engine.run_100_scenario_benchmark()
+
+
 

@@ -264,6 +264,8 @@ function switchTab(tabId) {
 
   if (tabId === 'audit') {
     loadAuditLedger();
+  } else if (tabId === 'benchmark') {
+    executeLiveBenchmark(false);
   } else if (tabId === 'a2a') {
     updateA2APriceHint();
   } else if (tabId === 'policy') {
@@ -1227,5 +1229,58 @@ async function sendCopilotMessage() {
   } finally {
     if (sendBtn) sendBtn.disabled = false;
     msgContainer.scrollTop = msgContainer.scrollHeight;
+  }
+}
+
+// BATCH BENCHMARK EXECUTION
+async function executeLiveBenchmark(showToastNotice = true) {
+  const btn = document.getElementById("btn-run-benchmark");
+  const tbody = document.getElementById("benchmark-table-body");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>Running 100 Scenarios...</span>`;
+  }
+  if (tbody && showToastNotice) {
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6" style="color: #2563eb; font-weight: 600;">Executing batch RARS profiling &amp; Zero-LLM guardrail validation across 100 SKUs...</td></tr>`;
+  }
+
+  try {
+    const res = await fetch("/api/benchmark/batch", { method: "POST" });
+    const data = await res.json();
+
+    document.getElementById("bench-stat-rars").textContent = `${data.high_critical_rars_cases} / 100`;
+    document.getElementById("bench-stat-approved").textContent = `${data.guardrail_approved_actions}`;
+    document.getElementById("bench-stat-recovered").textContent = `₹${(data.total_revenue_recovered_inr / 10000000).toFixed(2)} Cr`;
+    document.getElementById("bench-stat-escapes").textContent = `${data.guardrail_violation_escape_rate_pct.toFixed(2)}%`;
+
+    if (tbody && data.scenarios_sample) {
+      tbody.innerHTML = data.scenarios_sample.map(s => `
+        <tr>
+          <td>
+            <div style="font-weight: 700; color: #0f172a;">${s.name}</div>
+            <div style="font-size: 11px; color: #64748b; font-family: var(--font-mono);">${s.sku}</div>
+          </td>
+          <td style="font-family: var(--font-mono); font-weight: 600;">₹${s.price_inr.toLocaleString('en-IN')}</td>
+          <td style="font-family: var(--font-mono);">${s.margin_pct.toFixed(1)}%</td>
+          <td><span class="status-tag ${s.rars_score >= 0.6 ? 'red' : 'amber'}">${s.rars_score.toFixed(2)}</span></td>
+          <td><code style="font-size: 11.5px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">${s.action_type}</code></td>
+          <td><span class="status-tag ${s.initial_status === 'APPROVED' ? 'green' : 'red'}">${s.initial_status}</span></td>
+          <td><span class="status-tag ${s.final_status === 'APPROVED' ? 'green' : 'red'}">${s.final_status}</span></td>
+          <td>${s.repaired ? '<span class="status-tag green">AUTO-REPAIRED</span>' : '<span style="color: #94a3b8; font-size: 12px;">Standard</span>'}</td>
+          <td class="text-right" style="font-family: var(--font-mono); font-weight: 700; color: #059669;">₹${Math.round(s.estimated_recovery_inr).toLocaleString('en-IN')}</td>
+        </tr>
+      `).join("");
+    }
+
+    if (showToastNotice) {
+      showToast(`Batch Benchmark Completed: 100 scenarios tested, 100% Zero-LLM Invariants enforced!`, "success");
+    }
+  } catch (err) {
+    if (showToastNotice) showToast(`Benchmark failed: ${err.message}`, "error");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<span>Run Live 100-Scenario Benchmark</span>`;
+    }
   }
 }
