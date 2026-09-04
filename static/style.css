@@ -418,8 +418,8 @@ body {
 .hero-cards-stage {
   position: relative;
   width: 100%;
-  max-width: 960px;
-  height: 310px;
+  max-width: 1100px;
+  height: 320px;
   margin: 36px auto 30px auto;
   perspective: 1400px;
   display: flex;
@@ -429,11 +429,11 @@ body {
 }
 
 .fintech-credit-card {
-  width: 420px;
-  height: 265px;
+  width: 380px;
+  height: 240px;
   aspect-ratio: 1.586 / 1;
-  border-radius: 22px;
-  padding: 26px 30px;
+  border-radius: 20px;
+  padding: 22px 26px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -463,37 +463,53 @@ body {
   100% { background-position: 200% 200%; }
 }
 
-/* Card 1: Obsidian Black Titanium (Luxury Wide Card) */
+/* Card 1: Obsidian Black Titanium (Left Deck) */
 .card-obsidian {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 55%, #020617 100%);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  left: calc(50% - 370px);
-  transform: rotateX(8deg) rotateY(12deg) rotateZ(-4deg) translateY(0);
+  left: calc(50% - 460px);
+  transform: rotateX(8deg) rotateY(14deg) rotateZ(-5deg) translateY(0);
   z-index: 10;
 }
 
 .card-obsidian:hover {
-  transform: rotateX(2deg) rotateY(4deg) rotateZ(-1deg) translateY(-16px) scale(1.04) !important;
+  transform: rotateX(2deg) rotateY(4deg) rotateZ(-1deg) translateY(-16px) scale(1.06) !important;
   z-index: 35;
   box-shadow: 0 36px 72px -12px rgba(15, 23, 42, 0.50);
 }
 
-/* Card 2: Frosted Pearl Sapphire Glass (Luxury Wide Card) */
+/* Card 2: Frosted Pearl Sapphire Glass (Center Prominent) */
 .card-glass {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(241, 245, 249, 0.88) 100%);
   color: #0f172a;
   border: 1.5px solid rgba(255, 255, 255, 1);
   box-shadow: 0 32px 64px -15px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(226, 232, 240, 0.9);
-  left: calc(50% - 70px);
-  transform: rotateX(8deg) rotateY(-8deg) rotateZ(3deg) translateY(-10px) scale(1.02);
+  left: calc(50% - 190px);
+  transform: rotateX(6deg) rotateY(0deg) rotateZ(0deg) translateY(-10px) scale(1.04);
   z-index: 20;
 }
 
 .card-glass:hover {
-  transform: rotateX(2deg) rotateY(-2deg) rotateZ(0deg) translateY(-22px) scale(1.06) !important;
+  transform: rotateX(2deg) rotateY(0deg) rotateZ(0deg) translateY(-22px) scale(1.08) !important;
   z-index: 40;
   box-shadow: 0 40px 80px -15px rgba(15, 23, 42, 0.35);
+}
+
+/* Card 3: Electric Cobalt Protocol (Right Deck) */
+.card-cobalt {
+  background: linear-gradient(135deg, #0284c7 0%, #1e40af 60%, #0f172a 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  left: calc(50% + 80px);
+  transform: rotateX(8deg) rotateY(-14deg) rotateZ(5deg) translateY(0);
+  z-index: 10;
+}
+
+.card-cobalt:hover {
+  transform: rotateX(2deg) rotateY(-4deg) rotateZ(1deg) translateY(-16px) scale(1.06) !important;
+  z-index: 35;
+  box-shadow: 0 36px 72px -12px rgba(15, 23, 42, 0.50);
 }
 
 /* Card Components */

@@ -107,7 +107,7 @@ function initAmbientCanvas() {
   draw();
 }
 
-// Interactive 3D Card Deck Parallax & Tilt Physics
+// Interactive 3D Card Deck Parallax & Tilt Physics (3-Card Golden Ratio Deck)
 function initHeroCardsParallax() {
   const stage = document.querySelector(".hero-cards-stage");
   if (!stage) return;
@@ -136,12 +136,16 @@ function initHeroCardsParallax() {
 
     const obsidian = stage.querySelector(".card-obsidian");
     const glass = stage.querySelector(".card-glass");
+    const cobalt = stage.querySelector(".card-cobalt");
 
     if (obsidian && !obsidian.matches(":hover")) {
-      obsidian.style.transform = `rotateX(${8 + tiltX * 0.5}deg) rotateY(${12 + tiltY * 0.6}deg) rotateZ(-4deg) translateY(${tiltX * 1.5}px)`;
+      obsidian.style.transform = `rotateX(${8 + tiltX * 0.5}deg) rotateY(${14 + tiltY * 0.6}deg) rotateZ(-5deg) translateY(${tiltX * 1.5}px)`;
     }
     if (glass && !glass.matches(":hover")) {
-      glass.style.transform = `rotateX(${8 + tiltX * 0.6}deg) rotateY(${-8 + tiltY * 0.6}deg) rotateZ(3deg) translateY(${-10 + tiltX * 1.5}px) scale(1.02)`;
+      glass.style.transform = `rotateX(${6 + tiltX * 0.6}deg) rotateY(${tiltY * 0.6}deg) rotateZ(0deg) translateY(${-10 + tiltX * 1.5}px) scale(1.04)`;
+    }
+    if (cobalt && !cobalt.matches(":hover")) {
+      cobalt.style.transform = `rotateX(${8 + tiltX * 0.5}deg) rotateY(${-14 + tiltY * 0.6}deg) rotateZ(5deg) translateY(${tiltX * 1.5}px)`;
     }
 
     requestAnimationFrame(updateTilt);
@@ -362,10 +366,30 @@ function populateA2ASelect(items) {
   if (!select) return;
   const currentVal = select.value;
   select.innerHTML = items.map(entry => {
-    return `<option value="${entry.item.id}">${entry.item.name} (₹${entry.item.amount_inr.toFixed(2)})</option>`;
+    return `<option value="${entry.item.id}">${entry.item.name} — ₹${entry.item.amount_inr.toFixed(2)}</option>`;
   }).join("");
   if (currentVal && items.some(e => e.item.id === currentVal)) {
     select.value = currentVal;
+  } else if (items.length > 0) {
+    select.value = items[0].item.id;
+    const input = document.getElementById("a2a-offered-inr");
+    if (input && (!input.value || input.value === "1349")) {
+      input.value = (items[0].item.amount_inr * 0.9).toFixed(2);
+    }
+  }
+  updateA2APriceHint();
+}
+
+function onA2ASkuChange() {
+  const select = document.getElementById("a2a-sku");
+  if (!select) return;
+  const sku = select.value;
+  const entry = currentCatalogData.find(e => e.item.id === sku);
+  if (entry) {
+    const input = document.getElementById("a2a-offered-inr");
+    if (input) {
+      input.value = (entry.item.amount_inr * 0.9).toFixed(2);
+    }
   }
   updateA2APriceHint();
 }
@@ -409,7 +433,7 @@ function updateA2APriceHint() {
   const minMargin = 0.08;
   const floorPrice = (entry.item.base_cost_paise / (1.0 - minMargin)) / 100.0;
   const qty = parseInt(document.getElementById("a2a-qty")?.value || "1", 10);
-  const offered = parseFloat(document.getElementById("a2a-offered-inr")?.value || retail * 0.9);
+  const offered = parseFloat(document.getElementById("a2a-offered-inr")?.value || (retail * 0.9).toFixed(2));
 
   let statusNote = "Valid Range (Approved)";
   if (offered < floorPrice * 0.85) {
@@ -615,22 +639,21 @@ function launchLiveRazorpayCheckout() {
     key: keyId,
     amount: lastA2AResponse.total_amount_paise,
     currency: "INR",
-    name: "Apex Electronics Hub",
-    description: `A2A Machine Checkout: ${lastA2AResponse.sku} (${lastA2AResponse.quantity} unit)`,
+    name: "KuberMesh Autonomous Merchant",
+    description: `A2A Settlement: ${lastA2AResponse.sku} (Qty: ${lastA2AResponse.quantity || 1})`,
     image: "https://razorpay.com/favicon.ico",
-    order_id: lastA2AResponse.razorpay_order_id,
     handler: function (response) {
-      showToast(`Test Payment Successful! Payment ID: ${response.razorpay_payment_id}`, "success", 5000);
+      showToast(`Test Payment Verified! Razorpay Payment ID: ${response.razorpay_payment_id}`, "success", 6000);
       loadDashboardData();
       loadAuditLedger();
     },
     prefill: {
-      name: "AI Buyer Agent",
+      name: "AI Autonomous Buyer Agent",
       email: "buyer_agent@protocol.mesh",
       contact: "9876543210"
     },
     theme: {
-      color: "#0071e3"
+      color: "#0f172a"
     }
   };
 
@@ -641,7 +664,7 @@ function launchLiveRazorpayCheckout() {
     });
     rzp.open();
   } catch (e) {
-    showToast(`Razorpay checkout opened for order: ${lastA2AResponse.razorpay_order_id}`, "info");
+    showToast(`Razorpay checkout launched for ${lastA2AResponse.sku}`, "info");
   }
 }
 
