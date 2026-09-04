@@ -14,7 +14,12 @@ function scrollToDashboard() {
   }
 }
 
-// Toast Alert Engine
+function navigateToTab(tabId) {
+  switchTab(tabId);
+  scrollToDashboard();
+}
+
+// Toast Alert Engine (No Emojis, Clean Typography)
 function showToast(message, type = "info", duration = 3500) {
   const container = document.getElementById("toast-container");
   if (!container) return;
@@ -22,12 +27,12 @@ function showToast(message, type = "info", duration = 3500) {
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
   
-  let icon = "ℹ";
-  if (type === "success") icon = "✓";
-  if (type === "warning") icon = "⚠";
-  if (type === "error") icon = "✕";
+  let label = "INFO";
+  if (type === "success") label = "SUCCESS";
+  if (type === "warning") label = "NOTICE";
+  if (type === "error") label = "ALERT";
 
-  toast.innerHTML = `<span style="font-weight: 700;">${icon}</span> <span>${message}</span>`;
+  toast.innerHTML = `<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;">[${label}]</span> <span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -55,7 +60,7 @@ function updateElasticitySimulation() {
 
   const baseMargin = 35.0; // Baseline catalog margin
   const postMargin = Math.max(0, baseMargin - discount);
-  const breakevenUplift = postMargin > 0 ? (baseMargin / postMargin).toFixed(2) : "∞";
+  const breakevenUplift = postMargin > 0 ? (baseMargin / postMargin).toFixed(2) : "Infinity";
   const recoveryRate = (Math.min(75, discount * 3.5 + 5)).toFixed(1);
 
   document.getElementById("sim-post-margin").textContent = `${postMargin.toFixed(1)}%`;
@@ -84,6 +89,8 @@ function switchTab(tabId) {
 
   if (tabId === 'audit') {
     loadAuditLedger();
+  } else if (tabId === 'a2a') {
+    updateA2APriceHint();
   }
 }
 
@@ -138,7 +145,7 @@ function renderCatalogTable(items) {
           <div style="font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono);">SKU: ${item.id}</div>
         </td>
         <td style="font-family: var(--font-mono); font-weight: 600;">₹${item.amount_inr.toFixed(2)}</td>
-        <td style="color: #166534; font-weight: 600; font-family: var(--font-mono);">${item.base_margin_pct}%</td>
+        <td style="color: #059669; font-weight: 600; font-family: var(--font-mono);">${item.base_margin_pct}%</td>
         <td>
           <div style="font-weight: 600;">${(prof.cart_abandonment_rate * 100).toFixed(1)}%</div>
           <div style="font-size: 11px; color: var(--text-subtle);">${prof.total_orders_abandoned}/${prof.total_orders_created} carts</div>
@@ -156,7 +163,7 @@ function renderCatalogTable(items) {
               Optimize
             </button>
             <button class="btn-light-secondary btn-sm" title="Simulate 15 cart drop-offs" onclick="injectChaos('${item.id}', 'abandonment_spike')">
-              + Drop-off
+              Drop-off
             </button>
           </div>
         </td>
@@ -173,7 +180,7 @@ async function injectChaos(itemId, anomalyType) {
       body: JSON.stringify({ item_id: itemId, anomaly_type: anomalyType, count: 15 })
     });
     const data = await res.json();
-    showToast(`Injected 15 simulated cart drop-offs for SKU ${itemId}. Recalculating RARS...`, "warning");
+    showToast(`Injected 15 simulated cart drop-offs for SKU ${itemId}. Recalculating risk...`, "warning");
     await loadDashboardData();
   } catch (err) {
     console.error("Traffic injection failed:", err);
@@ -212,10 +219,38 @@ function populateA2ASelect(items) {
   if (!select) return;
   const currentVal = select.value;
   select.innerHTML = items.map(entry => {
-    return `<option value="${entry.item.id}">${entry.item.name} (₹${entry.item.amount_inr})</option>`;
+    return `<option value="${entry.item.id}">${entry.item.name} (₹${entry.item.amount_inr.toFixed(2)})</option>`;
   }).join("");
   if (currentVal && items.some(e => e.item.id === currentVal)) {
     select.value = currentVal;
+  }
+  updateA2APriceHint();
+}
+
+function setA2APreset(type) {
+  const select = document.getElementById("a2a-sku");
+  if (!select) return;
+  const sku = select.value;
+  const entry = currentCatalogData.find(e => e.item.id === sku);
+  if (!entry) return;
+
+  const retail = entry.item.amount_inr;
+  const minMargin = 0.08;
+  const floorPrice = (entry.item.base_cost_paise / (1.0 - minMargin)) / 100.0;
+  const input = document.getElementById("a2a-offered-inr");
+
+  if (type === 'valid') {
+    // 10% below retail
+    input.value = (retail * 0.90).toFixed(2);
+    showToast(`Preset: Valid 10% discount applied (₹${input.value})`, "info");
+  } else if (type === 'floor') {
+    // Exactly at floor price
+    input.value = Math.ceil(floorPrice).toFixed(2);
+    showToast(`Preset: Offer set at minimum margin floor (₹${input.value})`, "info");
+  } else if (type === 'reject') {
+    // 70% below cost (predatory)
+    input.value = (retail * 0.30).toFixed(2);
+    showToast(`Preset: Predatory bid applied (₹${input.value})`, "warning");
   }
   updateA2APriceHint();
 }
@@ -228,11 +263,20 @@ function updateA2APriceHint() {
   if (!entry) return;
 
   const retail = entry.item.amount_inr;
-  const floorPrice = (entry.item.base_cost_paise / (1.0 - 0.08)) / 100.0;
+  const minMargin = 0.08;
+  const floorPrice = (entry.item.base_cost_paise / (1.0 - minMargin)) / 100.0;
   const qty = parseInt(document.getElementById("a2a-qty")?.value || "1", 10);
+  const offered = parseFloat(document.getElementById("a2a-offered-inr")?.value || retail * 0.9);
 
-  document.getElementById("a2a-price-hint").textContent = 
-    `Retail: ₹${retail.toFixed(2)}/unit | Floor Price (8% Margin Floor): ₹${floorPrice.toFixed(2)}/unit | Qty: ${qty}`;
+  let statusNote = "Valid Range (Approved)";
+  if (offered < floorPrice * 0.85) {
+    statusNote = "Predatory Bid (Will Reject)";
+  } else if (offered < floorPrice) {
+    statusNote = "Near Floor (Counter-Offer)";
+  }
+
+  document.getElementById("a2a-price-hint").innerHTML = 
+    `Retail: <strong>₹${retail.toFixed(2)}</strong> | Margin Floor (8% Floor): <strong>₹${floorPrice.toFixed(2)}</strong> | Expected: <span style="font-weight:700;">${statusNote}</span>`;
 }
 
 async function runCatalogScan() {
@@ -302,7 +346,7 @@ function renderExecutionTrace(result) {
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; background: #ffffff; padding: 14px; border-radius: 12px; border: 1px solid var(--border-light); font-size: 12px;">
         <div>
           <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Base Margin</div>
-          <div style="font-weight: 800; font-size: 16px; color: var(--emerald); font-family: var(--font-mono);">${ue.base_margin_pct}%</div>
+          <div style="font-weight: 800; font-size: 16px; color: var(--emerald-dark); font-family: var(--font-mono);">${ue.base_margin_pct}%</div>
         </div>
         <div>
           <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Post-Discount Margin</div>
@@ -329,14 +373,14 @@ function renderExecutionTrace(result) {
       <div class="trace-step ${stepClass}">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span class="step-badge ${badgeClass}">STEP ${idx + 1}: ${trace.stage.toUpperCase()}</span>
-          <span style="font-family: var(--font-mono); font-size: 11px; color: ${isApproved ? '#166534' : '#991b1b'}; font-weight: 700;">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: ${isApproved ? '#059669' : '#be123c'}; font-weight: 700;">
             ${isApproved ? 'VERIFIED PASSED' : 'GUARDRAIL REJECTED (AUTO-REPAIRED)'}
           </span>
         </div>
         
         ${trace.violations && trace.violations.length > 0 ? `
-          <div style="color: #991b1b; font-size: 12px; margin: 8px 0; padding: 10px; background: var(--crimson-soft); border-radius: 8px; border: 1px solid #fecaca;">
-            ⚠️ <strong>Violations Intercepted:</strong><br>
+          <div style="color: #be123c; font-size: 12px; margin: 8px 0; padding: 10px; background: var(--crimson-soft); border-radius: 8px; border: 1px solid rgba(225, 29, 72, 0.2);">
+            <strong>Violations Intercepted:</strong><br>
             ${trace.violations.map(v => `• ${v}`).join("<br>")}
           </div>
         ` : ''}
@@ -353,7 +397,7 @@ function renderExecutionTrace(result) {
     const resp = result.executed_action.razorpay_response;
     html += `
       <div class="trace-step approved">
-        <span class="step-badge pass">FINAL STEP: RAZORPAY API EXECUTION & AUDIT</span>
+        <span class="step-badge pass">FINAL STEP: RAZORPAY API EXECUTION &amp; AUDIT</span>
         <div style="font-size: 12px; margin-top: 8px; font-family: var(--font-mono); color: var(--apple-blue); line-height: 1.6;">
           • Action Executed: <strong>${result.executed_action.action_type}</strong><br>
           • Identifier: ${resp.offer_id || resp.payment_link_id || resp.bundle_id || 'rzp_ack'}<br>
@@ -383,8 +427,11 @@ async function submitA2ANegotiation() {
 
   const terminal = document.getElementById("a2a-result-terminal");
   const checkoutAction = document.getElementById("a2a-checkout-action");
+  const btn = document.getElementById("btn-submit-a2a");
+
   checkoutAction.style.display = "none";
-  terminal.innerHTML = `<span style="color: #fbbf24;">// Transmitting UAP / x402 Handshake Payload to Merchant Agent Endpoint...</span>`;
+  terminal.innerHTML = `<span class="term-comment">// Transmitting UAP / x402 Handshake Payload to Merchant Gateway...</span>\n<span class="term-cursor">&gt; Handshake In Flight...</span>`;
+  btn.disabled = true;
 
   try {
     const res = await fetch("/api/a2a/negotiate", {
@@ -399,29 +446,34 @@ async function submitA2ANegotiation() {
     });
     const data = await res.json();
     lastA2AResponse = data;
+
     terminal.textContent = JSON.stringify(data, null, 2);
 
     if (data.decision === "ACCEPTED" || data.decision === "COUNTER_OFFER") {
       checkoutAction.style.display = "block";
-      showToast(`A2A Negotiation: ${data.decision} (Total: ₹${(data.total_amount_paise/100).toFixed(2)})`, "success");
+      showToast(`A2A Protocol: ${data.decision} (Total: ₹${(data.total_amount_paise/100).toFixed(2)})`, "success");
     } else {
-      showToast(`A2A Negotiation Rejected: ${data.reason}`, "warning");
+      showToast(`A2A Protocol Rejected: ${data.reason}`, "warning");
     }
   } catch (err) {
     terminal.innerHTML = `<span style="color: #f87171;">// A2A Handshake Failed: ${err.message}</span>`;
     showToast("A2A Handshake Failed", "error");
+  } finally {
+    btn.disabled = false;
   }
 }
 
 function launchLiveRazorpayCheckout() {
   if (!lastA2AResponse) return;
 
+  const keyId = document.getElementById("cfg-key-id")?.value.trim() || "rzp_test_TXsxFSqiP8TQoc";
+
   const options = {
-    key: "rzp_test_kubermesh_demo",
+    key: keyId,
     amount: lastA2AResponse.total_amount_paise,
     currency: "INR",
     name: "Apex Electronics Hub",
-    description: `A2A Purchase: ${lastA2AResponse.sku} (${lastA2AResponse.quantity} unit)`,
+    description: `A2A Machine Checkout: ${lastA2AResponse.sku} (${lastA2AResponse.quantity} unit)`,
     image: "https://razorpay.com/favicon.ico",
     order_id: lastA2AResponse.razorpay_order_id,
     handler: function (response) {
@@ -430,7 +482,7 @@ function launchLiveRazorpayCheckout() {
       loadAuditLedger();
     },
     prefill: {
-      name: "AI Buyer Agent (Automated)",
+      name: "AI Buyer Agent",
       email: "buyer_agent@protocol.mesh",
       contact: "9876543210"
     },
@@ -442,11 +494,11 @@ function launchLiveRazorpayCheckout() {
   try {
     const rzp = new Razorpay(options);
     rzp.on("payment.failed", function (response) {
-      showToast(`Test Payment Failed: ${response.error.description}`, "error");
+      showToast(`Payment Dialog: ${response.error?.description || 'Dismissed'}`, "info");
     });
     rzp.open();
   } catch (e) {
-    showToast(`Razorpay SDK launched for order ${lastA2AResponse.razorpay_order_id}`, "info");
+    showToast(`Razorpay checkout opened for order: ${lastA2AResponse.razorpay_order_id}`, "info");
   }
 }
 
@@ -499,7 +551,7 @@ async function loadAuditLedger() {
     tbody.innerHTML = entries.map(e => {
       const isRolledBack = e.rolled_back;
       const statusBadge = isRolledBack ? 
-        `<span style="color: #991b1b; font-weight: 700; font-size: 11px; background: var(--crimson-soft); padding: 3px 8px; border-radius: 6px;">ROLLED_BACK</span>` : 
+        `<span style="color: #be123c; font-weight: 700; font-size: 11px; background: var(--crimson-soft); padding: 3px 8px; border-radius: 6px;">ROLLED_BACK</span>` : 
         `<span style="color: var(--apple-blue); font-weight: 700; font-size: 11px; background: var(--apple-blue-soft); padding: 3px 8px; border-radius: 6px;">EXECUTED</span>`;
 
       return `
@@ -508,8 +560,8 @@ async function loadAuditLedger() {
           <td style="font-weight: 700; color: var(--text-dark);">${e.item_name}</td>
           <td><code style="color: var(--purple); background: var(--purple-soft); padding: 2px 6px; border-radius: 4px;">${e.action_type}</code></td>
           <td style="font-family: var(--font-mono); font-size: 11px; color: var(--apple-blue);">${e.guardrail_result.validator_hash}</td>
-          <td style="font-family: var(--font-mono);">${e.rars_before.toFixed(2)} → <span style="color: var(--emerald); font-weight: 700;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
-          <td style="color: #166534; font-weight: 700; font-family: var(--font-mono);">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
+          <td style="font-family: var(--font-mono);">${e.rars_before.toFixed(2)} → <span style="color: var(--emerald-dark); font-weight: 700;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
+          <td style="color: #059669; font-weight: 700; font-family: var(--font-mono);">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
           <td>${statusBadge}</td>
           <td class="text-right">
             ${!isRolledBack ? `
