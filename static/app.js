@@ -81,32 +81,21 @@ function scrollToSection(sectionId) {
   if (sectionId === 'hero' || sectionId === 'overview') {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setActiveNavButton('nav-btn-overview');
-    programmaticScrollTimeout = setTimeout(() => {
-      isProgrammaticScrolling = false;
-      setActiveNavButton('nav-btn-overview');
-    }, 700);
-    return;
-  }
-
-  const el = document.getElementById(sectionId);
-  if (el) {
-    const navHeight = 72;
-    const elementPosition = el.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - navHeight;
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth'
-    });
-  }
-
-  if (sectionId === 'capabilities') {
-    setActiveNavButton('nav-btn-architecture');
+  } else {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (sectionId === 'capabilities') {
+      setActiveNavButton('nav-btn-architecture');
+    }
   }
 
   programmaticScrollTimeout = setTimeout(() => {
     isProgrammaticScrolling = false;
     if (sectionId === 'capabilities') setActiveNavButton('nav-btn-architecture');
-  }, 700);
+    else if (sectionId === 'hero' || sectionId === 'overview') setActiveNavButton('nav-btn-overview');
+  }, 600);
 }
 
 function setActiveNavButton(btnId) {
@@ -136,16 +125,10 @@ function navigateToTab(tabId) {
     setActiveNavButton('nav-btn-audit');
   }
 
-  // Smooth scroll directly to workspace tab panel with header offset
-  const el = document.getElementById(`tab-${tabId}`) || document.getElementById("dashboard");
+  // Smooth scroll directly to workspace dashboard with header offset
+  const el = document.getElementById("dashboard");
   if (el) {
-    const navHeight = 72;
-    const elementPosition = el.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - navHeight;
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: 'smooth'
-    });
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   programmaticScrollTimeout = setTimeout(() => {
@@ -153,7 +136,10 @@ function navigateToTab(tabId) {
     if (tabId === 'a2a') setActiveNavButton('nav-btn-a2a');
     else if (tabId === 'growth') setActiveNavButton('nav-btn-workspace');
     else if (tabId === 'audit') setActiveNavButton('nav-btn-audit');
-  }, 700);
+    else if (tabId === 'adversarial') setActiveNavButton('nav-btn-adversarial');
+    else if (tabId === 'policy') setActiveNavButton('nav-btn-policy');
+    else if (tabId === 'webhooks') setActiveNavButton('nav-btn-webhooks');
+  }, 600);
 }
 
 // Enterprise ScrollSpy: synchronizes active nav button as user scrolls

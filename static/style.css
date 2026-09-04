@@ -88,6 +88,10 @@ body {
   overflow-x: hidden;
 }
 
+section, .content-section, .hero-block, .workspace-section, #dashboard, #capabilities, #hero {
+  scroll-margin-top: 80px;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
