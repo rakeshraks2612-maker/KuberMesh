@@ -1,49 +1,51 @@
 /* ==========================================================================
-   KUBERMESH DESIGN SYSTEM — AWSMD MONEY MANAGEMENT PLATFORM AESTHETIC
-   Clean, Modern Warm Oatmeal & Beige Palette (#f3efe6) with High-Contrast Dark Accents
+   KUBERMESH DESIGN SYSTEM — MONEY MANAGEMENT PLATFORM AESTHETIC
+   Cool Architectural Gray Canvas (#eaecf0), Pure Snow White Cards (#ffffff),
+   Deep Charcoal Contrast Elements (#0f172a), Electric Fintech Accents
    ========================================================================== */
 
 :root {
-  /* Canvas & Surfaces (Awsmd Warm Oatmeal / Beige) */
-  --bg-app: #f3efe6;
+  /* Canvas & Surfaces (Cool Gray & Snow White) */
+  --bg-app: #eaecf0;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;
-  --bg-surface-subtle: #eae4d5;
-  --bg-surface-hover: #e2dbca;
-  --bg-dark-accent: #181b20;
-  --bg-glass: rgba(243, 239, 230, 0.90);
+  --bg-surface-subtle: #f8fafc;
+  --bg-surface-muted: #f1f5f9;
+  --bg-surface-hover: #e2e8f0;
+  --bg-dark-accent: #0f172a;
+  --bg-glass: rgba(255, 255, 255, 0.92);
 
   /* Hairlines & Borders */
-  --border-subtle: rgba(90, 80, 70, 0.10);
-  --border-light: rgba(90, 80, 70, 0.14);
-  --border-strong: rgba(90, 80, 70, 0.20);
-  --border-focus: #181b20;
+  --border-subtle: #e2e8f0;
+  --border-light: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-focus: #0f172a;
 
   /* Typography */
-  --text-primary: #14171a;
-  --text-dark: #14171a;
-  --text-secondary: #4e5359;
-  --text-tertiary: #767c85;
-  --text-subtle: #767c85;
-  --text-muted: #9aa0a6;
+  --text-primary: #0f172a;
+  --text-dark: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-subtle: #64748b;
+  --text-muted: #94a3b8;
 
-  /* Fintech Vibrant Accents */
-  --apple-blue: #0066ff;
-  --apple-blue-hover: #0052cc;
-  --apple-blue-soft: rgba(0, 102, 255, 0.08);
+  /* Fintech Accents */
+  --fintech-blue: #0284c7;
+  --fintech-blue-hover: #0369a1;
+  --fintech-blue-soft: rgba(2, 132, 199, 0.08);
 
   --emerald: #10b981;
   --emerald-dark: #059669;
   --emerald-soft: rgba(16, 185, 129, 0.10);
 
   --amber: #f59e0b;
-  --amber-dark: #b45309;
+  --amber-dark: #d97706;
   --amber-soft: rgba(245, 158, 11, 0.10);
 
-  --rose: #e11d48;
-  --rose-dark: #be123c;
-  --rose-soft: rgba(225, 29, 72, 0.10);
-  --crimson-soft: rgba(225, 29, 72, 0.08);
+  --rose: #f43f5e;
+  --rose-dark: #e11d48;
+  --rose-soft: rgba(244, 63, 94, 0.10);
+  --crimson-soft: rgba(244, 63, 94, 0.08);
 
   --indigo: #6366f1;
   --indigo-soft: rgba(99, 102, 241, 0.10);
@@ -51,14 +53,14 @@
   --purple: #8b5cf6;
   --purple-soft: rgba(139, 92, 246, 0.10);
 
-  /* Shadows with Warm Depth */
-  --shadow-sm: 0 1px 3px rgba(40, 30, 20, 0.04), 0 1px 2px rgba(40, 30, 20, 0.02);
-  --shadow-md: 0 8px 24px -4px rgba(40, 30, 20, 0.06), 0 2px 6px -1px rgba(40, 30, 20, 0.03);
-  --shadow-lg: 0 16px 36px -6px rgba(40, 30, 20, 0.08), 0 4px 12px -2px rgba(40, 30, 20, 0.04);
-  --shadow-float: 0 24px 48px -10px rgba(20, 15, 10, 0.16);
+  /* Clean Crisp Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 4px 16px -2px rgba(16, 24, 40, 0.06), 0 2px 6px -1px rgba(16, 24, 40, 0.04);
+  --shadow-lg: 0 12px 32px -4px rgba(16, 24, 40, 0.08), 0 4px 12px -2px rgba(16, 24, 40, 0.03);
+  --shadow-float: 0 24px 48px -12px rgba(16, 24, 40, 0.18);
 
   /* Fonts */
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
 }
 
@@ -94,15 +96,15 @@ body {
   background: var(--bg-app);
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4ccbd;
+  background: #cbd5e1;
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a89f8f;
+  background: #94a3b8;
 }
 
 /* ==========================================================================
-   TOP NAVBAR (FLOATING FROSTED WARM BEIGE BAR)
+   TOP NAVBAR (CRISP WHITE FROSTED GLASS BAR)
    ========================================================================== */
 .top-navbar {
   position: sticky;
@@ -141,9 +143,9 @@ body {
   width: 36px;
   height: 36px;
   background: var(--bg-dark-accent);
-  color: #f3efe6;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(24, 27, 32, 0.2);
+  color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
 }
 
 .brand-name {
@@ -157,7 +159,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(90, 80, 70, 0.08);
+  background: var(--bg-surface-muted);
   padding: 4px 6px;
   border-radius: 980px;
   border: 1px solid var(--border-subtle);
@@ -176,7 +178,8 @@ body {
 
 .nav-item:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
 }
 
 .nav-controls {
@@ -213,8 +216,8 @@ body {
 }
 
 .btn-ghost-nav {
-  background: transparent;
-  border: 1px solid var(--border-strong);
+  background: #ffffff;
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13px;
@@ -222,12 +225,13 @@ body {
   padding: 7px 15px;
   border-radius: 980px;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
 }
 
 .btn-ghost-nav:hover {
   background: var(--bg-surface-hover);
-  border-color: rgba(90, 80, 70, 0.35);
+  border-color: var(--border-strong);
 }
 
 .btn-primary-nav {
@@ -240,18 +244,18 @@ body {
   padding: 8px 18px;
   border-radius: 980px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(24, 27, 32, 0.18);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
   transition: all 0.15s ease;
 }
 
 .btn-primary-nav:hover {
   background: #000000;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(24, 27, 32, 0.28);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.28);
 }
 
 /* ==========================================================================
-   PAGE CONTAINER & AMBIENT SOFT LIGHTING
+   PAGE CONTAINER & CRISP LAYOUT
    ========================================================================== */
 .page-body {
   max-width: 1280px;
@@ -260,28 +264,28 @@ body {
   position: relative;
 }
 
+/* Subtle Diffuse Ambient Lighting */
 .page-body::before {
   content: "";
   position: absolute;
-  top: -60px;
+  top: -40px;
   left: 50%;
   transform: translateX(-50%);
-  width: 960px;
+  width: 1000px;
   height: 550px;
-  background: radial-gradient(circle at 30% 30%, rgba(240, 225, 200, 0.7), transparent 60%),
-              radial-gradient(circle at 70% 40%, rgba(215, 230, 250, 0.5), transparent 60%),
-              radial-gradient(circle at 50% 70%, rgba(235, 220, 200, 0.6), transparent 70%);
+  background: radial-gradient(circle at 30% 30%, rgba(2, 132, 199, 0.06), transparent 60%),
+              radial-gradient(circle at 70% 40%, rgba(139, 92, 246, 0.05), transparent 60%),
+              radial-gradient(circle at 50% 70%, rgba(16, 185, 129, 0.05), transparent 70%);
   filter: blur(80px);
   z-index: -1;
   pointer-events: none;
-  border-radius: 50%;
 }
 
 /* ==========================================================================
    HERO PRESENTATION SECTION
    ========================================================================== */
 .hero-block {
-  padding: 70px 0 50px 0;
+  padding: 60px 0 45px 0;
   text-align: center;
   max-width: 960px;
   margin: 0 auto;
@@ -291,33 +295,33 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--apple-blue-soft);
-  color: var(--apple-blue);
-  border: 1px solid rgba(0, 102, 255, 0.2);
+  background: var(--fintech-blue-soft);
+  color: var(--fintech-blue);
+  border: 1px solid rgba(2, 132, 199, 0.2);
   padding: 6px 16px;
   border-radius: 980px;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin-bottom: 24px;
-}
-
-.hero-heading {
-  font-size: 56px;
-  font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-  color: var(--text-primary);
   margin-bottom: 22px;
 }
 
+.hero-heading {
+  font-size: 54px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
 .hero-subheading {
-  font-size: 19px;
-  line-height: 1.5;
+  font-size: 18.5px;
+  line-height: 1.55;
   color: var(--text-secondary);
   font-weight: 400;
   max-width: 780px;
-  margin: 0 auto 34px auto;
+  margin: 0 auto 32px auto;
   letter-spacing: -0.01em;
 }
 
@@ -326,7 +330,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 14px;
-  margin-bottom: 50px;
+  margin-bottom: 45px;
 }
 
 .btn-hero-primary {
@@ -352,7 +356,7 @@ body {
 .btn-hero-secondary {
   background: #ffffff;
   color: var(--text-primary);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-light);
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 600;
@@ -368,24 +372,24 @@ body {
 }
 
 .btn-hero-secondary:hover {
-  background: var(--bg-surface-hover);
-  border-color: rgba(90, 80, 70, 0.4);
+  background: var(--bg-surface-subtle);
+  border-color: var(--border-strong);
   transform: translateY(-1px);
 }
 
 .btn-hero-secondary code {
   font-family: var(--font-mono);
   font-size: 13px;
-  background: rgba(90, 80, 70, 0.08);
+  background: var(--bg-surface-muted);
   padding: 2px 6px;
   border-radius: 4px;
 }
 
 /* ==========================================================================
-   HERO TELEMETRY SHOWCASE CARD (AWSMD MONEY PLATFORM STYLE)
+   SHOWCASE TELEMETRY CARD (MONEY MANAGEMENT PLATFORM 4-COL CARD)
    ========================================================================== */
 .hero-showcase-wrapper {
-  max-width: 1040px;
+  max-width: 1080px;
   margin: 0 auto;
 }
 
@@ -420,7 +424,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-secondary);
-  background: rgba(90, 80, 70, 0.08);
+  background: var(--bg-surface-muted);
   padding: 4px 10px;
   border-radius: 6px;
   display: inline-block;
@@ -464,7 +468,7 @@ body {
 
 .stat-box:hover {
   background: #ffffff;
-  border-color: var(--border-strong);
+  border-color: var(--border-light);
   box-shadow: var(--shadow-sm);
   transform: translateY(-1px);
 }
@@ -479,7 +483,7 @@ body {
 }
 
 .stat-number {
-  font-size: 29px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -494,7 +498,7 @@ body {
 
 .text-crimson { color: var(--rose-dark); }
 .text-emerald { color: var(--emerald-dark); }
-.text-blue { color: var(--apple-blue); }
+.text-blue { color: var(--fintech-blue); }
 .text-amber { color: var(--amber-dark); }
 .text-purple { color: var(--purple); }
 
@@ -522,7 +526,7 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--apple-blue);
+  color: var(--fintech-blue);
   margin-bottom: 10px;
 }
 
@@ -561,7 +565,7 @@ body {
 .bento-tile:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--border-strong);
+  border-color: var(--border-light);
 }
 
 .bento-tile-badge {
@@ -576,9 +580,9 @@ body {
 }
 
 .bento-tile-badge.blue {
-  background: var(--apple-blue-soft);
-  color: var(--apple-blue);
-  border: 1px solid rgba(0, 102, 255, 0.2);
+  background: var(--fintech-blue-soft);
+  color: var(--fintech-blue);
+  border: 1px solid rgba(2, 132, 199, 0.2);
 }
 
 .bento-tile-badge.emerald {
@@ -612,7 +616,7 @@ body {
 .bento-tile-text code {
   font-family: var(--font-mono);
   font-size: 12.5px;
-  background: rgba(90, 80, 70, 0.08);
+  background: var(--bg-surface-muted);
   padding: 2px 5px;
   border-radius: 4px;
   color: var(--text-primary);
@@ -637,10 +641,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(90, 80, 70, 0.09);
+  background: #dbe0e8;
   padding: 6px;
   border-radius: 980px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-light);
   margin-bottom: 28px;
 }
 
@@ -660,6 +664,7 @@ body {
 .tab-pill-btn.active {
   background: #ffffff;
   color: var(--text-primary);
+  font-weight: 700;
   box-shadow: var(--shadow-sm);
 }
 
@@ -730,7 +735,7 @@ body {
 .guardrail-status-chip.breach {
   background: var(--rose-soft);
   color: var(--rose-dark);
-  border: 1px solid rgba(225, 29, 72, 0.25);
+  border: 1px solid rgba(244, 63, 94, 0.25);
 }
 
 .chip-circle {
@@ -741,7 +746,7 @@ body {
 }
 
 /* ==========================================================================
-   WHAT-IF SIMULATOR SLIDER (AWSMD STYLE)
+   WHAT-IF SIMULATOR SLIDER (CRISP FINTECH RANGE SLIDER)
    ========================================================================== */
 .simulator-layout-grid {
   display: grid;
@@ -775,7 +780,7 @@ body {
 .slider-value-num {
   font-size: 22px;
   font-weight: 800;
-  color: var(--apple-blue);
+  color: var(--fintech-blue);
   font-family: var(--font-mono);
 }
 
@@ -784,7 +789,7 @@ body {
   width: 100%;
   height: 8px;
   border-radius: 4px;
-  background: #d8d0c0;
+  background: #cbd5e1;
   outline: none;
   cursor: pointer;
 }
@@ -795,8 +800,8 @@ body {
   height: 22px;
   border-radius: 50%;
   background: #ffffff;
-  border: 2px solid var(--apple-blue);
-  box-shadow: 0 2px 6px rgba(40, 30, 20, 0.2);
+  border: 2px solid var(--fintech-blue);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
   cursor: pointer;
   transition: transform 0.1s ease;
 }
@@ -870,7 +875,7 @@ body {
 
 .light-select {
   background: #ffffff;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13px;
@@ -884,11 +889,11 @@ body {
 }
 
 .light-select:focus {
-  border-color: var(--apple-blue);
+  border-color: var(--fintech-blue);
 }
 
 .btn-light-primary {
-  background: var(--apple-blue);
+  background: var(--fintech-blue);
   color: #ffffff;
   border: none;
   font-family: var(--font-sans);
@@ -897,7 +902,7 @@ body {
   padding: 10px 18px;
   border-radius: 980px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
@@ -905,9 +910,9 @@ body {
 }
 
 .btn-light-primary:hover {
-  background: var(--apple-blue-hover);
+  background: var(--fintech-blue-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
 }
 
 .btn-light-amber {
@@ -950,7 +955,7 @@ body {
 .btn-light-secondary {
   background: #ffffff;
   color: var(--text-primary);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-light);
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
@@ -966,20 +971,20 @@ body {
 }
 
 .btn-light-secondary:hover {
-  background: var(--bg-surface-hover);
+  background: var(--bg-surface-subtle);
 }
 
 .btn-light-secondary code {
   font-family: var(--font-mono);
   font-size: 12px;
-  background: rgba(90, 80, 70, 0.08);
+  background: var(--bg-surface-muted);
   padding: 2px 4px;
   border-radius: 3px;
 }
 
 .btn-table-action {
   background: #ffffff;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 12.5px;
@@ -993,9 +998,9 @@ body {
 }
 
 .btn-table-action:hover {
-  background: var(--apple-blue);
+  background: var(--fintech-blue);
   color: #ffffff;
-  border-color: var(--apple-blue);
+  border-color: var(--fintech-blue);
 }
 
 .btn-sm {
@@ -1010,7 +1015,7 @@ body {
 }
 
 /* ==========================================================================
-   DATA TABLE (AWSMD FINTECH STYLE)
+   DATA TABLE (CRISP WHITE CARD TABLE)
    ========================================================================== */
 .table-wrapper-card {
   padding: 0;
@@ -1030,7 +1035,7 @@ body {
 }
 
 .light-data-table th {
-  background: #ede6d8;
+  background: var(--bg-surface-muted);
   color: var(--text-secondary);
   font-weight: 700;
   font-size: 12px;
@@ -1053,7 +1058,7 @@ body {
 }
 
 .light-data-table tbody tr:hover {
-  background-color: #faf6ee;
+  background-color: var(--bg-surface-subtle);
 }
 
 .light-data-table tbody tr:last-child td {
@@ -1077,7 +1082,7 @@ body {
 .rars-critical, .rars-high {
   background: var(--rose-soft);
   color: var(--rose-dark);
-  border: 1px solid rgba(225, 29, 72, 0.25);
+  border: 1px solid rgba(244, 63, 94, 0.25);
 }
 
 .rars-moderate {
@@ -1100,7 +1105,7 @@ body {
    DECISION TRACE CARD & STEPS
    ========================================================================== */
 .trace-container-card {
-  border-left: 4px solid var(--apple-blue);
+  border-left: 4px solid var(--fintech-blue);
 }
 
 .trace-header-flex {
@@ -1122,7 +1127,7 @@ body {
 .dot-indicator.blue {
   width: 8px;
   height: 8px;
-  background-color: var(--apple-blue);
+  background-color: var(--fintech-blue);
   border-radius: 50%;
 }
 
@@ -1138,7 +1143,7 @@ body {
 
 .btn-close-light:hover {
   color: var(--text-primary);
-  background: rgba(90, 80, 70, 0.1);
+  background: var(--bg-surface-muted);
 }
 
 .trace-step {
@@ -1206,7 +1211,7 @@ body {
 
 .light-input-text {
   background: #ffffff;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-light);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13.5px;
@@ -1218,7 +1223,7 @@ body {
 }
 
 .light-input-text:focus {
-  border-color: var(--apple-blue);
+  border-color: var(--fintech-blue);
 }
 
 .form-row-2col {
@@ -1228,9 +1233,9 @@ body {
 }
 
 .light-info-callout {
-  background: var(--apple-blue-soft);
-  border: 1px solid rgba(0, 102, 255, 0.2);
-  color: var(--apple-blue);
+  background: var(--fintech-blue-soft);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+  color: var(--fintech-blue);
   font-size: 12.5px;
   font-weight: 600;
   padding: 10px 14px;
@@ -1239,7 +1244,7 @@ body {
 
 .light-terminal-view {
   background: var(--bg-dark-accent);
-  color: #f3efe6;
+  color: #f8fafc;
   font-family: var(--font-mono);
   font-size: 12.5px;
   line-height: 1.6;
@@ -1251,7 +1256,7 @@ body {
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-.term-comment { color: #9aa0a6; }
+.term-comment { color: #94a3b8; }
 .term-cursor { color: var(--emerald); font-weight: bold; }
 
 /* ==========================================================================
@@ -1260,7 +1265,7 @@ body {
 .modal-overlay-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(24, 27, 32, 0.5);
+  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -1373,7 +1378,7 @@ body {
 .toast, .toast-alert {
   pointer-events: auto;
   background: #ffffff;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 12px 18px;
   font-size: 13.5px;
@@ -1405,7 +1410,7 @@ body {
 }
 
 .toast.info, .toast-alert.info {
-  border-left: 4px solid var(--apple-blue);
+  border-left: 4px solid var(--fintech-blue);
 }
 
 /* Responsive Breakpoints */
