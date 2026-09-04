@@ -8,13 +8,89 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=3.5">
+  <link rel="stylesheet" href="/static/style.css?v=4.0">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
   <!-- DYNAMIC ANIMATED FINTECH BACKGROUND -->
   <div class="animated-bg-layer" aria-hidden="true">
     <canvas id="ambient-canvas"></canvas>
+    
+    <!-- 3D FLOATING FINTECH CREDIT CARDS -->
+    <div class="floating-cards-viewport">
+      <!-- Card 1: Obsidian Titanium Card (Top Right) -->
+      <div class="fintech-credit-card card-obsidian">
+        <div class="card-inner-sheen"></div>
+        <div class="card-top-row">
+          <div class="card-chip gold"></div>
+          <div class="card-contactless">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8.5 16.5a5 5 0 0 1 0-9"/>
+              <path d="M12 19a8.5 8.5 0 0 0 0-14"/>
+              <path d="M15.5 21.5a12 12 0 0 0 0-19"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-number">•••• •••• •••• 4242</div>
+        <div class="card-bottom-row">
+          <div>
+            <div class="card-label">CARDHOLDER</div>
+            <div class="card-val">RAZORPAY TESTNET</div>
+          </div>
+          <div class="card-logo-badge">
+            <span>KUBERMESH</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Frosted Holographic Glass Card (Bottom Left) -->
+      <div class="fintech-credit-card card-glass">
+        <div class="card-inner-sheen"></div>
+        <div class="card-top-row">
+          <div class="card-chip silver"></div>
+          <div class="card-contactless">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8.5 16.5a5 5 0 0 1 0-9"/>
+              <path d="M12 19a8.5 8.5 0 0 0 0-14"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-number">•••• •••• •••• 8890</div>
+        <div class="card-bottom-row">
+          <div>
+            <div class="card-label">PROTOCOL</div>
+            <div class="card-val">NPCI UAP / x402</div>
+          </div>
+          <div class="card-logo-badge">
+            <span>A2A GATEWAY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Cobalt Gradient Card (Center Right Background) -->
+      <div class="fintech-credit-card card-cobalt">
+        <div class="card-inner-sheen"></div>
+        <div class="card-top-row">
+          <div class="card-chip gold"></div>
+          <div class="card-contactless">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8.5 16.5a5 5 0 0 1 0-9"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-number">•••• •••• •••• 7712</div>
+        <div class="card-bottom-row">
+          <div>
+            <div class="card-label">SETTLEMENT</div>
+            <div class="card-val">INSTANT INR</div>
+          </div>
+          <div class="card-logo-badge">
+            <span>ZERO-LLM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="mesh-orb orb-cyan"></div>
     <div class="mesh-orb orb-indigo"></div>
     <div class="mesh-orb orb-emerald"></div>
