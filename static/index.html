@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=18.0">
+  <link rel="stylesheet" href="/static/style.css?v=19.0">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
@@ -37,8 +37,11 @@
       <div class="nav-menu">
         <button type="button" class="nav-item active" id="nav-btn-overview" onclick="scrollToSection('hero')">Overview</button>
         <button type="button" class="nav-item" id="nav-btn-architecture" onclick="scrollToSection('capabilities')">Architecture</button>
-        <button type="button" class="nav-item" id="nav-btn-workspace" onclick="navigateToTab('growth')">Live Workspace</button>
+        <button type="button" class="nav-item" id="nav-btn-workspace" onclick="navigateToTab('growth')">Revenue Engine</button>
         <button type="button" class="nav-item" id="nav-btn-a2a" onclick="navigateToTab('a2a')">A2A Protocol</button>
+        <button type="button" class="nav-item" id="nav-btn-adversarial" onclick="navigateToTab('adversarial')">Security Arena</button>
+        <button type="button" class="nav-item" id="nav-btn-policy" onclick="navigateToTab('policy')">Policy Config</button>
+        <button type="button" class="nav-item" id="nav-btn-webhooks" onclick="navigateToTab('webhooks')">Webhooks</button>
         <button type="button" class="nav-item" id="nav-btn-audit" onclick="navigateToTab('audit')">Audit Ledger</button>
       </div>
 
@@ -293,13 +296,22 @@
       <!-- WORKSPACE TABS -->
       <div class="tab-pill-container">
         <button class="tab-pill-btn active" id="tab-btn-growth" onclick="switchTab('growth')">
-          <span>Catalog Health &amp; Revenue Engine</span>
+          <span>Catalog &amp; Revenue</span>
         </button>
         <button class="tab-pill-btn" id="tab-btn-a2a" onclick="switchTab('a2a')">
-          <span>Agent-to-Agent (A2A) Gateway</span>
+          <span>A2A Gateway &amp; Flight Recorder</span>
+        </button>
+        <button class="tab-pill-btn" id="tab-btn-adversarial" onclick="switchTab('adversarial')">
+          <span>Adversarial AI Security Arena</span>
+        </button>
+        <button class="tab-pill-btn" id="tab-btn-policy" onclick="switchTab('policy')">
+          <span>Policy Configurator</span>
+        </button>
+        <button class="tab-pill-btn" id="tab-btn-webhooks" onclick="switchTab('webhooks')">
+          <span>Razorpay Webhook Stream</span>
         </button>
         <button class="tab-pill-btn" id="tab-btn-audit" onclick="switchTab('audit')">
-          <span>Immutable Audit Ledger &amp; Rollback</span>
+          <span>Audit Ledger &amp; Merkle Proof</span>
         </button>
       </div>
 
@@ -506,6 +518,15 @@
               <span class="term-cursor">&gt; _</span>
             </div>
 
+            <!-- FLIGHT RECORDER STEP-BY-STEP PLAYBACK -->
+            <div id="a2a-flight-recorder" class="flight-recorder-box" style="margin-top: 16px; display: none;">
+              <span class="badge-subtle">A2A Flight Recorder</span>
+              <h4 style="font-size: 13.5px; font-weight: 700; margin: 6px 0 10px 0; color: #0f172a;">Autonomous Machine-to-Machine Dialogue Playback</h4>
+              <div class="flight-steps-container" id="flight-steps-container">
+                <!-- Dynamically populated steps -->
+              </div>
+            </div>
+
             <div id="a2a-checkout-action" style="margin-top: 16px; display: none;">
               <button class="btn-light-emerald btn-full-width" id="btn-launch-rzp-checkout" onclick="launchLiveRazorpayCheckout()">
                 <span>Launch Razorpay Interactive Test Checkout</span>
@@ -515,16 +536,233 @@
         </div>
       </div>
 
-      <!-- TAB PANEL 3: IMMUTABLE AUDIT LEDGER -->
+      <!-- TAB PANEL: ADVERSARIAL AI SECURITY ARENA -->
+      <div id="tab-adversarial" class="tab-panel">
+        <div class="a2a-dual-grid">
+          <!-- ATTACK VECTOR GENERATOR -->
+          <div class="workspace-card">
+            <span class="badge-subtle">Adversarial Testing Suite</span>
+            <h3 class="card-headline">Simulate Malicious AI Buyer Attacks</h3>
+            <p class="card-subtext">Stress-test KuberMesh's Zero-LLM guardrails against jailbreaks, integer underflows, and margin drain exploits.</p>
+
+            <div class="form-field-group">
+              <label for="adv-sku-select">Target Catalog SKU</label>
+              <select id="adv-sku-select" class="light-select">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+
+            <div class="form-field-group">
+              <label>Select Attack Exploit Vector</label>
+              <div class="attack-preset-grid">
+                <button type="button" class="btn-attack-preset active" id="btn-adv-prompt_injection" onclick="selectAttackPreset('prompt_injection')">
+                  <strong>Jailbreak / Prompt Injection</strong>
+                  <span>Attempts to force ₹1.00 pricing override via system commands</span>
+                </button>
+                <button type="button" class="btn-attack-preset" id="btn-adv-zero_rupee_exploit" onclick="selectAttackPreset('zero_rupee_exploit')">
+                  <strong>Zero-Rupee Underflow</strong>
+                  <span>Transmits malformed ₹0 integer payload</span>
+                </button>
+                <button type="button" class="btn-attack-preset" id="btn-adv-margin_drain_attack" onclick="selectAttackPreset('margin_drain_attack')">
+                  <strong>90% Margin Drain Attack</strong>
+                  <span>Social-engineers fake government procurement mandate</span>
+                </button>
+                <button type="button" class="btn-attack-preset" id="btn-adv-infinite_quantity_glitch" onclick="selectAttackPreset('infinite_quantity_glitch')">
+                  <strong>Inventory Overflow Attack</strong>
+                  <span>Requests 50,000 units to drain warehouse stock</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-field-group">
+              <label for="adv-custom-prompt">Injected Adversarial Payload Prompt</label>
+              <textarea id="adv-custom-prompt" rows="3" class="light-input-text" style="font-family: var(--font-mono); font-size: 12px;"></textarea>
+            </div>
+
+            <button class="btn-light-primary btn-full-width" id="btn-run-adversarial" onclick="executeAdversarialAttack()">
+              <span>Launch Adversarial Exploit Test</span>
+            </button>
+          </div>
+
+          <!-- COMPARATIVE VERDICT (NAIVE LLM vs KUBERMESH) -->
+          <div class="workspace-card">
+            <span class="badge-subtle">Defense Engine Verification</span>
+            <h3 class="card-headline">Comparative Defense Telemetry</h3>
+            <p class="card-subtext">Live evaluation of unshielded LLMs vs KuberMesh deterministic Zero-LLM gates.</p>
+
+            <div id="adv-verdict-container" style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px;">
+              <!-- NAIVE LLM CARD -->
+              <div class="exploit-comparison-card naive">
+                <div class="exploit-card-header">
+                  <span class="status-tag red">🚨 Unshielded / Naive LLM Agent</span>
+                  <span class="exploit-badge-sub">Standard GenAI Failure</span>
+                </div>
+                <div class="exploit-card-body" id="adv-naive-result">
+                  Select an attack vector and click "Launch Adversarial Exploit Test" to see how typical LLMs get manipulated.
+                </div>
+              </div>
+
+              <!-- KUBERMESH DEFENSE CARD -->
+              <div class="exploit-comparison-card secure">
+                <div class="exploit-card-header">
+                  <span class="status-tag green">🛡️ KuberMesh Zero-LLM Invariants</span>
+                  <span class="exploit-badge-sub">Deterministic Protection</span>
+                </div>
+                <div class="exploit-card-body" id="adv-kubermesh-result">
+                  KuberMesh mathematically gates every financial request before Razorpay order creation.
+                </div>
+                <div class="exploit-card-footer" id="adv-proof-footer" style="display: none;">
+                  <span class="text-mono" id="adv-proof-hash" style="font-size: 11.5px; color: #047857; font-weight: 600;">Proof Hash: 0x...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL: GUARDRAIL POLICY CONFIGURATOR -->
+      <div id="tab-policy" class="tab-panel">
+        <div class="a2a-dual-grid">
+          <!-- CONFIG SLIDERS -->
+          <div class="workspace-card">
+            <span class="badge-subtle">Governance Engine</span>
+            <h3 class="card-headline">Dynamic Zero-LLM Policy Editor</h3>
+            <p class="card-subtext">Configure mathematical boundary constraints for your autonomous agents without redeploying code.</p>
+
+            <div class="policy-control-group" style="margin-top: 14px;">
+              <div class="slider-title-row">
+                <span class="slider-heading">Rule G-01: Max Promotional Discount Ceiling</span>
+                <span class="slider-value-num" id="pol-val-discount">20%</span>
+              </div>
+              <input type="range" id="pol-slider-discount" min="5" max="40" step="1" value="20" class="apple-light-range" oninput="onPolicySliderChange()">
+              <div class="slider-ticks-row">
+                <span>5% (Conservative)</span>
+                <span>20% (Default)</span>
+                <span>40% (Aggressive)</span>
+              </div>
+            </div>
+
+            <div class="policy-control-group" style="margin-top: 14px;">
+              <div class="slider-title-row">
+                <span class="slider-heading">Rule G-02: Minimum Net Profit Margin Floor</span>
+                <span class="slider-value-num" id="pol-val-margin">8%</span>
+              </div>
+              <input type="range" id="pol-slider-margin" min="2" max="25" step="1" value="8" class="apple-light-range" oninput="onPolicySliderChange()">
+              <div class="slider-ticks-row">
+                <span>2% (High Volume)</span>
+                <span>8% (Default)</span>
+                <span>25% (Luxury Margin)</span>
+              </div>
+            </div>
+
+            <div class="policy-control-group" style="margin-top: 14px;">
+              <div class="slider-title-row">
+                <span class="slider-heading">Rule G-03: Single-Update Price Volatility Cap</span>
+                <span class="slider-value-num" id="pol-val-volatility">15%</span>
+              </div>
+              <input type="range" id="pol-slider-volatility" min="5" max="30" step="1" value="15" class="apple-light-range" oninput="onPolicySliderChange()">
+              <div class="slider-ticks-row">
+                <span>5% (Strict Stability)</span>
+                <span>15% (Default)</span>
+                <span>30% (Dynamic)</span>
+              </div>
+            </div>
+
+            <div class="form-row-2col" style="margin-top: 14px;">
+              <div class="form-field-group">
+                <label for="pol-min-hours">Min Offer Duration (Hours)</label>
+                <input type="number" id="pol-min-hours" value="1" min="1" max="12" class="light-input-text" oninput="onPolicySliderChange()">
+              </div>
+              <div class="form-field-group">
+                <label for="pol-max-hours">Max Offer Duration (Hours)</label>
+                <input type="number" id="pol-max-hours" value="72" min="12" max="168" class="light-input-text" oninput="onPolicySliderChange()">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 18px;">
+              <button class="btn-light-primary" style="flex: 1;" onclick="savePolicyConfig()">
+                <span>Apply &amp; Re-Anchor Policies</span>
+              </button>
+              <button class="btn-light-secondary" onclick="resetPolicyConfig()">
+                <span>Reset Defaults</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- LIVE SPECIFICATION VIEWER -->
+          <div class="workspace-card">
+            <span class="badge-subtle">Active Mathematical Boundaries</span>
+            <h3 class="card-headline">Live Guardrail Schema Specification</h3>
+            <p class="card-subtext">JSON schema verified across all autonomous pricing cycles.</p>
+
+            <div class="light-terminal-view" id="policy-json-terminal" style="max-height: 420px; overflow-y: auto; margin-top: 12px;">
+              <pre id="policy-json-code" style="font-size: 12px;">// Loading active policy configuration...</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL: RAZORPAY WEBHOOK STREAM -->
+      <div id="tab-webhooks" class="tab-panel">
+        <div class="workspace-card control-bar-card">
+          <div class="control-bar-flex">
+            <div>
+              <span class="badge-subtle">Razorpay Event Stream</span>
+              <h3 class="card-headline">Live Webhook Simulator &amp; Ledger Reconciler</h3>
+              <p class="card-subtext">Simulate real Razorpay gateway webhooks and inspect cryptographic audit reconciliation.</p>
+            </div>
+            <div class="control-bar-actions" style="flex-wrap: wrap;">
+              <button class="btn-table-action" onclick="simulateWebhookEvent('payment.captured')">
+                ⚡ payment.captured
+              </button>
+              <button class="btn-table-action" onclick="simulateWebhookEvent('order.paid')">
+                ⚡ order.paid
+              </button>
+              <button class="btn-table-action" onclick="simulateWebhookEvent('refund.processed')">
+                ⚡ refund.processed
+              </button>
+              <button class="btn-table-action" onclick="simulateWebhookEvent('payment.failed')">
+                ⚡ payment.failed
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace-card table-wrapper-card">
+          <div class="table-scroll-container">
+            <table class="light-data-table" id="webhook-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Event Type</th>
+                  <th>Entity ID</th>
+                  <th>Reconciled Amount</th>
+                  <th>Validation Hash</th>
+                  <th>Reconciliation Status</th>
+                  <th class="text-right">Inspect Payload</th>
+                </tr>
+              </thead>
+              <tbody id="webhook-table-body">
+                <tr><td colspan="7" class="text-center py-6">No webhook events received yet. Click a simulation button above!</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL: IMMUTABLE AUDIT LEDGER -->
       <div id="tab-audit" class="tab-panel">
         <div class="workspace-card control-bar-card">
           <div class="control-bar-flex">
             <div>
               <span class="badge-subtle">Cryptographic Ledger</span>
-              <h3 class="card-headline">Immutable Financial Audit Ledger &amp; Reverse Compensation</h3>
+              <h3 class="card-headline">Immutable Financial Audit Ledger &amp; Merkle Root</h3>
               <p class="card-subtext">Every pricing action is sealed with SHA256 hashes, tracked with before/after RARS scores, and reversibly mapped.</p>
             </div>
             <div class="control-bar-actions">
+              <button class="btn-light-primary" onclick="openMerkleCertificateModal()">
+                <span>Export Merkle Certificate</span>
+              </button>
               <button class="btn-light-secondary" onclick="resetDemo()">
                 <span>Reset to Benchmark</span>
               </button>
@@ -555,6 +793,70 @@
         </div>
       </div>
     </section>
+
+    <!-- MERKLE CERTIFICATE MODAL -->
+    <div id="merkle-modal" class="modal-overlay-backdrop" style="display: none;">
+      <div class="modal-dialog-box" style="max-width: 680px;">
+        <div class="modal-dialog-header">
+          <h3 class="modal-dialog-title">Cryptographic Compliance Certificate</h3>
+          <button class="btn-close-light" onclick="closeMerkleCertificateModal()">✕</button>
+        </div>
+        <div class="modal-dialog-body">
+          <div class="cert-banner">
+            <div class="cert-status-badge">100% MATHEMATICALLY VERIFIED</div>
+            <div class="cert-title" id="cert-title-display">KuberMesh Zero-LLM Invariants Attestation</div>
+            <div class="cert-meta" id="cert-meta-display">Certified for Merchant: Apex Electronics Hub (Razorpay Verified)</div>
+          </div>
+
+          <div class="cert-details-grid" style="margin-top: 14px;">
+            <div class="cert-field">
+              <span class="cert-field-label">Certificate ID</span>
+              <span class="cert-field-val text-mono" id="cert-id-val">CERT-KM-...</span>
+            </div>
+            <div class="cert-field">
+              <span class="cert-field-label">Issued At</span>
+              <span class="cert-field-val" id="cert-date-val">2026-09-04</span>
+            </div>
+            <div class="cert-field">
+              <span class="cert-field-label">Merkle Tree Root Hash</span>
+              <span class="cert-field-val text-mono text-blue" id="cert-root-val">0x...</span>
+            </div>
+            <div class="cert-field">
+              <span class="cert-field-label">Total Certified Records</span>
+              <span class="cert-field-val text-emerald" id="cert-records-val">0 Records</span>
+            </div>
+          </div>
+
+          <div class="light-terminal-view" style="max-height: 180px; margin-top: 14px;">
+            <pre id="cert-rules-pre" style="font-size: 11.5px;"></pre>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 18px;">
+            <button class="btn-light-primary" style="flex: 1;" onclick="downloadMerkleCertificateJSON()">
+              <span>Download Signed JSON Certificate</span>
+            </button>
+            <button class="btn-light-secondary" onclick="closeMerkleCertificateModal()">
+              <span>Close</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEBHOOK PAYLOAD INSPECTOR MODAL -->
+    <div id="webhook-inspector-modal" class="modal-overlay-backdrop" style="display: none;">
+      <div class="modal-dialog-box" style="max-width: 640px;">
+        <div class="modal-dialog-header">
+          <h3 class="modal-dialog-title" id="wh-modal-title">Razorpay Webhook Payload</h3>
+          <button class="btn-close-light" onclick="closeWebhookInspectorModal()">✕</button>
+        </div>
+        <div class="modal-dialog-body">
+          <div class="light-terminal-view" style="max-height: 400px; overflow-y: auto;">
+            <pre id="wh-payload-pre">// Payload loading...</pre>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- CREDENTIALS MODAL -->
     <div id="settings-modal" class="modal-overlay-backdrop" style="display: none;">

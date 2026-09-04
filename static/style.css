@@ -1783,6 +1783,246 @@ body {
   border-left: 4px solid var(--fintech-blue);
 }
 
+/* ==========================================================================
+   ENTERPRISE COMPONENTS: ADVERSARIAL ARENA, POLICY & MERKLE CERTIFICATE
+   ========================================================================== */
+.attack-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn-attack-preset {
+  text-align: left;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.btn-attack-preset strong {
+  font-size: 12.5px;
+  color: #0f172a;
+}
+
+.btn-attack-preset span {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.btn-attack-preset:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.btn-attack-preset.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.exploit-comparison-card {
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.exploit-comparison-card.naive {
+  border-color: #fecdd3;
+  background: #fff5f5;
+}
+
+.exploit-comparison-card.secure {
+  border-color: #a7f3d0;
+  background: #f0fdf4;
+}
+
+.exploit-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-tag {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 980px;
+}
+
+.status-tag.red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-tag.green {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.exploit-badge-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.exploit-card-body {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #334155;
+  font-family: var(--font-sans);
+}
+
+.policy-control-group {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+/* Flight Recorder */
+.flight-recorder-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.flight-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flight-step-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  animation: step-fade-in 0.2s ease forwards;
+}
+
+@keyframes step-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.flight-step-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flight-step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flight-step-desc {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.flight-step-status {
+  font-weight: 700;
+  font-size: 11px;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 2px 8px;
+  border-radius: 980px;
+}
+
+/* Merkle Certificate Modal */
+.cert-banner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.cert-status-badge {
+  display: inline-block;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 980px;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.cert-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cert-meta {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.cert-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.cert-field {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cert-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cert-field-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 1024px) {
   .hero-heading { font-size: 44px; }

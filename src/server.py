@@ -303,6 +303,187 @@ async def handle_razorpay_webhook(request: Request):
     except Exception as e:
         return {"status": "error", "detail": str(e)}
 
+class PolicyUpdateRequest(BaseModel):
+    max_discount_pct: Optional[float] = None
+    min_margin_pct: Optional[float] = None
+    max_price_delta_pct: Optional[float] = None
+    max_offer_duration_hours: Optional[int] = None
+    min_offer_duration_hours: Optional[int] = None
+    max_sms_per_customer_per_week: Optional[int] = None
+
+class AdversarialAttackRequest(BaseModel):
+    sku_id: str
+    attack_type: Literal["prompt_injection", "zero_rupee_exploit", "margin_drain_attack", "infinite_quantity_glitch"]
+    custom_prompt: Optional[str] = None
+
+class SimulateWebhookRequest(BaseModel):
+    event_type: Literal["payment.captured", "order.paid", "refund.processed", "dispute.created", "payment.failed"]
+    sku_id: Optional[str] = None
+    amount_inr: Optional[float] = None
+
+@app.get("/api/policy")
+def get_guardrail_policy():
+    return {
+        "status": "ok",
+        "policy": settings.guardrails.model_dump()
+    }
+
+@app.post("/api/policy")
+def update_guardrail_policy(req: PolicyUpdateRequest):
+    g = settings.guardrails
+    if req.max_discount_pct is not None:
+        if req.max_discount_pct < 5.0 or req.max_discount_pct > 50.0:
+            raise HTTPException(status_code=400, detail="Max discount must be between 5% and 50%")
+        g.max_discount_pct = req.max_discount_pct
+    if req.min_margin_pct is not None:
+        if req.min_margin_pct < 1.0 or req.min_margin_pct > 30.0:
+            raise HTTPException(status_code=400, detail="Min margin floor must be between 1% and 30%")
+        g.min_margin_pct = req.min_margin_pct
+    if req.max_price_delta_pct is not None:
+        g.max_price_delta_pct = req.max_price_delta_pct
+    if req.max_offer_duration_hours is not None:
+        g.max_offer_duration_hours = req.max_offer_duration_hours
+    if req.min_offer_duration_hours is not None:
+        g.min_offer_duration_hours = req.min_offer_duration_hours
+    if req.max_sms_per_customer_per_week is not None:
+        g.max_sms_per_customer_per_week = req.max_sms_per_customer_per_week
+
+    return {
+        "status": "policy_updated",
+        "policy": g.model_dump()
+    }
+
+@app.post("/api/policy/reset")
+def reset_guardrail_policy():
+    from src.config import GuardrailSettings
+    settings.guardrails = GuardrailSettings()
+    return {
+        "status": "policy_reset_to_default",
+        "policy": settings.guardrails.model_dump()
+    }
+
+@app.get("/api/audit/certificate")
+def get_merkle_audit_certificate():
+    cert = state_manager.generate_merkle_certificate()
+    return cert
+
+@app.post("/api/a2a/adversarial-test")
+def run_adversarial_test(req: AdversarialAttackRequest):
+    result = a2a_gateway.simulate_adversarial_attack(
+        sku_id=req.sku_id,
+        attack_type=req.attack_type,
+        custom_prompt=req.custom_prompt
+    )
+    return result
+
+@app.post("/api/webhooks/simulate")
+def simulate_webhook_event(req: SimulateWebhookRequest):
+    from datetime import datetime, timezone
+    now_iso = datetime.now(timezone.utc).isoformat() + "Z"
+    
+    catalog = discovery_engine.get_catalog()
+    item = next((i for i in catalog if i.id == req.sku_id or (req.sku_id and req.sku_id in i.id)), None) if req.sku_id else (catalog[0] if catalog else None)
+    
+    amount_inr = req.amount_inr or (item.amount_inr if item else 999.0)
+    amount_paise = int(amount_inr * 100)
+    
+    event_id = f"evt_sim_{uuid.uuid4().hex[:12]}"
+    pay_id = f"pay_sim_{uuid.uuid4().hex[:10]}"
+    order_id = f"order_sim_{uuid.uuid4().hex[:10]}"
+    
+    simulated_payload = {
+        "entity": "event",
+        "account_id": "acc_kubermesh_apex",
+        "event": req.event_type,
+        "contains": ["payment", "order"],
+        "payload": {
+            "payment": {
+                "entity": {
+                    "id": pay_id,
+                    "entity": "payment",
+                    "amount": amount_paise,
+                    "currency": "INR",
+                    "status": "captured" if req.event_type in ["payment.captured", "order.paid"] else ("refunded" if req.event_type == "refund.processed" else "failed"),
+                    "order_id": order_id,
+                    "invoice_id": None,
+                    "international": False,
+                    "method": "upi",
+                    "amount_refunded": amount_paise if req.event_type == "refund.processed" else 0,
+                    "refund_status": "full" if req.event_type == "refund.processed" else None,
+                    "captured": req.event_type in ["payment.captured", "order.paid"],
+                    "description": f"KuberMesh Transaction for SKU {item.name if item else 'General'}",
+                    "email": "agent.buyer@enterprise.ai",
+                    "contact": "+919876543210",
+                    "fee": int(amount_paise * 0.02),
+                    "tax": int(amount_paise * 0.0036),
+                    "error_code": "PSP_TIMEOUT" if req.event_type == "payment.failed" else None,
+                    "created_at": int(datetime.now().timestamp())
+                }
+            },
+            "order": {
+                "entity": {
+                    "id": order_id,
+                    "entity": "order",
+                    "amount": amount_paise,
+                    "amount_paid": amount_paise if req.event_type in ["payment.captured", "order.paid"] else 0,
+                    "amount_due": 0 if req.event_type in ["payment.captured", "order.paid"] else amount_paise,
+                    "currency": "INR",
+                    "receipt": f"rcpt_{uuid.uuid4().hex[:6]}",
+                    "status": "paid" if req.event_type in ["payment.captured", "order.paid"] else "attempted",
+                    "attempts": 1,
+                    "created_at": int(datetime.now().timestamp())
+                }
+            }
+        },
+        "created_at": int(datetime.now().timestamp())
+    }
+
+    # Record into audit ledger
+    from src.models import AuditEntry, GuardrailResult
+    webhook_entry = AuditEntry(
+        id=f"audit_wh_{uuid.uuid4().hex[:8]}",
+        timestamp=now_iso,
+        merchant_id="rzp_merch_apex_hub",
+        item_id=item.id if item else "global_event",
+        item_name=f"Razorpay Webhook: {req.event_type}",
+        action_type="WEBHOOK_INGESTION",
+        proposed_payload=simulated_payload,
+        reasoning=f"Autonomous ingestion and reconciliation for Razorpay event '{req.event_type}' on SKU {item.name if item else 'General'}.",
+        guardrail_result=GuardrailResult(
+            approved=True,
+            rule_violations=[],
+            validator_hash=f"0x{uuid.uuid4().hex[:16]}",
+            timestamp=now_iso
+        ),
+        razorpay_response=simulated_payload,
+        rollback_spec=None,
+        rars_before=0.0,
+        rars_after=0.0,
+        revenue_impact_inr=amount_inr if req.event_type in ["payment.captured", "order.paid"] else (-amount_inr if req.event_type == "refund.processed" else 0.0),
+        rolled_back=False,
+        status="RECONCILED"
+    )
+    state_manager.record_entry(webhook_entry)
+
+    return {
+        "status": "webhook_dispatched",
+        "event_id": event_id,
+        "event_type": req.event_type,
+        "amount_inr": amount_inr,
+        "target_sku": item.name if item else "General",
+        "razorpay_payload": simulated_payload,
+        "audit_entry_id": webhook_entry.id
+    }
+
+@app.get("/api/webhooks/events")
+def get_webhook_events(limit: int = 20):
+    entries = state_manager.get_entries(limit=100)
+    wh_events = [e for e in entries if e.get("action_type") == "WEBHOOK_INGESTION"]
+    return {
+        "count": len(wh_events),
+        "events": wh_events[:limit]
+    }
+
 @app.post("/api/credentials")
 def update_credentials(req: Dict[str, str]):
     key_id = req.get("key_id")
@@ -330,4 +511,5 @@ def update_credentials(req: Dict[str, str]):
 def reset_demo_state():
     data = initialize_merchant_state()
     return {"status": "reset_successful", "catalog_count": len(data["catalog"])}
+
 

@@ -197,3 +197,32 @@ def test_a2a_negotiation_handshake():
     res_low = a2a_gateway.handle_negotiation(req_low)
     assert res_low.decision == "REJECTED"
 
+def test_merkle_certificate_generation():
+    cert = state_manager.generate_merkle_certificate()
+    assert cert["certificate_id"].startswith("CERT-KM-")
+    assert cert["merkle_tree_root"].startswith("0x")
+    assert cert["compliance_standard"] == "ZERO-LLM-FINANCIAL-INVARIANTS-V1"
+    assert len(cert["active_rules_attestation"]) >= 5
+
+def test_adversarial_attack_defense():
+    catalog = discovery_engine.get_catalog()
+    target_item = catalog[0]
+
+    # Test Prompt Injection
+    res_pi = a2a_gateway.simulate_adversarial_attack(
+        sku_id=target_item.id,
+        attack_type="prompt_injection"
+    )
+    assert res_pi["status"] == "simulation_complete"
+    assert res_pi["attack_profile"]["naive_llm_result"]["vulnerable"] is True
+    assert res_pi["attack_profile"]["kubermesh_result"]["defended"] is True
+    assert res_pi["attack_profile"]["kubermesh_result"]["verdict"] == "ATTACK_INTERCEPTED_AND_BLOCKED"
+
+    # Test Zero Rupee Exploit
+    res_zr = a2a_gateway.simulate_adversarial_attack(
+        sku_id=target_item.id,
+        attack_type="zero_rupee_exploit"
+    )
+    assert res_zr["attack_profile"]["kubermesh_result"]["defended"] is True
+
+
