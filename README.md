@@ -18,7 +18,7 @@
 Indian merchants lose **28–35% of potential GMV** to silent cart drop-offs, payment failure bounces, dead inventory, and mispriced catalog items. Simultaneously, as AI buyer agents begin transacting autonomously across emerging protocols (**NPCI UAP, ACP, AP2, x402**), merchant catalogs remain trapped in unstructured HTML and static portals without machine-readable negotiation gateways.
 
 **KuberMesh** is a dual-engine autonomous platform:
-1. **Inside-Out (Merchant Growth)**: Discovers Razorpay catalog data, profiles sales velocity and cart abandonment, calculates the quantified **Revenue At Risk Score (RARS)**, reasons over interventions via Gemini 1.5 Flash, strictly gates every rupee action through a **deterministic zero-LLM safety validator**, executes via Razorpay APIs, and logs to an immutable audit ledger with automated rollback.
+1. **Inside-Out (Merchant Growth)**: Discovers Razorpay catalog data, profiles sales velocity and cart abandonment, calculates the quantified **Revenue At Risk Score (RARS)**, reasons over interventions via Gemini 1.5 Flash, strictly gates every rupee action through a **deterministic zero-LLM safety validator**, executes via Razorpay APIs, and logs to a tamper-evident audit ledger with automated rollback.
 2. **Outside-In (A2A Commerce Protocol)**: Automatically compiles and serves an agent-readable manifest (`kubermesh.json`), exposing a bounded endpoint (`/api/a2a/negotiate`) where external AI buyers can discover inventory, negotiate discounts within margin bounds, and receive instant Razorpay checkout orders.
 
 ---
