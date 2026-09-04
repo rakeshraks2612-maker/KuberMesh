@@ -68,7 +68,7 @@ class A2AGateway:
 
     def handle_negotiation(self, req: A2ANegotiationRequest) -> A2ANegotiationResponse:
         catalog = discovery_engine.get_catalog()
-        item = next((i for i in catalog if i.id == req.sku), None)
+        item = next((i for i in catalog if i.id == req.sku or req.sku.lower() in i.id.lower() or req.sku.lower() in i.name.lower() or i.name.lower() in req.sku.lower()), None)
         
         if not item:
             return A2ANegotiationResponse(
