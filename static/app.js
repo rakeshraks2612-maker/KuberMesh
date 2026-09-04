@@ -7,6 +7,38 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
+function showToast(message, type = "info", duration = 4000) {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  
+  let icon = "ℹ️";
+  if (type === "success") icon = "✅";
+  if (type === "warning") icon = "⚠️";
+  if (type === "error") icon = "❌";
+
+  toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px)";
+    toast.style.transition = "all 0.3s ease";
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+function copyProtocolUrl() {
+  const url = `${window.location.origin}/api/a2a/catalog`;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast(`Copied kubermesh.json URL: ${url}`, "success");
+  }).catch(() => {
+    prompt("Copy protocol manifest URL:", url);
+  });
+}
+
 function updateElasticitySimulation() {
   const slider = document.getElementById("sim-discount-slider");
   if (!slider) return;
@@ -24,11 +56,15 @@ function updateElasticitySimulation() {
 
   const badge = document.getElementById("simulator-guardrail-badge");
   if (discount > 20.0 || postMargin < 8.0) {
+    badge.className = "badge";
     badge.style.background = "rgba(239, 68, 68, 0.2)";
+    badge.style.borderColor = "rgba(239, 68, 68, 0.4)";
     badge.style.color = "#f87171";
     badge.textContent = "⚠️ GUARDRAIL BREACH: BLOCKED BY G-01 / G-02";
   } else {
+    badge.className = "badge badge-safe";
     badge.style.background = "rgba(16, 185, 129, 0.15)";
+    badge.style.borderColor = "rgba(16, 185, 129, 0.3)";
     badge.style.color = "#34d399";
     badge.textContent = "🛡️ GUARDRAIL STATUS: SAFE ZONE";
   }
@@ -38,8 +74,10 @@ function switchTab(tabId) {
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
 
-  document.getElementById(`tab-btn-${tabId}`).classList.add("active");
-  document.getElementById(`tab-${tabId}`).classList.add("active");
+  const btn = document.getElementById(`tab-btn-${tabId}`);
+  const content = document.getElementById(`tab-${tabId}`);
+  if (btn) btn.classList.add("active");
+  if (content) content.classList.add("active");
 
   if (tabId === 'audit') {
     loadAuditLedger();
@@ -53,20 +91,22 @@ async function loadDashboardData() {
     currentCatalogData = data.items || [];
 
     // Update Top Metrics
-    document.getElementById("metric-total-leakage").textContent = `₹${data.total_revenue_at_risk_inr.toLocaleString('en-IN')}`;
+    const totalLeakage = data.total_revenue_at_risk_inr || 0;
+    document.getElementById("metric-total-leakage").textContent = `₹${totalLeakage.toLocaleString('en-IN')}`;
     
     // Render Catalog Table
     renderCatalogTable(currentCatalogData);
     populateA2ASelect(currentCatalogData);
   } catch (err) {
     console.error("Failed to load catalog data:", err);
+    showToast("Error loading catalog metrics", "error");
   }
 }
 
 function renderCatalogTable(items) {
   const tbody = document.getElementById("catalog-table-body");
   if (!items || items.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center">No catalog items available.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4">No catalog items available.</td></tr>`;
     return;
   }
 
@@ -100,12 +140,12 @@ function renderCatalogTable(items) {
           </span>
         </td>
         <td>
-          <div style="display: flex; gap: 6px; align-items: center;">
+          <div style="display: flex; gap: 8px; align-items: center;">
             <button class="btn btn-primary btn-sm" onclick="optimizeSingleItem('${item.id}')">
-              Optimize
+              ⚡ Optimize
             </button>
             <button class="btn btn-secondary btn-sm" title="Simulate 15 cart drop-offs" onclick="injectChaos('${item.id}', 'abandonment_spike')">
-              ⚡ Drop-off
+              📉 Drop-off
             </button>
           </div>
         </td>
@@ -122,10 +162,11 @@ async function injectChaos(itemId, anomalyType) {
       body: JSON.stringify({ item_id: itemId, anomaly_type: anomalyType, count: 15 })
     });
     const data = await res.json();
-    alert(`⚡ Injected 15 simulated cart drop-offs for SKU ${itemId}. Recalculating RARS...`);
+    showToast(`⚡ Injected 15 simulated cart drop-offs for SKU ${itemId}. Recalculating RARS...`, "warning");
     await loadDashboardData();
   } catch (err) {
     console.error("Traffic injection failed:", err);
+    showToast("Failed to simulate traffic drop-off", "error");
   }
 }
 
@@ -143,35 +184,44 @@ async function triggerMultiScenarioDemo() {
     });
     const result = await res.json();
     renderExecutionTrace(result);
+    showToast(`Guardrail Intercepted & Auto-Repaired successfully!`, "success");
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
     console.error("Scenario demo failed:", err);
+    showToast("Scenario test failed", "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<span class="btn-icon">🛡️</span> Test Selected Guardrail`;
+    btn.innerHTML = `<span class="btn-icon">⚡</span> Test Selected Guardrail`;
   }
 }
 
 function populateA2ASelect(items) {
   const select = document.getElementById("a2a-sku");
   if (!select) return;
+  const currentVal = select.value;
   select.innerHTML = items.map(entry => {
     return `<option value="${entry.item.id}">${entry.item.name} (₹${entry.item.amount_inr})</option>`;
   }).join("");
+  if (currentVal && items.some(e => e.item.id === currentVal)) {
+    select.value = currentVal;
+  }
   updateA2APriceHint();
 }
 
 function updateA2APriceHint() {
   const select = document.getElementById("a2a-sku");
+  if (!select) return;
   const sku = select.value;
   const entry = currentCatalogData.find(e => e.item.id === sku);
   if (!entry) return;
 
   const retail = entry.item.amount_inr;
   const floorPrice = (entry.item.base_cost_paise / (1.0 - 0.08)) / 100.0;
+  const qty = parseInt(document.getElementById("a2a-qty")?.value || "1", 10);
+
   document.getElementById("a2a-price-hint").textContent = 
-    `Retail: ₹${retail.toFixed(2)} | Floor Price (8% Margin Floor): ₹${floorPrice.toFixed(2)}`;
+    `Retail: ₹${retail.toFixed(2)}/unit | Floor Price (8% Margin Floor): ₹${floorPrice.toFixed(2)}/unit | Qty: ${qty}`;
 }
 
 async function runCatalogScan() {
@@ -184,15 +234,19 @@ async function runCatalogScan() {
     const result = await res.json();
     
     if (result.top_risk_sku) {
-      await optimizeSingleItem(result.top_risk_sku, false);
+      showToast(`Scan complete. Top risk SKU identified: ${result.top_risk_sku}`, "info");
+      await optimizeSingleItem(result.top_risk_sku, true);
+    } else {
+      showToast("Scan complete. All catalog SKUs within healthy risk thresholds.", "success");
     }
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
     console.error("Scan failed:", err);
+    showToast("Catalog scan failed", "error");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<span class="btn-icon">⚡</span> Run Autonomous Growth Scan`;
+    btn.innerHTML = `<span class="btn-icon">🚀</span> Run Autonomous Growth Scan`;
   }
 }
 
@@ -207,10 +261,12 @@ async function optimizeSingleItem(itemId, showTrace = true) {
     if (showTrace) {
       renderExecutionTrace(result);
     }
+    showToast(`Autonomous optimization executed for ${result.item_name}`, "success");
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
     console.error("Optimization failed:", err);
+    showToast("Optimization failed", "error");
   }
 }
 
@@ -223,30 +279,31 @@ function renderExecutionTrace(result) {
   const ue = result.unit_economics;
 
   let html = `
-    <div style="margin-bottom: 14px; font-size: 13px;">
-      Target: <strong>${result.item_name}</strong> | Initial RARS: <span class="rars-badge rars-critical">${result.rars_score}</span>
+    <div style="margin-bottom: 14px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <div>Target: <strong style="color: #ffffff;">${result.item_name}</strong> | Initial RARS: <span class="rars-badge rars-critical">${result.rars_score}</span></div>
+      <div style="font-family: monospace; font-size: 11px; color: #38bdf8;">Deterministic Hash: ${result.validator_hash || 'SHA256-GATED'}</div>
     </div>
   `;
 
   // Unit Economics Card
   if (ue) {
     html += `
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; background: rgba(0,0,0,0.45); padding: 14px; border-radius: 12px; border: 1px solid var(--border-highlight); font-size: 12px;">
         <div>
-          <div style="color: var(--text-muted); font-size: 11px;">Base Margin</div>
-          <div style="font-weight: 700; color: #34d399;">${ue.base_margin_pct}%</div>
+          <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Base Margin</div>
+          <div style="font-weight: 800; font-size: 16px; color: #34d399; font-family: monospace;">${ue.base_margin_pct}%</div>
         </div>
         <div>
-          <div style="color: var(--text-muted); font-size: 11px;">Post-Discount Margin</div>
-          <div style="font-weight: 700; color: #38bdf8;">${ue.post_discount_margin_pct}%</div>
+          <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Post-Discount Margin</div>
+          <div style="font-weight: 800; font-size: 16px; color: #38bdf8; font-family: monospace;">${ue.post_discount_margin_pct}%</div>
         </div>
         <div>
-          <div style="color: var(--text-muted); font-size: 11px;">Break-Even Vol Multiplier</div>
-          <div style="font-weight: 700; color: #fbbf24;">${ue.breakeven_volume_multiplier}x</div>
+          <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Break-Even Uplift</div>
+          <div style="font-weight: 800; font-size: 16px; color: #fbbf24; font-family: monospace;">${ue.breakeven_volume_multiplier}x</div>
         </div>
         <div>
-          <div style="color: var(--text-muted); font-size: 11px;">Forecast Recovery</div>
-          <div style="font-weight: 700; color: #a78bfa;">+₹${ue.net_gmv_recovery_inr.toLocaleString('en-IN')}</div>
+          <div style="color: var(--text-muted); font-size: 11px; font-weight: 600;">Forecast Recovery</div>
+          <div style="font-weight: 800; font-size: 16px; color: #818cf8; font-family: monospace;">+₹${ue.net_gmv_recovery_inr.toLocaleString('en-IN')}</div>
         </div>
       </div>
     `;
@@ -261,21 +318,21 @@ function renderExecutionTrace(result) {
       <div class="trace-step ${stepClass}">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span class="step-badge ${badgeClass}">STEP ${idx + 1}: ${trace.stage}</span>
-          <span style="font-family: monospace; font-size: 11px; color: var(--text-dim);">
-            ${isApproved ? 'VERIFIED PASSED' : 'GUARDRAIL REJECTED'}
+          <span style="font-family: monospace; font-size: 11px; color: ${isApproved ? '#34d399' : '#f87171'}; font-weight: 700;">
+            ${isApproved ? 'VERIFIED PASSED' : 'GUARDRAIL REJECTED (AUTO-REPAIRED)'}
           </span>
         </div>
         
         ${trace.violations && trace.violations.length > 0 ? `
-          <div style="color: #f87171; font-size: 12px; margin: 8px 0; padding: 8px; background: rgba(239, 68, 68, 0.1); border-radius: 6px;">
-            ⚠️ <strong>Violations Detected:</strong><br>
+          <div style="color: #f87171; font-size: 12px; margin: 8px 0; padding: 10px; background: rgba(239, 68, 68, 0.12); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.25);">
+            ⚠️ <strong>Violations Intercepted:</strong><br>
             ${trace.violations.map(v => `• ${v}`).join("<br>")}
           </div>
         ` : ''}
 
-        <div style="font-size: 12px; color: var(--text-main); margin-top: 6px;">
-          ${trace.action ? `<strong>Proposal:</strong> ${trace.action.reasoning}` : ''}
-          ${trace.repaired_action ? `<strong>Auto-Repaired Proposal:</strong> ${trace.repaired_action.reasoning}` : ''}
+        <div style="font-size: 12px; color: var(--text-main); margin-top: 6px; line-height: 1.5;">
+          ${trace.action ? `<div><span style="color: var(--text-muted);">Supervisor Proposal:</span> ${trace.action.reasoning}</div>` : ''}
+          ${trace.repaired_action ? `<div style="margin-top: 4px;"><span style="color: #38bdf8; font-weight: 700;">Auto-Repaired Action:</span> ${trace.repaired_action.reasoning}</div>` : ''}
         </div>
       </div>
     `;
@@ -286,11 +343,11 @@ function renderExecutionTrace(result) {
     html += `
       <div class="trace-step approved">
         <span class="step-badge pass">FINAL STEP: RAZORPAY API EXECUTION & AUDIT</span>
-        <div style="font-size: 12px; margin-top: 6px; font-family: monospace; color: #38bdf8;">
-          • Action Executed: ${result.executed_action.action_type}<br>
+        <div style="font-size: 12px; margin-top: 8px; font-family: monospace; color: #38bdf8; line-height: 1.6;">
+          • Action Executed: <strong>${result.executed_action.action_type}</strong><br>
           • Target Identifier: ${resp.offer_id || resp.payment_link_id || resp.bundle_id || 'rzp_ack'}<br>
-          ${resp.magic_checkout_link ? `• Live Payment Link: <a href="${resp.magic_checkout_link}" target="_blank" style="color: #38bdf8; text-decoration: underline;">${resp.magic_checkout_link}</a><br>` : ''}
-          • Reversal Compensation Spec: ${result.executed_action.rollback_spec.endpoint || result.executed_action.rollback_spec.type}
+          ${resp.magic_checkout_link ? `• Live Payment Link: <a href="${resp.magic_checkout_link}" target="_blank" style="color: #38bdf8; text-decoration: underline; font-weight: 700;">${resp.magic_checkout_link}</a><br>` : ''}
+          • Reversal Compensation Spec: ${result.executed_action.rollback_spec?.endpoint || result.executed_action.rollback_spec?.type || 'N/A'}
         </div>
       </div>
     `;
@@ -335,9 +392,13 @@ async function submitA2ANegotiation() {
 
     if (data.decision === "ACCEPTED" || data.decision === "COUNTER_OFFER") {
       checkoutAction.style.display = "block";
+      showToast(`A2A Negotiation Result: ${data.decision} (Total: ₹${(data.total_amount_paise/100).toFixed(2)})`, "success");
+    } else {
+      showToast(`A2A Negotiation Rejected: ${data.reason}`, "warning");
     }
   } catch (err) {
     terminal.innerHTML = `<span style="color: #f87171;">// A2A Handshake Failed: ${err.message}</span>`;
+    showToast("A2A Handshake Failed", "error");
   }
 }
 
@@ -353,7 +414,7 @@ function launchLiveRazorpayCheckout() {
     image: "https://razorpay.com/favicon.ico",
     order_id: lastA2AResponse.razorpay_order_id,
     handler: function (response) {
-      alert(`🎉 Test Payment Successful!\nPayment ID: ${response.razorpay_payment_id}\nOrder ID: ${response.razorpay_order_id}\nSignature: ${response.razorpay_signature}`);
+      showToast(`🎉 Test Payment Successful! Payment ID: ${response.razorpay_payment_id}`, "success", 6000);
       loadDashboardData();
       loadAuditLedger();
     },
@@ -370,11 +431,11 @@ function launchLiveRazorpayCheckout() {
   try {
     const rzp = new Razorpay(options);
     rzp.on("payment.failed", function (response) {
-      alert(`⚠️ Test Payment Failed: ${response.error.description}`);
+      showToast(`⚠️ Test Payment Failed: ${response.error.description}`, "error");
     });
     rzp.open();
   } catch (e) {
-    alert(`Interactive Checkout Simulation: Razorpay SDK launched for order ${lastA2AResponse.razorpay_order_id} (Amount: ₹${(lastA2AResponse.total_amount_paise/100).toFixed(2)})`);
+    showToast(`Razorpay SDK launched for order ${lastA2AResponse.razorpay_order_id} (₹${(lastA2AResponse.total_amount_paise/100).toFixed(2)})`, "info");
   }
 }
 
@@ -401,11 +462,11 @@ async function saveCredentials() {
     if (data.key_id_set) {
       document.getElementById("badge-rzp-mode").innerHTML = `<span class="status-dot green"></span> Live Test Keys Active`;
     }
-    alert("Credentials saved! Live test sync initialized.");
+    showToast("Credentials saved! Live test sync initialized.", "success");
     closeSettingsModal();
     loadDashboardData();
   } catch (e) {
-    alert(`Failed to update credentials: ${e.message}`);
+    showToast(`Failed to update credentials: ${e.message}`, "error");
   }
 }
 
@@ -419,24 +480,24 @@ async function loadAuditLedger() {
 
     const tbody = document.getElementById("audit-table-body");
     if (entries.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center">No audit entries recorded yet. Run an optimization to generate verified records.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4">No audit entries recorded yet. Run an optimization to generate verified records.</td></tr>`;
       return;
     }
 
     tbody.innerHTML = entries.map(e => {
       const isRolledBack = e.rolled_back;
       const statusBadge = isRolledBack ? 
-        `<span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171;">ROLLED_BACK</span>` : 
+        `<span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.3);">ROLLED_BACK</span>` : 
         `<span class="badge badge-rzp">EXECUTED</span>`;
 
       return `
         <tr>
           <td style="font-size: 11px; font-family: monospace; color: var(--text-dim);">${new Date(e.timestamp).toLocaleTimeString()}</td>
           <td style="font-weight: 600;">${e.item_name}</td>
-          <td><code style="color: #818cf8;">${e.action_type}</code></td>
+          <td><code style="color: #818cf8; background: rgba(99, 102, 241, 0.1); padding: 2px 6px; border-radius: 4px;">${e.action_type}</code></td>
           <td style="font-family: monospace; font-size: 11px; color: #38bdf8;">${e.guardrail_result.validator_hash}</td>
-          <td style="font-family: monospace;">${e.rars_before.toFixed(2)} → <span style="color: #34d399;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
-          <td style="color: #34d399; font-weight: 600;">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
+          <td style="font-family: monospace;">${e.rars_before.toFixed(2)} → <span style="color: #34d399; font-weight: 700;">${e.rars_after ? e.rars_after.toFixed(2) : '0.25'}</span></td>
+          <td style="color: #34d399; font-weight: 700; font-family: monospace;">+₹${e.revenue_impact_inr.toLocaleString('en-IN')}</td>
           <td>${statusBadge}</td>
           <td>
             ${!isRolledBack ? `
@@ -463,17 +524,22 @@ async function triggerRollback(entryId) {
       body: JSON.stringify({ entry_id: entryId })
     });
     const result = await res.json();
-    alert(`Rollback Confirmed: ${result.reversal_details}`);
+    showToast(`Rollback Confirmed: ${result.reversal_details}`, "warning", 5000);
     await loadDashboardData();
     await loadAuditLedger();
   } catch (err) {
-    alert(`Rollback failed: ${err.message}`);
+    showToast(`Rollback failed: ${err.message}`, "error");
   }
 }
 
 async function resetDemo() {
   if (!confirm("Reset merchant catalog and simulated transactions to initial benchmark state?")) return;
-  await fetch("/api/reset", { method: "POST" });
-  await loadDashboardData();
-  await loadAuditLedger();
+  try {
+    await fetch("/api/reset", { method: "POST" });
+    showToast("Merchant state reset to baseline benchmark", "info");
+    await loadDashboardData();
+    await loadAuditLedger();
+  } catch (e) {
+    showToast("Reset failed", "error");
+  }
 }
