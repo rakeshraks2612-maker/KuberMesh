@@ -4,6 +4,7 @@ let currentCatalogData = [];
 document.addEventListener("DOMContentLoaded", () => {
   initAmbientSpotlight();
   initHeroCardsParallax();
+  initNavScrollSpy();
   loadDashboardData();
   loadAuditLedger();
   updateElasticitySimulation();
@@ -64,16 +65,87 @@ function initHeroCardsParallax() {
   updateTilt();
 }
 
-function scrollToDashboard() {
-  const el = document.getElementById("dashboard");
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth' });
+function scrollToSection(sectionId) {
+  if (sectionId === 'hero' || sectionId === 'overview') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setActiveNavButton('nav-btn-overview');
+    return;
   }
+
+  const el = document.getElementById(sectionId);
+  if (el) {
+    const navHeight = 72;
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    });
+  }
+
+  if (sectionId === 'capabilities') {
+    setActiveNavButton('nav-btn-architecture');
+  }
+}
+
+function setActiveNavButton(btnId) {
+  document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
+  const target = document.getElementById(btnId);
+  if (target) target.classList.add("active");
 }
 
 function navigateToTab(tabId) {
   switchTab(tabId);
-  scrollToDashboard();
+
+  // Synchronize top navbar active pill
+  if (tabId === 'growth') {
+    setActiveNavButton('nav-btn-workspace');
+  } else if (tabId === 'a2a') {
+    setActiveNavButton('nav-btn-a2a');
+  } else if (tabId === 'audit') {
+    setActiveNavButton('nav-btn-audit');
+  }
+
+  // Smooth scroll to workspace dashboard with header offset
+  const el = document.getElementById("dashboard");
+  if (el) {
+    const navHeight = 72;
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    });
+  }
+}
+
+// Enterprise ScrollSpy: synchronizes active nav button as user scrolls
+function initNavScrollSpy() {
+  window.addEventListener('scroll', () => {
+    const scrollPos = window.scrollY + 140;
+
+    // At top of page
+    if (window.scrollY < 280) {
+      setActiveNavButton('nav-btn-overview');
+      return;
+    }
+
+    const dashboardEl = document.getElementById("dashboard");
+    const capEl = document.getElementById("capabilities");
+
+    if (dashboardEl && scrollPos >= dashboardEl.offsetTop) {
+      const activeTab = document.querySelector(".tab-panel.active");
+      if (activeTab && activeTab.id === 'tab-a2a') {
+        setActiveNavButton('nav-btn-a2a');
+      } else if (activeTab && activeTab.id === 'tab-audit') {
+        setActiveNavButton('nav-btn-audit');
+      } else {
+        setActiveNavButton('nav-btn-workspace');
+      }
+    } else if (capEl && scrollPos >= capEl.offsetTop) {
+      setActiveNavButton('nav-btn-architecture');
+    }
+  }, { passive: true });
 }
 
 // Toast Alert Engine (No Emojis, Clean Typography)
@@ -143,6 +215,15 @@ function switchTab(tabId) {
   const content = document.getElementById(`tab-${tabId}`);
   if (btn) btn.classList.add("active");
   if (content) content.classList.add("active");
+
+  // Sync top navbar active button if in workspace view
+  if (tabId === 'growth') {
+    setActiveNavButton('nav-btn-workspace');
+  } else if (tabId === 'a2a') {
+    setActiveNavButton('nav-btn-a2a');
+  } else if (tabId === 'audit') {
+    setActiveNavButton('nav-btn-audit');
+  }
 
   if (tabId === 'audit') {
     loadAuditLedger();
