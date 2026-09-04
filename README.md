@@ -202,7 +202,7 @@ pytest -v tests/test_suite.py
 ```bash
 uvicorn src.server:app --port 8000 --reload
 ```
-Open **[https://grad-generating-businesses-articles.trycloudflare.com/](https://grad-generating-businesses-articles.trycloudflare.com/)** in your browser.
+Open **[https://dozens-delhi-but-slim.trycloudflare.com/](https://dozens-delhi-but-slim.trycloudflare.com/)** in your browser.
 
 ---
 
