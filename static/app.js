@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
   updateElasticitySimulation();
 });
 
-// Minimalist Ambient Flow & Dynamic Constellation Engine
+// Interactive Liquid Aurora Wave & Financial Flow Canvas Engine
 function initAmbientCanvas() {
   const canvas = document.getElementById("ambient-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let width, height;
-  let mouse = { x: -1000, y: -1000, active: false };
+  let mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000, active: false };
   let time = 0;
 
   function resize() {
@@ -24,8 +24,8 @@ function initAmbientCanvas() {
   }
   window.addEventListener("resize", resize);
   window.addEventListener("mousemove", (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+    mouse.targetX = e.clientX;
+    mouse.targetY = e.clientY;
     mouse.active = true;
   });
   window.addEventListener("mouseleave", () => {
@@ -33,80 +33,171 @@ function initAmbientCanvas() {
   });
   resize();
 
-  // Generate delicate minimalist floating nodes
-  const particleCount = Math.min(36, Math.floor((window.innerWidth * window.innerHeight) / 28000));
-  const particles = [];
-  for (let i = 0; i < particleCount; i++) {
-    particles.push({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      radius: Math.random() * 1.8 + 1.2,
-      speedY: Math.random() * 0.35 + 0.15,
-      seed: Math.random() * 100,
-      alpha: Math.random() * 0.25 + 0.15,
-      color: i % 3 === 0 ? "2, 132, 199" : (i % 3 === 1 ? "99, 102, 241" : "16, 185, 129")
-    });
+  // Multi-layered fluid aurora ribbons
+  const waves = [
+    {
+      baseYRatio: 0.32,
+      amplitude: 60,
+      speed: 0.012,
+      wavelength: 0.0032,
+      phase: 0,
+      colors: ["rgba(2, 132, 199, 0.14)", "rgba(56, 189, 248, 0.07)", "rgba(99, 102, 241, 0.01)"],
+      lineColor: "rgba(2, 132, 199, 0.38)",
+      lineWidth: 1.5
+    },
+    {
+      baseYRatio: 0.48,
+      amplitude: 75,
+      speed: 0.009,
+      wavelength: 0.0026,
+      phase: Math.PI / 3,
+      colors: ["rgba(99, 102, 241, 0.12)", "rgba(139, 92, 246, 0.06)", "rgba(2, 132, 199, 0.01)"],
+      lineColor: "rgba(99, 102, 241, 0.32)",
+      lineWidth: 1.5
+    },
+    {
+      baseYRatio: 0.64,
+      amplitude: 68,
+      speed: 0.014,
+      wavelength: 0.0038,
+      phase: Math.PI * 0.75,
+      colors: ["rgba(16, 185, 129, 0.10)", "rgba(6, 182, 212, 0.05)", "rgba(16, 185, 129, 0.01)"],
+      lineColor: "rgba(16, 185, 129, 0.28)",
+      lineWidth: 1.2
+    },
+    {
+      baseYRatio: 0.80,
+      amplitude: 52,
+      speed: 0.008,
+      wavelength: 0.0022,
+      phase: Math.PI * 1.2,
+      colors: ["rgba(6, 182, 212, 0.09)", "rgba(2, 132, 199, 0.04)", "rgba(241, 245, 249, 0.0)"],
+      lineColor: "rgba(6, 182, 212, 0.25)",
+      lineWidth: 1.2
+    }
+  ];
+
+  // Floating luminous pulses along the wave ribbons
+  const pulses = Array.from({ length: 22 }, (_, i) => ({
+    waveIndex: i % waves.length,
+    progress: Math.random(),
+    speed: 0.0006 + Math.random() * 0.0010,
+    radius: Math.random() * 2.2 + 1.4,
+    glowSize: Math.random() * 14 + 8,
+    color: i % 3 === 0 ? "2, 132, 199" : (i % 3 === 1 ? "99, 102, 241" : "16, 185, 129")
+  }));
+
+  function getWaveY(wave, x, t) {
+    const baseY = height * wave.baseYRatio;
+    let y = baseY + 
+      Math.sin(x * wave.wavelength + t * wave.speed * 60 + wave.phase) * wave.amplitude +
+      Math.sin(x * wave.wavelength * 0.5 - t * wave.speed * 30) * (wave.amplitude * 0.35) +
+      Math.cos(x * wave.wavelength * 1.8 + t * wave.speed * 45) * (wave.amplitude * 0.2);
+
+    // Mouse fluid wave ripple & deflection
+    if (mouse.active) {
+      const dx = x - mouse.x;
+      const dy = baseY - mouse.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 260) {
+        const factor = (1 - dist / 260);
+        y += Math.sin(dist * 0.04 - t * 4) * factor * 26;
+      }
+    }
+    return y;
   }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
-    time += 0.015;
+    time += 0.016;
 
-    // 1. Subtle Ambient Cursor Light
+    // Smooth mouse follow
     if (mouse.active) {
-      const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 240);
-      grad.addColorStop(0, "rgba(2, 132, 199, 0.06)");
-      grad.addColorStop(0.5, "rgba(99, 102, 241, 0.025)");
-      grad.addColorStop(1, "transparent");
-      ctx.fillStyle = grad;
+      mouse.x += (mouse.targetX - mouse.x) * 0.1;
+      mouse.y += (mouse.targetY - mouse.y) * 0.1;
+
+      // Cursor Ambient Radiant Lens
+      const lens = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 220);
+      lens.addColorStop(0, "rgba(2, 132, 199, 0.07)");
+      lens.addColorStop(0.4, "rgba(99, 102, 241, 0.025)");
+      lens.addColorStop(1, "transparent");
+      ctx.fillStyle = lens;
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 240, 0, Math.PI * 2);
+      ctx.arc(mouse.x, mouse.y, 220, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // 2. Update & Draw Floating Particles
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-      p.y -= p.speedY;
-      p.x += Math.sin(time + p.seed) * 0.35;
+    // Draw Aurora Liquid Waves
+    for (let w = 0; w < waves.length; w++) {
+      const wave = waves[w];
+      const step = 8;
+      const points = [];
 
-      // Wrap around screen
-      if (p.y < -10) p.y = height + 10;
-      if (p.x < -10) p.x = width + 10;
-      if (p.x > width + 10) p.x = -10;
-
-      // Mouse gentle repulsion
-      if (mouse.active) {
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 140 && dist > 0) {
-          const force = (1 - dist / 140) * 0.8;
-          p.x += (dx / dist) * force;
-          p.y += (dy / dist) * force;
-        }
+      for (let x = 0; x <= width + step; x += step) {
+        points.push({ x, y: getWaveY(wave, x, time) });
       }
 
-      // Draw particle
+      // Gradient fill under the wave curve
+      const fillGrad = ctx.createLinearGradient(0, height * (wave.baseYRatio - 0.2), 0, height);
+      fillGrad.addColorStop(0, wave.colors[0]);
+      fillGrad.addColorStop(0.5, wave.colors[1]);
+      fillGrad.addColorStop(1, wave.colors[2]);
+
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+      ctx.moveTo(0, height);
+      ctx.lineTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1];
+        const curr = points[i];
+        const xc = (prev.x + curr.x) / 2;
+        const yc = (prev.y + curr.y) / 2;
+        ctx.quadraticCurveTo(prev.x, prev.y, xc, yc);
+      }
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fillStyle = fillGrad;
       ctx.fill();
 
-      // Constellation connection lines
-      for (let j = i + 1; j < particles.length; j++) {
-        const p2 = particles[j];
-        const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-        if (dist < 110) {
-          const lineAlpha = (1 - dist / 110) * 0.12;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(2, 132, 199, ${lineAlpha})`;
-          ctx.lineWidth = 0.75;
-          ctx.stroke();
-        }
+      // Glowing Crest Line
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        const prev = points[i - 1];
+        const curr = points[i];
+        const xc = (prev.x + curr.x) / 2;
+        const yc = (prev.y + curr.y) / 2;
+        ctx.quadraticCurveTo(prev.x, prev.y, xc, yc);
       }
+      ctx.strokeStyle = wave.lineColor;
+      ctx.lineWidth = wave.lineWidth;
+      ctx.stroke();
+    }
+
+    // Draw Luminous Gliding Data Pulses along waves
+    for (let i = 0; i < pulses.length; i++) {
+      const p = pulses[i];
+      p.progress += p.speed;
+      if (p.progress > 1) p.progress = 0;
+
+      const wave = waves[p.waveIndex];
+      const posX = p.progress * width;
+      const posY = getWaveY(wave, posX, time);
+
+      // Pulse Glow halo
+      const glowGrad = ctx.createRadialGradient(posX, posY, 0, posX, posY, p.glowSize);
+      glowGrad.addColorStop(0, `rgba(${p.color}, 0.40)`);
+      glowGrad.addColorStop(0.5, `rgba(${p.color}, 0.10)`);
+      glowGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(posX, posY, p.glowSize, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core Particle
+      ctx.beginPath();
+      ctx.arc(posX, posY, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color}, 0.85)`;
+      ctx.fill();
     }
 
     requestAnimationFrame(draw);

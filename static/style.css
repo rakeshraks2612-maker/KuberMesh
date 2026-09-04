@@ -258,7 +258,7 @@ body {
 }
 
 /* ==========================================================================
-   MINIMALIST AMBIENT FINTECH BACKGROUND
+   INTERACTIVE LIQUID AURORA BACKGROUND
    ========================================================================== */
 .animated-bg-layer {
   position: fixed;
@@ -266,7 +266,7 @@ body {
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
-  background: #f8fafc;
+  background: radial-gradient(circle at 50% -10%, #f0f9ff 0%, #f8fafc 45%, #f1f5f9 100%);
 }
 
 #ambient-canvas {
