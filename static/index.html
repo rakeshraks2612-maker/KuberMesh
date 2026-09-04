@@ -3,427 +3,484 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KUBERMESH — Autonomous Revenue Optimizer &amp; A2A Protocol</title>
-  <meta name="description" content="Autonomous Revenue Optimization &amp; Agent-to-Agent (A2A) Commerce Protocol for Razorpay Merchants.">
+  <title>KuberMesh — Revenue intelligence is here.</title>
+  <meta name="description" content="KuberMesh brings autonomous revenue intelligence, deterministic financial guardrails, and agent-to-agent commerce to Razorpay merchants.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Archivo+Narrow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-  <!-- Precision Background Grid Lines -->
-  <div class="blueprint-grid-overlay"></div>
+  <!-- Apple Intelligence Ambient Rainbow Fluid Glow -->
+  <div class="apple-glow-mesh">
+    <div class="glow-orb orb-purple"></div>
+    <div class="glow-orb orb-cyan"></div>
+    <div class="glow-orb orb-magenta"></div>
+    <div class="glow-orb orb-amber"></div>
+  </div>
 
-  <div class="site-wrapper">
-    <!-- TOP NAVIGATION BAR (SHARPLINK STYLE) -->
-    <header class="site-header">
-      <div class="header-left">
-        <div class="brand-block">
-          <div class="brand-symbol">
-            <span class="crosshair-icon">+</span>
-          </div>
-          <div class="brand-text">
-            <span class="brand-title">KUBERMESH</span>
-            <span class="brand-meta">SYS_VER 1.0.0 // PROTOCOL_ACTIVE</span>
-          </div>
-        </div>
+  <!-- APPLE-STYLE STICKY GLASS NAVBAR -->
+  <nav class="apple-nav">
+    <div class="nav-content">
+      <a href="#hero" class="nav-brand">
+        <span class="brand-spark">✧</span>
+        <span class="brand-text">KuberMesh</span>
+      </a>
 
-        <div class="system-status-ribbon">
-          <div class="status-node" id="node-rzp-status">
-            <span class="node-indicator online"></span>
-            <span class="node-text">RZP_TESTNET: CONNECTED</span>
-          </div>
-          <div class="status-node">
-            <span class="node-indicator gated"></span>
-            <span class="node-text">GUARDRAILS: DETERMINISTIC (0-LLM)</span>
-          </div>
-          <div class="status-node">
-            <span class="node-indicator active"></span>
-            <span class="node-text">PROTOCOL: NPCI_UAP / x402</span>
-          </div>
-        </div>
+      <div class="nav-links">
+        <a href="#overview" class="nav-link">Overview</a>
+        <a href="#pillars" class="nav-link">Capabilities</a>
+        <a href="#dashboard" class="nav-link">Live Dashboard</a>
+        <a href="#a2a-section" class="nav-link">A2A Protocol</a>
+        <a href="#audit-section" class="nav-link">Audit Ledger</a>
       </div>
 
-      <div class="header-right">
-        <button class="sys-btn" onclick="copyProtocolUrl()">
-          <span class="btn-prefix">[MANIFEST]</span>
-          <span>kubermesh.json</span>
+      <div class="nav-actions">
+        <div class="rzp-pill" id="badge-rzp-status">
+          <span class="status-pulse"></span>
+          <span>Razorpay Testnet</span>
+        </div>
+        <button class="btn-apple-glass" onclick="openSettingsModal()">
+          <span>API Keys</span>
         </button>
-        <button class="sys-btn" onclick="openSettingsModal()">
-          <span class="btn-prefix">[AUTH]</span>
-          <span>API KEYS</span>
-        </button>
-        <button class="sys-btn btn-ghost" onclick="resetDemo()">
-          <span>RESET</span>
+        <button class="btn-apple-primary" onclick="scrollToDashboard()">
+          <span>Launch Dashboard</span>
         </button>
       </div>
-    </header>
+    </div>
+  </nav>
 
-    <!-- HERO EDITORIAL CALLOUT (SHARPLINK STYLE) -->
-    <section class="hero-editorial">
-      <div class="editorial-col-left">
-        <div class="section-kicker">AUTONOMOUS AGENT COMMERCE &amp; REVENUE ENGINE</div>
-        <h1 class="editorial-headline">CLOSED-LOOP REVENUE DEFENSE FOR RAZORPAY</h1>
-      </div>
-      <div class="editorial-col-right">
-        <p class="editorial-desc">
-          KuberMesh continuously profiles catalog conversion velocity, intercepts cart drop-offs, enforces Zero-LLM deterministic financial guardrails, and negotiates autonomously with AI buyer agents via NPCI UAP/x402 protocols.
-        </p>
-      </div>
-    </section>
-
-    <!-- 4-COLUMN PINNED METRICS MATRIX -->
-    <section class="metrics-matrix">
-      <!-- Matrix Tile 1 -->
-      <div class="matrix-card pin-card">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="card-meta">
-          <span class="meta-tag text-crimson">LEAKAGE_RISK_PIPELINE</span>
-          <span class="meta-code">RARS_01</span>
-        </div>
-        <div class="card-value text-crimson" id="metric-total-leakage">₹1,43,925</div>
-        <div class="card-subtext">
-          <span class="risk-badge">▲ 28.4% EXPOSURE</span> across 5 active catalog SKUs
-        </div>
+  <div class="page-container">
+    <!-- HERO SECTION (APPLE INTELLIGENCE STYLE) -->
+    <section id="hero" class="hero-section">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-spark">✧</span>
+        <span class="gradient-text-subtle">KuberMesh for Razorpay Merchants</span>
       </div>
 
-      <!-- Matrix Tile 2 -->
-      <div class="matrix-card pin-card">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="card-meta">
-          <span class="meta-tag text-emerald">GATED_INTERVENTIONS</span>
-          <span class="meta-code">SEC_02</span>
-        </div>
-        <div class="card-value text-emerald" id="metric-interventions">0</div>
-        <div class="card-subtext">
-          <span class="secure-badge">100% GATED</span> Zero-LLM Hard Enforcement
-        </div>
+      <h1 class="hero-title">
+        Revenue intelligence<br>
+        <span class="gradient-text-iridescent">is here.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Autonomous revenue optimization meets deterministic financial guardrails. Discover leaking carts, execute bounded Razorpay interventions, self-repair failures, and settle agentic commerce over NPCI UAP and x402 protocols.
+      </p>
+
+      <div class="hero-cta-group">
+        <button class="btn-apple-glow" onclick="scrollToDashboard()">
+          <span>Experience Live Dashboard</span>
+        </button>
+        <a href="/api/a2a/catalog" target="_blank" class="btn-apple-secondary">
+          <span>View <code>kubermesh.json</code> Manifest</span>
+        </a>
       </div>
 
-      <!-- Matrix Tile 3 -->
-      <div class="matrix-card pin-card">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="card-meta">
-          <span class="meta-tag text-cyan">A2A_PROTOCOL_STATE</span>
-          <span class="meta-code">UAP_03</span>
-        </div>
-        <div class="card-value text-cyan">x402 READY</div>
-        <div class="card-subtext">
-          Machine-Readable Manifest live at <code>/api/a2a/catalog</code>
-        </div>
-      </div>
+      <!-- HERO INTERACTIVE SHOWCASE CARD -->
+      <div class="hero-card-container">
+        <div class="hero-card rainbow-border">
+          <div class="hero-card-inner">
+            <div class="hero-card-header">
+              <div class="hero-card-left">
+                <span class="pill-chip">Autonomous Revenue Telemetry</span>
+                <span class="header-desc">Active Closed-Loop Optimization Engine</span>
+              </div>
+              <div class="hero-card-right">
+                <span class="status-tag live">Live Sync Active</span>
+              </div>
+            </div>
 
-      <!-- Matrix Tile 4 -->
-      <div class="matrix-card pin-card">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="card-meta">
-          <span class="meta-tag text-amber">GUARDRAIL_BOUNDS</span>
-          <span class="meta-code">INV_04</span>
-        </div>
-        <div class="card-value text-amber">6 RULES ACTIVE</div>
-        <div class="card-subtext">
-          Max Disc 20% | Min Margin 8% | Volatility 15%
+            <div class="hero-metrics-grid">
+              <div class="hero-metric-tile">
+                <div class="tile-caption">Total Revenue At Risk</div>
+                <div class="tile-number text-magenta" id="hero-stat-leakage">₹1,43,925</div>
+                <div class="tile-footnote">Across unoptimized catalog items</div>
+              </div>
+
+              <div class="hero-metric-tile">
+                <div class="tile-caption">Autonomous Interventions</div>
+                <div class="tile-number text-emerald" id="hero-stat-interventions">0</div>
+                <div class="tile-footnote">100% Gated by Zero-LLM Rules</div>
+              </div>
+
+              <div class="hero-metric-tile">
+                <div class="tile-caption">A2A Protocol Readiness</div>
+                <div class="tile-number text-cyan">NPCI UAP</div>
+                <div class="tile-footnote">x402 Autonomous Buyer Gateway</div>
+              </div>
+
+              <div class="hero-metric-tile">
+                <div class="tile-caption">Guardrail Integrity</div>
+                <div class="tile-number text-amber">6 Invariants</div>
+                <div class="tile-footnote">Strict Zero-LLM Margin Floor (8%)</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ARCHITECTURAL SEGMENTED NAVIGATION -->
-    <nav class="matrix-nav">
-      <button class="matrix-nav-btn active" id="tab-btn-growth" onclick="switchTab('growth')">
-        <span class="btn-index">01</span>
-        <span class="btn-title">CATALOG HEALTH &amp; REVENUE ENGINE</span>
-      </button>
-      <button class="matrix-nav-btn" id="tab-btn-a2a" onclick="switchTab('a2a')">
-        <span class="btn-index">02</span>
-        <span class="btn-title">AGENT-TO-AGENT (A2A) COMMERCE GATEWAY</span>
-      </button>
-      <button class="matrix-nav-btn" id="tab-btn-audit" onclick="switchTab('audit')">
-        <span class="btn-index">03</span>
-        <span class="btn-title">IMMUTABLE AUDIT LEDGER &amp; ROLLBACK</span>
-      </button>
-    </nav>
+    <!-- SECTION: THE THREE CORE PILLARS (APPLE BENTO GRID) -->
+    <section id="pillars" class="section-container">
+      <div class="section-intro">
+        <div class="section-eyebrow">Architected for Trust</div>
+        <h2 class="section-heading">Powerful capabilities.<br>Deterministic protection.</h2>
+        <p class="section-subtext">Every financial action is bound by mathematical proofs and verifiable audit ledgers.</p>
+      </div>
 
-    <!-- TAB 1: CATALOG HEALTH & REVENUE ENGINE -->
-    <main id="tab-growth" class="matrix-panel active">
-      <!-- WHAT-IF ELASTICITY & MARGIN DEFENSE ENGINE -->
-      <section class="pin-card panel-block">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        
-        <div class="panel-header">
-          <div>
-            <span class="section-kicker">UNIT ECONOMICS &amp; BOUNDARY CALCULATOR</span>
-            <h3 class="panel-heading">INTERACTIVE ELASTICITY &amp; GUARDRAIL SIMULATOR</h3>
-            <p class="panel-description">
-              Simulate promotional discounts to calculate break-even volume multipliers ($E_{\text{req}} = \frac{M_{\text{base}}}{M_{\text{post}}}$) and verify Zero-LLM guardrail boundary conditions.
-            </p>
+      <div class="bento-grid">
+        <!-- Bento Tile 1 -->
+        <div class="bento-card rainbow-hover">
+          <div class="bento-icon-box purple">
+            <span class="bento-icon">🛡️</span>
           </div>
-          <div id="simulator-guardrail-badge" class="guardrail-chip safe">
-            <span class="chip-dot"></span>
-            <span id="simulator-badge-text">STATUS: SAFE ZONE (G-01 &amp; G-02 VERIFIED)</span>
+          <h3 class="bento-title">Zero-LLM Safety Validator</h3>
+          <p class="bento-body">
+            Financial decisions never rely on unconstrained model hallucinations. Hard rules enforce a 20% discount ceiling, 8% margin floor, and 15% price volatility delta.
+          </p>
+          <div class="bento-tag">G-01 to G-06 Hard Invariants</div>
+        </div>
+
+        <!-- Bento Tile 2 -->
+        <div class="bento-card rainbow-hover">
+          <div class="bento-icon-box cyan">
+            <span class="bento-icon">⚡</span>
           </div>
+          <h3 class="bento-title">Self-Repair Failure Defense</h3>
+          <p class="bento-body">
+            When an agent proposal exceeds safety boundaries, KuberMesh catches the violation, recalibrates to mathematically optimal safe bounds, and logs verified SHA256 checksums.
+          </p>
+          <div class="bento-tag">Closed-Loop Auto-Correction</div>
         </div>
 
-        <div class="simulator-body">
-          <div class="sim-slider-box">
-            <div class="slider-header-flex">
-              <span class="slider-caption">PROMOTIONAL DISCOUNT PARAMETER</span>
-              <span class="slider-num text-cyan" id="sim-discount-val">14%</span>
-            </div>
-            <input type="range" id="sim-discount-slider" min="0" max="35" step="1" value="14" class="industrial-slider" oninput="updateElasticitySimulation()">
-            <div class="slider-markers">
-              <span>0% (FULL MARGIN)</span>
-              <span class="mark-warning">20% (GUARDRAIL CEILING G-01)</span>
-              <span class="mark-danger">35% (BREACH ZONE)</span>
-            </div>
+        <!-- Bento Tile 3 -->
+        <div class="bento-card rainbow-hover">
+          <div class="bento-icon-box magenta">
+            <span class="bento-icon">🤖</span>
           </div>
-
-          <div class="sim-readout-grid">
-            <div class="readout-box">
-              <div class="readout-title">POST-DISCOUNT MARGIN</div>
-              <div class="readout-metric text-cyan" id="sim-post-margin">21.0%</div>
-              <div class="readout-sub">MIN FLOOR: 8.0% (G-02)</div>
-            </div>
-            <div class="readout-box">
-              <div class="readout-title">REQUIRED VOLUME UPLIFT</div>
-              <div class="readout-metric text-amber" id="sim-breakeven-uplift">1.67x</div>
-              <div class="readout-sub">TARGET BREAK-EVEN RATE</div>
-            </div>
-            <div class="readout-box">
-              <div class="readout-title">EST. REVENUE RECOVERY</div>
-              <div class="readout-metric text-emerald" id="sim-recovery-rate">+54.0%</div>
-              <div class="readout-sub">PROJECTED GMV RECOVERY</div>
-            </div>
-          </div>
+          <h3 class="bento-title">Agent-to-Agent Commerce</h3>
+          <p class="bento-body">
+            External AI buyers query <code>kubermesh.json</code>, negotiate bulk price terms within merchant margin floors, and settle instant checkouts using Razorpay APIs.
+          </p>
+          <div class="bento-tag">NPCI UAP / AP2 / x402 Protocol</div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- CONTROL STRIP FOR MULTI-SCENARIO DEFENSE -->
-      <section class="pin-card control-strip">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="control-left">
-          <span class="section-kicker">AUTONOMOUS SUPERVISOR</span>
-          <div class="control-title">CATALOG RISK PROFILING &amp; MULTI-SCENARIO DEFENSE</div>
-        </div>
-        <div class="control-right">
-          <div class="select-container">
-            <select id="select-failure-scenario" class="industrial-select">
-              <option value="discount_cap_breach">SCENARIO A: DISCOUNT CAP BREACH (25% > 20%)</option>
-              <option value="margin_floor_breach">SCENARIO B: MARGIN FLOOR BREACH (10% ON 11% MARGIN)</option>
-              <option value="volatility_breach">SCENARIO C: PRICE VOLATILITY BREACH (30% DROP)</option>
-            </select>
-          </div>
-          <button id="btn-fail-demo" class="industrial-btn btn-amber" onclick="triggerMultiScenarioDemo()">
-            <span>TEST GUARDRAIL DEFENSE</span>
-          </button>
-          <button id="btn-scan" class="industrial-btn btn-indigo" onclick="runCatalogScan()">
-            <span>EXECUTE GROWTH SCAN</span>
-          </button>
-        </div>
-      </section>
+    <!-- SECTION: LIVE INTERACTIVE WORKSPACE & DASHBOARD -->
+    <section id="dashboard" class="section-container dashboard-section">
+      <div class="section-intro text-left">
+        <div class="section-eyebrow">Interactive Merchant Workspace</div>
+        <h2 class="section-heading">Live Revenue Optimizer &amp; Test Suite</h2>
+        <p class="section-subtext">Interact directly with live Razorpay test-mode catalog metrics, simulations, and negotiation engines.</p>
+      </div>
 
-      <!-- CATALOG INVENTORY & RISK TABLE -->
-      <section class="pin-card table-section">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="table-responsive">
-          <table class="industrial-table" id="catalog-table">
-            <thead>
-              <tr>
-                <th>SKU &amp; PRODUCT IDENTIFIER</th>
-                <th>RETAIL PRICE</th>
-                <th>BASE MARGIN</th>
-                <th>CART ABANDONMENT</th>
-                <th>7D VELOCITY</th>
-                <th>STAGNATION</th>
-                <th>RARS SCORE</th>
-                <th class="col-actions">AUTONOMOUS ACTION</th>
-              </tr>
-            </thead>
-            <tbody id="catalog-table-body">
-              <tr><td colspan="8" class="text-center py-8">DISCOVERING CATALOG METRICS FROM RAZORPAY...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <!-- WORKSPACE TABS -->
+      <div class="dashboard-tab-bar">
+        <button class="dash-tab-btn active" id="tab-btn-growth" onclick="switchTab('growth')">
+          <span>Catalog Health &amp; Revenue Engine</span>
+        </button>
+        <button class="dash-tab-btn" id="tab-btn-a2a" onclick="switchTab('a2a')">
+          <span>Agent-to-Agent (A2A) Gateway</span>
+        </button>
+        <button class="dash-tab-btn" id="tab-btn-audit" onclick="switchTab('audit')">
+          <span>Immutable Audit Ledger &amp; Rollback</span>
+        </button>
+      </div>
 
-      <!-- EXECUTION TRACE FORENSIC PANEL -->
-      <section id="execution-trace-panel" class="pin-card trace-panel" style="display: none;">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="trace-header">
-          <div class="trace-meta">
-            <span class="node-indicator active"></span>
-            <span class="trace-heading">AUTONOMOUS REASONING, GUARDRAIL &amp; UNIT ECONOMICS TRACE</span>
-          </div>
-          <button class="btn-close" onclick="closeTracePanel()">[CLOSE]</button>
-        </div>
-        <div class="trace-body" id="trace-content">
-          <!-- Populated dynamically -->
-        </div>
-      </section>
-    </main>
-
-    <!-- TAB 2: AGENT-TO-AGENT (A2A) COMMERCE GATEWAY -->
-    <main id="tab-a2a" class="matrix-panel">
-      <section class="pin-card control-strip">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="control-left">
-          <span class="section-kicker">PROTOCOL SPECIFICATION</span>
-          <div class="control-title">NPCI UAP / AP2 / x402 MACHINE COMMERCE GATEWAY</div>
-        </div>
-        <div class="control-right">
-          <a href="/api/a2a/catalog" target="_blank" class="industrial-btn btn-ghost">
-            <span>VIEW KUBERMESH.JSON MANIFEST</span>
-          </a>
-        </div>
-      </section>
-
-      <div class="a2a-dual-pane">
-        <!-- LEFT: BUYER AGENT SIMULATOR -->
-        <div class="pin-card panel-block">
-          <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-          <div class="panel-header">
-            <div>
-              <span class="section-kicker">BUYER AGENT PERSPECTIVE</span>
-              <h3 class="panel-heading">AI BUYER AGENT SIMULATOR</h3>
-            </div>
-          </div>
-
-          <div class="form-matrix">
-            <div class="form-cell">
-              <label for="a2a-buyer-id">BUYER AGENT IDENTIFIER</label>
-              <input type="text" id="a2a-buyer-id" value="agent_gemini_shopping_bot_99" class="industrial-input">
-            </div>
-
-            <div class="form-cell">
-              <label for="a2a-sku">TARGET CATALOG SKU</label>
-              <select id="a2a-sku" class="industrial-select" onchange="updateA2APriceHint()">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-
-            <div class="form-row-split">
-              <div class="form-cell">
-                <label for="a2a-qty">QUANTITY</label>
-                <input type="number" id="a2a-qty" value="1" min="1" max="10" class="industrial-input" oninput="updateA2APriceHint()">
+      <!-- TAB PANEL 1: REVENUE ENGINE -->
+      <div id="tab-growth" class="dash-panel active">
+        <!-- WHAT-IF ELASTICITY SIMULATOR (APPLE CARD) -->
+        <div class="apple-card simulator-box rainbow-border">
+          <div class="apple-card-inner">
+            <div class="sim-header">
+              <div>
+                <span class="card-eyebrow">Predictive Unit Economics</span>
+                <h3 class="card-title">Interactive "What-If" Elasticity &amp; Guardrail Simulator</h3>
+                <p class="card-desc">Drag the discount parameter to test break-even unit volumes and watch Zero-LLM guardrail thresholds react in real-time.</p>
               </div>
-              <div class="form-cell">
-                <label for="a2a-offered-inr">OFFERED PRICE PER UNIT (₹)</label>
-                <input type="number" id="a2a-offered-inr" value="1349" class="industrial-input">
+              <div id="simulator-guardrail-badge" class="guardrail-pill safe">
+                <span class="pill-dot"></span>
+                <span id="simulator-badge-text">Safe Zone: Rules G-01 &amp; G-02 Verified</span>
               </div>
             </div>
 
-            <div class="callout-box" id="a2a-price-hint">
-              RETAIL: ₹1,499.00 | FLOOR PRICE (8% MARGIN FLOOR): ₹1,032.61
-            </div>
+            <div class="sim-grid">
+              <div class="slider-block">
+                <div class="slider-top">
+                  <span class="slider-title">Simulated Promotional Discount</span>
+                  <span class="slider-value-display gradient-text-iridescent" id="sim-discount-val">14%</span>
+                </div>
+                <input type="range" id="sim-discount-slider" min="0" max="35" step="1" value="14" class="apple-range" oninput="updateElasticitySimulation()">
+                <div class="slider-legend">
+                  <span>0% (Full Margin)</span>
+                  <span class="legend-warn">20% (Guardrail Ceiling)</span>
+                  <span class="legend-breach">35% (Breach Zone)</span>
+                </div>
+              </div>
 
-            <button class="industrial-btn btn-indigo btn-full" onclick="submitA2ANegotiation()">
-              <span>TRANSMIT UAP / x402 NEGOTIATION HANDSHAKE</span>
-            </button>
+              <div class="sim-readouts">
+                <div class="readout-tile">
+                  <div class="readout-label">Post-Discount Margin</div>
+                  <div class="readout-value text-cyan" id="sim-post-margin">21.0%</div>
+                  <div class="readout-sub">Floor: 8.0% (G-02)</div>
+                </div>
+                <div class="readout-tile">
+                  <div class="readout-label">Required Vol Uplift</div>
+                  <div class="readout-value text-amber" id="sim-breakeven-uplift">1.67x</div>
+                  <div class="readout-sub">Break-Even Elasticity</div>
+                </div>
+                <div class="readout-tile">
+                  <div class="readout-label">Est. GMV Recovery</div>
+                  <div class="readout-value text-emerald" id="sim-recovery-rate">+54.0%</div>
+                  <div class="readout-sub">Predicted Net Uplift</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- RIGHT: MERCHANT GATEWAY RESPONSE -->
-        <div class="pin-card panel-block">
-          <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-          <div class="panel-header">
+        <!-- CONTROL TOOLBAR -->
+        <div class="apple-card control-card">
+          <div class="control-header">
             <div>
-              <span class="section-kicker">GATEWAY RESPONSE</span>
-              <h3 class="panel-heading">CRYPTOGRAPHIC TOKEN &amp; SETTLEMENT</h3>
+              <span class="card-eyebrow">Autonomous Supervisor</span>
+              <h3 class="card-title">Catalog Risk Matrix &amp; Multi-Scenario Defense</h3>
+              <p class="card-desc">Continuous calculation of Revenue At Risk Score (RARS) with closed-loop autonomous auto-repair.</p>
+            </div>
+            <div class="control-actions">
+              <div class="select-wrapper">
+                <select id="select-failure-scenario" class="apple-select">
+                  <option value="discount_cap_breach">Scenario A: Discount Cap Breach (25% > 20%)</option>
+                  <option value="margin_floor_breach">Scenario B: Margin Floor Breach (10% on 11% Margin)</option>
+                  <option value="volatility_breach">Scenario C: Price Volatility Breach (30% Drop)</option>
+                </select>
+              </div>
+              <button id="btn-fail-demo" class="btn-apple-amber" onclick="triggerMultiScenarioDemo()">
+                <span>Test Selected Guardrail</span>
+              </button>
+              <button id="btn-scan" class="btn-apple-primary" onclick="runCatalogScan()">
+                <span>Run Growth Scan</span>
+              </button>
             </div>
           </div>
+        </div>
 
-          <div class="terminal-container" id="a2a-result-terminal">
-            <span class="terminal-comment">// AWAITING INCOMING A2A NEGOTIATION REQUEST...</span>
-            <span class="terminal-cursor">&gt; _</span>
+        <!-- CATALOG INVENTORY TABLE -->
+        <div class="apple-card table-card">
+          <div class="table-responsive">
+            <table class="apple-table" id="catalog-table">
+              <thead>
+                <tr>
+                  <th>Product &amp; SKU</th>
+                  <th>Retail Price</th>
+                  <th>Base Margin</th>
+                  <th>Cart Abandonment</th>
+                  <th>7d Sales Velocity</th>
+                  <th>Stagnation</th>
+                  <th>RARS Score</th>
+                  <th class="text-right">Autonomous Action</th>
+                </tr>
+              </thead>
+              <tbody id="catalog-table-body">
+                <tr><td colspan="8" class="text-center py-6">Loading catalog metrics from Razorpay...</td></tr>
+              </tbody>
+            </table>
           </div>
+        </div>
 
-          <div id="a2a-checkout-action" style="margin-top: 16px; display: none;">
-            <button class="industrial-btn btn-emerald btn-full" id="btn-launch-rzp-checkout" onclick="launchLiveRazorpayCheckout()">
-              <span>LAUNCH RAZORPAY INTERACTIVE TEST CHECKOUT</span>
-            </button>
+        <!-- AGENT DECISION TRACE FORENSIC PANEL -->
+        <div id="execution-trace-panel" class="apple-card trace-card rainbow-border" style="display: none;">
+          <div class="apple-card-inner">
+            <div class="trace-top">
+              <div class="trace-title">
+                <span class="status-pulse blue"></span>
+                <span>Autonomous Reasoning, Guardrail &amp; Unit Economics Trace</span>
+              </div>
+              <button class="btn-close" onclick="closeTracePanel()">✕</button>
+            </div>
+            <div class="trace-content" id="trace-content">
+              <!-- Populated dynamically -->
+            </div>
           </div>
         </div>
       </div>
-    </main>
 
-    <!-- TAB 3: IMMUTABLE AUDIT LEDGER -->
-    <main id="tab-audit" class="matrix-panel">
-      <section class="pin-card control-strip">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="control-left">
-          <span class="section-kicker">CRYPTOGRAPHIC LEDGER</span>
-          <div class="control-title">IMMUTABLE FINANCIAL AUDIT LEDGER &amp; REVERSE COMPENSATION</div>
+      <!-- TAB PANEL 2: AGENT-TO-AGENT COMMERCE -->
+      <div id="tab-a2a" class="dash-panel">
+        <div class="apple-card control-card" id="a2a-section">
+          <div class="control-header">
+            <div>
+              <span class="card-eyebrow">Protocol Gateway</span>
+              <h3 class="card-title">NPCI UAP / AP2 / x402 Machine Commerce Gateway</h3>
+              <p class="card-desc">Enables external AI buyer agents to discover product manifests, negotiate price within margin bounds, and receive Razorpay checkout tokens.</p>
+            </div>
+            <a href="/api/a2a/catalog" target="_blank" class="btn-apple-glass">
+              <span>View <code>kubermesh.json</code> Manifest</span>
+            </a>
+          </div>
         </div>
-      </section>
 
-      <section class="pin-card table-section">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="table-responsive">
-          <table class="industrial-table" id="audit-table">
-            <thead>
-              <tr>
-                <th>TIMESTAMP</th>
-                <th>TARGET SKU</th>
-                <th>ACTION TYPE</th>
-                <th>VALIDATOR SHA256 HASH</th>
-                <th>RARS IMPACT (Δ)</th>
-                <th>REVENUE IMPACT</th>
-                <th>STATUS</th>
-                <th class="col-actions">REVERSE ROLLBACK</th>
-              </tr>
-            </thead>
-            <tbody id="audit-table-body">
-              <tr><td colspan="8" class="text-center py-8">DISCOVERING IMMUTABLE AUDIT RECORDS...</td></tr>
-            </tbody>
-          </table>
+        <div class="a2a-grid">
+          <!-- BUYER AGENT SIMULATOR -->
+          <div class="apple-card">
+            <div class="card-inner">
+              <span class="card-eyebrow">Buyer Perspective</span>
+              <h3 class="card-title">AI Buyer Agent Simulator</h3>
+              <p class="card-desc">Simulate an external personal shopping agent initiating negotiation.</p>
+
+              <div class="form-stack">
+                <div class="form-group">
+                  <label for="a2a-buyer-id">Buyer Agent Identifier</label>
+                  <input type="text" id="a2a-buyer-id" value="agent_gemini_shopping_bot_99" class="apple-input">
+                </div>
+
+                <div class="form-group">
+                  <label for="a2a-sku">Target Catalog Product SKU</label>
+                  <select id="a2a-sku" class="apple-select" onchange="updateA2APriceHint()">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="a2a-qty">Quantity</label>
+                    <input type="number" id="a2a-qty" value="1" min="1" max="10" class="apple-input" oninput="updateA2APriceHint()">
+                  </div>
+                  <div class="form-group">
+                    <label for="a2a-offered-inr">Offered Price per Unit (₹)</label>
+                    <input type="number" id="a2a-offered-inr" value="1349" class="apple-input">
+                  </div>
+                </div>
+
+                <div class="info-pill" id="a2a-price-hint">
+                  Retail: ₹1,499.00 | Floor Price (8% Margin Floor): ₹1,032.61
+                </div>
+
+                <button class="btn-apple-glow btn-full" onclick="submitA2ANegotiation()">
+                  <span>Transmit UAP / x402 Handshake</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MERCHANT GATEWAY RESPONSE -->
+          <div class="apple-card">
+            <div class="card-inner">
+              <span class="card-eyebrow">Merchant Settlement</span>
+              <h3 class="card-title">Cryptographic Token &amp; Checkout</h3>
+              <p class="card-desc">Evaluated against margin floors and signed with HMAC-SHA256.</p>
+
+              <div class="terminal-shell" id="a2a-result-terminal">
+                <span class="term-comment">// Awaiting incoming A2A negotiation request...</span>
+                <span class="term-cursor">&gt; _</span>
+              </div>
+
+              <div id="a2a-checkout-action" style="margin-top: 16px; display: none;">
+                <button class="btn-apple-emerald btn-full" id="btn-launch-rzp-checkout" onclick="launchLiveRazorpayCheckout()">
+                  <span>Launch Razorpay Interactive Test Checkout</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
-    </main>
+      </div>
+
+      <!-- TAB PANEL 3: IMMUTABLE AUDIT LEDGER -->
+      <div id="tab-audit" class="dash-panel">
+        <div class="apple-card control-card" id="audit-section">
+          <div class="control-header">
+            <div>
+              <span class="card-eyebrow">Cryptographic Ledger</span>
+              <h3 class="card-title">Immutable Financial Audit Ledger &amp; Reverse Compensation</h3>
+              <p class="card-desc">Every rupee action is sealed with SHA256 hashes, tracked with before/after RARS scores, and reversibly mapped.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="apple-card table-card">
+          <div class="table-responsive">
+            <table class="apple-table" id="audit-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Target SKU</th>
+                  <th>Action Type</th>
+                  <th>Validator SHA256 Hash</th>
+                  <th>RARS Impact (Δ)</th>
+                  <th>Revenue Recovered</th>
+                  <th>Status</th>
+                  <th class="text-right">Reverse Rollback</th>
+                </tr>
+              </thead>
+              <tbody id="audit-table-body">
+                <tr><td colspan="8" class="text-center py-6">Loading immutable audit records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- CREDENTIALS MODAL -->
-    <div id="settings-modal" class="modal-layer" style="display: none;">
-      <div class="modal-panel pin-card">
-        <div class="pin pin-tl"></div><div class="pin pin-tr"></div><div class="pin pin-bl"></div><div class="pin pin-br"></div>
-        <div class="modal-top">
-          <div class="modal-heading">API CREDENTIALS CONFIGURATION</div>
-          <button class="btn-close" onclick="closeSettingsModal()">[CLOSE]</button>
-        </div>
-        <div class="modal-body form-matrix">
-          <p class="modal-meta">
-            Connect your live Razorpay Test Mode dashboard to execute real offers, payment links, and orders on <code>dashboard.razorpay.com</code>.
-          </p>
-          <div class="form-cell">
-            <label for="cfg-key-id">RAZORPAY TEST KEY ID (rzp_test_...)</label>
-            <input type="text" id="cfg-key-id" class="industrial-input" placeholder="rzp_test_TXsxFSqiP8TQoc" value="rzp_test_TXsxFSqiP8TQoc">
+    <div id="settings-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card apple-card rainbow-border">
+        <div class="apple-card-inner">
+          <div class="modal-header">
+            <h3 class="card-title">Live Razorpay Test Credentials</h3>
+            <button class="btn-close" onclick="closeSettingsModal()">✕</button>
           </div>
-          <div class="form-cell">
-            <label for="cfg-key-secret">RAZORPAY KEY SECRET</label>
-            <input type="password" id="cfg-key-secret" class="industrial-input" placeholder="••••••••••••••••••••••••" value="2KISC0dyzmVIXjwcSe6zkeYb">
+          <div class="modal-body form-stack">
+            <p class="card-desc">
+              Connect your live Razorpay Test Mode dashboard to execute real offers, payment links, and orders on <code>dashboard.razorpay.com</code>.
+            </p>
+            <div class="form-group">
+              <label for="cfg-key-id">Razorpay Test Key ID (rzp_test_...)</label>
+              <input type="text" id="cfg-key-id" class="apple-input" placeholder="rzp_test_TXsxFSqiP8TQoc" value="rzp_test_TXsxFSqiP8TQoc">
+            </div>
+            <div class="form-group">
+              <label for="cfg-key-secret">Razorpay Key Secret</label>
+              <input type="password" id="cfg-key-secret" class="apple-input" placeholder="••••••••••••••••••••••••" value="2KISC0dyzmVIXjwcSe6zkeYb">
+            </div>
+            <div class="form-group">
+              <label for="cfg-gemini-key">Gemini API Key (Optional)</label>
+              <input type="password" id="cfg-gemini-key" class="apple-input" placeholder="AIzaSy...">
+            </div>
+            <button class="btn-apple-glow btn-full" onclick="saveCredentials()">
+              <span>Save Credentials &amp; Enable Live Sync</span>
+            </button>
           </div>
-          <div class="form-cell">
-            <label for="cfg-gemini-key">GEMINI API KEY (OPTIONAL)</label>
-            <input type="password" id="cfg-gemini-key" class="industrial-input" placeholder="AIzaSy...">
-          </div>
-          <button class="industrial-btn btn-indigo btn-full" onclick="saveCredentials()">
-            <span>SAVE CREDENTIALS &amp; INITIALIZE SYNC</span>
-          </button>
         </div>
       </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="site-footer">
-      <div class="footer-left">
-        <strong>KUBERMESH v1.0.0</strong> // ARCHITECTURAL REVENUE PROTOCOL // RAZORPAY BUILDATHON
+    <!-- APPLE-STYLE FOOTER -->
+    <footer class="apple-footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="brand-spark">✧</span>
+          <strong>KuberMesh</strong>
+        </div>
+        <div class="footer-tagline">
+          Autonomous Revenue Optimization &amp; A2A Commerce Protocol &bull; Razorpay Buildathon 2026
+        </div>
       </div>
-      <div class="footer-right">
-        <span>ZERO-LLM FINANCIAL BOUNDARIES</span> • <span>NPCI UAP / x402 SPEC</span> • <span>DETERMINISTIC LEDGER</span>
+      <div class="footer-bottom">
+        <div class="footer-specs">
+          <span>Deterministic Zero-LLM Invariants</span> &bull; 
+          <span>NPCI UAP / AP2 / x402 Protocol</span> &bull; 
+          <span>Immutable SHA256 Audit Trail</span>
+        </div>
+        <div class="footer-copy">
+          &copy; 2026 KuberMesh. Built for Track 01: AI Growth &amp; Agentic Commerce.
+        </div>
       </div>
     </footer>
   </div>
 
-  <!-- TOAST FEED -->
-  <div id="toast-container" class="toast-feed"></div>
+  <!-- TOAST ALERTS STACK -->
+  <div id="toast-container" class="toast-stack"></div>
 
   <script src="/static/app.js"></script>
 </body>
