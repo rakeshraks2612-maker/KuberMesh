@@ -66,9 +66,46 @@ class A2AGateway:
 
         return manifest
 
-    def handle_negotiation(self, req: A2ANegotiationRequest) -> A2ANegotiationResponse:
+    def _find_item(self, sku_query: str) -> Optional[Item]:
+        if not sku_query:
+            return None
+        sku_q = sku_query.strip().lower()
         catalog = discovery_engine.get_catalog()
-        item = next((i for i in catalog if i.id == req.sku or req.sku.lower() in i.id.lower() or req.sku.lower() in i.name.lower() or i.name.lower() in req.sku.lower()), None)
+        
+        # 1. Exact or substring match in active catalog
+        for i in catalog:
+            if i.id.lower() == sku_q or sku_q in i.id.lower() or sku_q in i.name.lower() or i.name.lower() in sku_q:
+                return i
+
+        # 2. Check local synthetic state if not found
+        try:
+            local_items = [Item(**d) for d in discovery_engine._load_local_state().get("catalog", [])]
+            for i in local_items:
+                if i.id.lower() == sku_q or sku_q in i.id.lower() or sku_q in i.name.lower() or i.name.lower() in sku_q:
+                    return i
+        except Exception:
+            local_items = []
+
+        # 3. Known aliases & keyword mapping
+        keyword_groups = [
+            (["earbuds", "earbud", "aurasound pro", "item_earbuds_pro", "item_txtg3fxjm6hjzp", "item_txtnticpvycmuy"], "AuraSound Pro ANC Earbuds"),
+            (["case", "silicone", "armour", "item_earbud_case", "item_txtg43cu40uxdq", "item_txtnuv79nmay9l"], "AuraSound Armour Silicone Case"),
+            (["smartwatch", "chronos", "amoled", "item_smartwatch_elite", "item_txtg4gedvc6yti", "item_txtnv3qv9phvja"], "Chronos AMOLED Smartwatch"),
+            (["charger", "gan", "voltpulse", "item_fast_charger_65w", "item_txtg5mkgwauz7b", "item_txtnvurkam7hns"], "VoltPulse 65W GaN Dual-Port Charger"),
+            (["keyboard", "vortex", "mechanical", "item_mechanical_keyboard", "item_txtg5qncyouoi5"], "VortexRGB Mechanical Keyboard"),
+        ]
+        
+        all_candidates = catalog + local_items
+        for keywords, standard_name in keyword_groups:
+            if any(k in sku_q for k in keywords):
+                for cand in all_candidates:
+                    if cand.name == standard_name or any(k in cand.name.lower() or k in cand.id.lower() for k in keywords):
+                        return cand
+
+        return None
+
+    def handle_negotiation(self, req: A2ANegotiationRequest) -> A2ANegotiationResponse:
+        item = self._find_item(req.sku)
         
         if not item:
             return A2ANegotiationResponse(
@@ -173,10 +210,11 @@ class A2AGateway:
         attack_type: str,
         custom_prompt: Optional[str] = None
     ) -> Dict[str, Any]:
-        catalog = discovery_engine.get_catalog()
-        item = next((i for i in catalog if i.id == sku_id or sku_id.lower() in i.id.lower() or sku_id.lower() in i.name.lower() or i.name.lower() in sku_id.lower()), None)
-        if not item and catalog:
-            item = catalog[0]
+        item = self._find_item(sku_id)
+        if not item:
+            catalog = discovery_engine.get_catalog()
+            if catalog:
+                item = catalog[0]
         if not item:
             return {"status": "error", "message": "Catalog empty"}
 

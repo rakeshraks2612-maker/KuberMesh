@@ -398,6 +398,12 @@ async function triggerMultiScenarioDemo() {
 
 // Built-in catalog metadata dictionary for instantaneous reactivity
 const defaultCatalogFallbacks = {
+  "item_earbuds_pro": { item: { id: "item_earbuds_pro", name: "AuraSound Pro ANC Earbuds", amount_inr: 1499.0, base_cost_paise: 95000 } },
+  "item_earbud_case": { item: { id: "item_earbud_case", name: "AuraSound Armour Silicone Case", amount_inr: 399.0, base_cost_paise: 15000 } },
+  "item_smartwatch_elite": { item: { id: "item_smartwatch_elite", name: "Chronos AMOLED Smartwatch", amount_inr: 2999.0, base_cost_paise: 195000 } },
+  "item_fast_charger_65w": { item: { id: "item_fast_charger_65w", name: "VoltPulse 65W GaN Dual-Port Charger", amount_inr: 1199.0, base_cost_paise: 70000 } },
+  "item_mechanical_keyboard": { item: { id: "item_mechanical_keyboard", name: "VortexRGB Mechanical Keyboard", amount_inr: 3499.0, base_cost_paise: 310000 } },
+  "item_desk_mat_xl": { item: { id: "item_desk_mat_xl", name: "ApexGlide XL Gaming Desk Mat", amount_inr: 899.0, base_cost_paise: 38000 } },
   "item_TXtg5qNcyOuOI5": { item: { id: "item_TXtg5qNcyOuOI5", name: "VortexRGB Mechanical Keyboard", amount_inr: 3499.0, base_cost_paise: 227435 } },
   "item_TXtg4gEDvC6yTI": { item: { id: "item_TXtg4gEDvC6yTI", name: "Chronos AMOLED Smartwatch", amount_inr: 2999.0, base_cost_paise: 194935 } },
   "item_TXtg3FXJM6HJzP": { item: { id: "item_TXtg3FXJM6HJzP", name: "AuraSound Pro ANC Earbuds", amount_inr: 1499.0, base_cost_paise: 97435 } },

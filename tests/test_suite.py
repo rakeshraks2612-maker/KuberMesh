@@ -197,6 +197,17 @@ def test_a2a_negotiation_handshake():
     res_low = a2a_gateway.handle_negotiation(req_low)
     assert res_low.decision == "REJECTED"
 
+    # 3. Cross-alias resolution (e.g. live test SKU item_TXtg3FXJM6HJzP -> AuraSound Pro ANC Earbuds)
+    req_alias = A2ANegotiationRequest(
+        buyer_agent_id="agent_buyer_03",
+        sku="item_TXtg3FXJM6HJzP",
+        requested_quantity=1,
+        offered_price_paise=134900
+    )
+    res_alias = a2a_gateway.handle_negotiation(req_alias)
+    assert res_alias.decision == "ACCEPTED"
+    assert res_alias.agreed_price_paise == 134900
+
 def test_merkle_certificate_generation():
     cert = state_manager.generate_merkle_certificate()
     assert cert["certificate_id"].startswith("CERT-KM-")
