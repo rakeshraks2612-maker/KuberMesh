@@ -38,6 +38,12 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 @app.get("/favicon.ico")
 def serve_favicon():
+    favicon_ico = STATIC_DIR / "favicon.ico"
+    if favicon_ico.exists():
+        return FileResponse(favicon_ico, media_type="image/x-icon")
+    favicon_png = STATIC_DIR / "favicon.png"
+    if favicon_png.exists():
+        return FileResponse(favicon_png, media_type="image/png")
     favicon_svg = STATIC_DIR / "favicon.svg"
     if favicon_svg.exists():
         return FileResponse(favicon_svg, media_type="image/svg+xml")
