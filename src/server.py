@@ -60,8 +60,12 @@ def get_catalog_metrics():
         prof = profiles.get(item.id)
         sc = scores.get(item.id)
         if prof and sc:
+            item_dict = item.model_dump()
+            item_dict["amount_inr"] = item.amount_inr
+            item_dict["base_cost_inr"] = item.base_cost_inr
+            item_dict["base_margin_pct"] = item.base_margin_pct
             combined.append({
-                "item": item.model_dump(),
+                "item": item_dict,
                 "profile": prof.model_dump(),
                 "rars": sc.model_dump()
             })

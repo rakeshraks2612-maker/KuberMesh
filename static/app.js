@@ -267,12 +267,22 @@ function switchTab(tabId) {
   } else if (tabId === 'benchmark') {
     executeLiveBenchmark(false);
   } else if (tabId === 'a2a') {
+    populateA2ASelect(currentCatalogData);
     updateA2APriceHint();
+  } else if (tabId === 'adversarial') {
+    populateAdversarialSkuSelect(currentCatalogData);
   } else if (tabId === 'policy') {
     loadPolicyConfig();
   } else if (tabId === 'webhooks') {
     loadWebhookEvents();
   }
+}
+
+function getItemPrice(item) {
+  if (!item) return 0;
+  if (typeof item.amount_inr === 'number' && !isNaN(item.amount_inr)) return item.amount_inr;
+  if (typeof item.amount === 'number' && !isNaN(item.amount)) return item.amount / 100.0;
+  return 0;
 }
 
 async function loadDashboardData(retryCount = 0) {
@@ -299,6 +309,8 @@ async function loadDashboardData(retryCount = 0) {
       setTimeout(() => loadDashboardData(retryCount + 1), 1000);
     } else {
       showToast("Syncing with live Razorpay catalog...", "info");
+      populateA2ASelect(Object.values(defaultCatalogFallbacks));
+      populateAdversarialSkuSelect(Object.values(defaultCatalogFallbacks));
     }
   }
 }
@@ -311,9 +323,11 @@ function renderCatalogTable(items) {
   }
 
   tbody.innerHTML = items.map(entry => {
-    const item = entry.item;
-    const prof = entry.profile;
-    const rars = entry.rars;
+    const item = entry.item || entry;
+    const prof = entry.profile || {};
+    const rars = entry.rars || { score: 0.0, risk_level: "LOW" };
+    const price = getItemPrice(item);
+    const margin = (item.base_margin_pct !== undefined ? item.base_margin_pct : (prof.base_margin_pct !== undefined ? prof.base_margin_pct : 35.0));
 
     let rarsClass = "rars-low";
     if (rars.risk_level === "CRITICAL") rarsClass = "rars-critical";
@@ -326,17 +340,17 @@ function renderCatalogTable(items) {
           <div style="font-weight: 700; color: var(--text-dark);">${item.name}</div>
           <div style="font-size: 11px; color: var(--text-subtle); font-family: var(--font-mono);">SKU: ${item.id}</div>
         </td>
-        <td style="font-family: var(--font-mono); font-weight: 600;">₹${item.amount_inr.toFixed(2)}</td>
-        <td style="color: #059669; font-weight: 600; font-family: var(--font-mono);">${item.base_margin_pct}%</td>
+        <td style="font-family: var(--font-mono); font-weight: 600;">₹${price.toFixed(2)}</td>
+        <td style="color: #059669; font-weight: 600; font-family: var(--font-mono);">${margin}%</td>
         <td>
-          <div style="font-weight: 600;">${(prof.cart_abandonment_rate * 100).toFixed(1)}%</div>
-          <div style="font-size: 11px; color: var(--text-subtle);">${prof.total_orders_abandoned}/${prof.total_orders_created} carts</div>
+          <div style="font-weight: 600;">${((prof.cart_abandonment_rate || 0) * 100).toFixed(1)}%</div>
+          <div style="font-size: 11px; color: var(--text-subtle);">${prof.total_orders_abandoned || 0}/${prof.total_orders_created || 0} carts</div>
         </td>
-        <td>${prof.sales_velocity_7d} <span style="font-size: 11px; color: var(--text-subtle);">orders/day</span></td>
-        <td>${prof.stagnation_days} <span style="font-size: 11px; color: var(--text-subtle);">days</span></td>
+        <td>${prof.sales_velocity_7d || 0} <span style="font-size: 11px; color: var(--text-subtle);">orders/day</span></td>
+        <td>${prof.stagnation_days || 0} <span style="font-size: 11px; color: var(--text-subtle);">days</span></td>
         <td>
           <span class="rars-badge ${rarsClass}">
-            ${rars.score.toFixed(2)} • ${rars.risk_level}
+            ${(rars.score || 0).toFixed(2)} • ${rars.risk_level || 'LOW'}
           </span>
         </td>
         <td class="text-right">
@@ -413,23 +427,28 @@ const defaultCatalogFallbacks = {
 
 function getCatalogEntry(sku) {
   if (currentCatalogData && currentCatalogData.length > 0) {
-    const found = currentCatalogData.find(e => e.item && e.item.id === sku);
+    const found = currentCatalogData.find(e => (e.item?.id || e.id) === sku);
     if (found) return found;
   }
-  return defaultCatalogFallbacks[sku] || Object.values(defaultCatalogFallbacks)[0];
+  return defaultCatalogFallbacks[sku];
 }
 
 function populateA2ASelect(items) {
   const select = document.getElementById("a2a-sku");
   if (!select) return;
+  const list = (items && items.length > 0) ? items : Object.values(defaultCatalogFallbacks);
   const currentVal = select.value;
-  select.innerHTML = items.map(entry => {
-    return `<option value="${entry.item.id}">${entry.item.name} — ₹${entry.item.amount_inr.toFixed(2)}</option>`;
+
+  select.innerHTML = list.map(entry => {
+    const item = entry.item || entry;
+    const price = getItemPrice(item);
+    return `<option value="${item.id}">${item.name} — ₹${price.toFixed(2)}</option>`;
   }).join("");
-  if (currentVal && items.some(e => e.item.id === currentVal)) {
+
+  if (currentVal && list.some(e => (e.item?.id || e.id) === currentVal)) {
     select.value = currentVal;
-  } else if (items.length > 0) {
-    select.value = items[0].item.id;
+  } else if (list.length > 0) {
+    select.value = (list[0].item?.id || list[0].id);
   }
   onA2ASkuChange();
 }
@@ -439,10 +458,12 @@ function onA2ASkuChange() {
   if (!select) return;
   const sku = select.value;
   const entry = getCatalogEntry(sku);
-  if (entry && entry.item) {
+  if (entry) {
+    const item = entry.item || entry;
+    const price = getItemPrice(item);
     const input = document.getElementById("a2a-offered-inr");
     if (input) {
-      input.value = (entry.item.amount_inr * 0.90).toFixed(2);
+      input.value = (price * 0.90).toFixed(2);
     }
   }
   updateA2APriceHint();
@@ -453,12 +474,14 @@ function setA2APreset(type) {
   if (!select) return;
   const sku = select.value;
   const entry = getCatalogEntry(sku);
-  if (!entry || !entry.item) return;
+  if (!entry) return;
 
-  const retail = entry.item.amount_inr;
-  const minMargin = 0.08;
-  const floorPrice = (entry.item.base_cost_paise / (1.0 - minMargin)) / 100.0;
+  const item = entry.item || entry;
+  const retail = getItemPrice(item);
+  const baseCost = (item.base_cost_paise ? item.base_cost_paise / 100.0 : retail * 0.65);
+  const floorPrice = baseCost / (1.0 - 0.08); // 8% min margin
   const input = document.getElementById("a2a-offered-inr");
+  if (!input) return;
 
   if (type === 'valid') {
     input.value = (retail * 0.90).toFixed(2);
@@ -748,12 +771,22 @@ function renderFlightRecorder(data) {
 // Adversarial AI Security Arena
 function populateAdversarialSkuSelect(items) {
   const select = document.getElementById("adv-sku-select");
-  if (!select || !items.length) return;
+  if (!select) return;
+  const list = (items && items.length > 0) ? items : Object.values(defaultCatalogFallbacks);
+  if (!list.length) return;
 
-  select.innerHTML = items.map(bundle => {
-    const item = bundle.item;
-    return `<option value="${item.id}">${item.name} — ₹${item.amount_inr.toLocaleString('en-IN')}</option>`;
+  const currentVal = select.value;
+  select.innerHTML = list.map(bundle => {
+    const item = bundle.item || bundle;
+    const price = getItemPrice(item);
+    return `<option value="${item.id}">${item.name} — ₹${price.toLocaleString('en-IN')}</option>`;
   }).join("");
+
+  if (currentVal && list.some(b => (b.item?.id || b.id) === currentVal)) {
+    select.value = currentVal;
+  } else if (list.length > 0) {
+    select.value = (list[0].item?.id || list[0].id);
+  }
 }
 
 const attackPresets = {
