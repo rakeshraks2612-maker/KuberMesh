@@ -4,7 +4,23 @@ let currentPolicyConfig = null;
 let currentAdversarialPreset = "prompt_injection";
 let currentMerkleCert = null;
 
+// Force instant browser tab favicon
+function forceTabFavicon() {
+  const favDataUri = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABtklEQVR4nO3WO24DMQwEUPcB0vgUvkEOlgu4T+EL+V7bJdjCgKBIK36GlLgmATb+aGcebK8vl5ycnBzBfD2339X2LUu7YMwuMxWiPvDjelt+YQgRy8MQohY/gkiAdysvRrAu//n9aP5i749bI0wF2Au+tgfw2mkAVh//shwFAI1A/hqgAepSHAAkhDtAr4wEAAHhBjAqoQHQQJgDUMMjACQQMIDWc9zgKIAagZIbBqAJjQRoneUKIA1vdcY0AG4J9HuXAaAWQb7PFYCKMCqEeD21PByAG4pTRlq8dVcwB+AEtNzebdEFQANRjrb4dAAOxNFIiy8DMIKgjKT4cgA9CAkA53rLAZQInJGUT4AEWBxA8huQAGcA4CBoyocBaEFI7/thAHoImj894QAoENqzQwDse//Z/i3i3ARIgASwB0BAoAFGWU0ANBAoAGpGUwAJAgKAk88cgAuhAZDkcgOgQkgANHncAUYQHABEjmkAPQgKAPL6ZIASARmgRhgBoK9NLm8JUEL0AKyuKQKwRPBc1sf/bAii8gnQQIgGUWdnl4+MACvfQ4i06vJRIaDFo2CYl87JOd/8Aa0lDMQ0K1vHAAAAAElFTkSuQmCC";
+  ['icon', 'shortcut icon'].forEach(rel => {
+    let link = document.querySelector(`link[rel='${rel}']`);
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = rel;
+      link.type = 'image/png';
+      document.head.appendChild(link);
+    }
+    link.href = favDataUri;
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  forceTabFavicon();
   initAmbientSpotlight();
   initHeroCardsParallax();
   initNavScrollSpy();

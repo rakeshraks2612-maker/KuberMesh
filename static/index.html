@@ -13,6 +13,18 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=3">
   <link rel="shortcut icon" href="/favicon.ico?v=3">
   <link rel="apple-touch-icon" href="/static/favicon.png?v=3">
+  <script>
+    (function() {
+      var fav = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABtklEQVR4nO3WO24DMQwEUPcB0vgUvkEOlgu4T+EL+V7bJdjCgKBIK36GlLgmATb+aGcebK8vl5ycnBzBfD2339X2LUu7YMwuMxWiPvDjelt+YQgRy8MQohY/gkiAdysvRrAu//n9aP5i749bI0wF2Au+tgfw2mkAVh//shwFAI1A/hqgAepSHAAkhDtAr4wEAAHhBjAqoQHQQJgDUMMjACQQMIDWc9zgKIAagZIbBqAJjQRoneUKIA1vdcY0AG4J9HuXAaAWQb7PFYCKMCqEeD21PByAG4pTRlq8dVcwB+AEtNzebdEFQANRjrb4dAAOxNFIiy8DMIKgjKT4cgA9CAkA53rLAZQInJGUT4AEWBxA8huQAGcA4CBoyocBaEFI7/thAHoImj894QAoENqzQwDse//Z/i3i3ARIgASwB0BAoAFGWU0ANBAoAGpGUwAJAgKAk88cgAuhAZDkcgOgQkgANHncAUYQHABEjmkAPQgKAPL6ZIASARmgRhgBoK9NLm8JUEL0AKyuKQKwRPBc1sf/bAii8gnQQIgGUWdnl4+MACvfQ4i06vJRIaDFo2CYl87JOd/8Aa0lDMQ0K1vHAAAAAElFTkSuQmCC";
+      ['icon', 'shortcut icon'].forEach(function(r) {
+        var l = document.createElement('link');
+        l.type = 'image/png';
+        l.rel = r;
+        l.href = fav;
+        document.head.appendChild(l);
+      });
+    })();
+  </script>
   <link rel="stylesheet" href="/static/style.css?v=26.0">
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
