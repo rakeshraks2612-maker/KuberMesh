@@ -2,8 +2,7 @@ import os
 import uuid
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Literal
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -36,6 +35,13 @@ app = FastAPI(
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+@app.get("/favicon.ico")
+def serve_favicon():
+    favicon_svg = STATIC_DIR / "favicon.svg"
+    if favicon_svg.exists():
+        return FileResponse(favicon_svg, media_type="image/svg+xml")
+    return HTMLResponse("", status_code=204)
 
 @app.get("/")
 def serve_index():
